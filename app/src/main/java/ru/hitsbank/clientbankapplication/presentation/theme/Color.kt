@@ -1,4 +1,4 @@
-package ru.hitsbank.clientbankapplication.ui.theme
+package ru.hitsbank.clientbankapplication.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

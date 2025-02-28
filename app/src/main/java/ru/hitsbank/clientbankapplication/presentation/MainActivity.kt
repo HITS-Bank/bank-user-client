@@ -1,4 +1,4 @@
-package ru.hitsbank.clientbankapplication
+package ru.hitsbank.clientbankapplication.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import ru.hitsbank.clientbankapplication.ui.theme.ClientBankApplicationTheme
+import ru.hitsbank.clientbankapplication.presentation.theme.ClientBankApplicationTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
