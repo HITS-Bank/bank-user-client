@@ -1,4 +1,5 @@
-package com.example.compose
+package ru.hitsbank.clientbankapplication.core.presentation.theme
+
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF0C6B59)
