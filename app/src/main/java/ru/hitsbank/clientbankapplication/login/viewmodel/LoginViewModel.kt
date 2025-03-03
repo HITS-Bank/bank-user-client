@@ -7,14 +7,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.hitsbank.clientbankapplication.core.constants.Constants.CLIENT_APP_CHANNEL
 import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
 import ru.hitsbank.clientbankapplication.core.navigation.base.replace
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess

@@ -11,6 +11,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
+import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.interceptor.AuthInterceptor
 import java.util.concurrent.TimeUnit
 
@@ -60,6 +61,8 @@ private fun buildOkHttpClient(
 
 private fun authApi(retrofit: Retrofit) = retrofit.create(AuthApi::class.java)
 
+private fun profileApi(retrofit: Retrofit) = retrofit.create(ProfileApi::class.java)
+
 fun networkModule() = module {
     singleOf(::loggingInterceptor)
     singleOf(::AuthInterceptor)
@@ -80,4 +83,5 @@ fun networkModule() = module {
     }
 
     single { authApi(get(named(NO_AUTH_RETROFIT))) }
+    single { profileApi(get(named(AUTH_RETROFIT))) }
 }

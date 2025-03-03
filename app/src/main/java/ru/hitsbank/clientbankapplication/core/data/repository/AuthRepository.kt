@@ -2,6 +2,7 @@ package ru.hitsbank.clientbankapplication.core.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
+import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
@@ -11,12 +12,14 @@ import ru.hitsbank.clientbankapplication.core.data.model.RefreshRequest
 import ru.hitsbank.clientbankapplication.core.data.model.TokenType
 import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
+import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
-import ru.hitsbank.clientbankapplication.core.domain.model.TokenResponseEntity
+import ru.hitsbank.clientbankapplication.core.domain.model.ProfileEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 
 class AuthRepository(
-    private val api: AuthApi,
+    private val authApi: AuthApi,
+    private val profileApi: ProfileApi,
     private val mapper: AuthMapper,
     private val sessionManager: SessionManager,
 ) : IAuthRepository {
@@ -26,7 +29,7 @@ class AuthRepository(
         request: LoginRequestEntity,
     ): Result<Completable> {
         return apiCall(Dispatchers.IO) {
-            api.login(channel, mapper.map(request))
+            authApi.login(channel, mapper.map(request))
                 .toResult()
                 .also { result ->
                     if (result is Result.Success) {
@@ -45,7 +48,7 @@ class AuthRepository(
         }
 
         return apiCall(Dispatchers.IO) {
-            api.refresh(
+            authApi.refresh(
                 expiredToken = "Bearer $accessToken",
                 request = RefreshRequest(refreshToken),
             )
@@ -57,5 +60,26 @@ class AuthRepository(
                 }
                 .toCompletableResult()
         }
+    }
+
+    override suspend fun getSelfProfile(): Result<ProfileEntity> {
+        return apiCall(Dispatchers.IO) {
+            profileApi.getSelfProfile()
+                .toResult()
+                .also { result ->
+                    if (result is Result.Success) {
+                        sessionManager.saveIsUserBlocked(result.data.isBanned)
+                    }
+                }
+                .map(mapper::map)
+        }
+    }
+
+    override fun saveIsUserBlocked(isUserBlocked: Boolean) {
+        sessionManager.saveIsUserBlocked(isUserBlocked)
+    }
+
+    override fun getIsUserBlocked(): Result<Boolean> {
+        return Result.Success(sessionManager.isUserBlocked())
     }
 }
