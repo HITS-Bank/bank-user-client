@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.hitsbank.clientbankapplication.core.constants.Constants.CLIENT_APP_CHANNEL
+import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
@@ -21,7 +23,7 @@ class LoginViewModel(
 
     private val _state: MutableStateFlow<BankUiState<LoginScreenModel>> =
         MutableStateFlow(BankUiState.Ready(LoginScreenModel.EMPTY))
-    val state = _state.asStateFlow()
+    val uiState = _state.asStateFlow()
 
     fun onEvent(event: LoginEvent) {
         when (event) {
@@ -42,10 +44,17 @@ class LoginViewModel(
     private fun logIn() {
         val request = _state.getIfSuccess() ?: return
         viewModelScope.launch {
-            authInteractor.login(
-                channel = CLIENT_APP_CHANNEL,
-                request = mapper.map(request),
-            )
+            authInteractor
+                .login(
+                    channel = CLIENT_APP_CHANNEL,
+                    request = mapper.map(request),
+                ).collectLatest { state ->
+                    when (state) {
+                        State.Loading -> Unit // TODO
+                        is State.Error -> Unit // TODO
+                        is State.Success -> Unit // TODO
+                    }
+                }
         }
     }
 }

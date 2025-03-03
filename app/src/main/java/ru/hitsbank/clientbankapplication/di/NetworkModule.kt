@@ -21,6 +21,8 @@ private const val NO_AUTH_OKHTTP = "NO_AUTH_OKHTTP"
 private const val AUTH_RETROFIT = "AUTH_RETROFIT"
 private const val NO_AUTH_RETROFIT = "NO_AUTH_RETROFIT"
 
+private const val BASE_URL = "http://10.0.2.2:8080/"
+
 private fun loggingInterceptor() = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
 private fun gson() = GsonBuilder().create()
@@ -62,14 +64,19 @@ fun networkModule() = module {
     singleOf(::loggingInterceptor)
     singleOf(::AuthInterceptor)
     singleOf(::gson)
-    singleOf(::noAuthOkHttpClient) { named(NO_AUTH_OKHTTP) }
-    singleOf(::authOkHttpClient) { named(AUTH_OKHTTP) }
+
+    single(named(NO_AUTH_OKHTTP)) {
+        noAuthOkHttpClient(get())
+    }
+    single(named(AUTH_OKHTTP)) {
+        authOkHttpClient(get(), get())
+    }
 
     single(named(NO_AUTH_RETROFIT)) {
-        retrofit(get(named(NO_AUTH_OKHTTP)), get(), get())
+        retrofit(get(named(NO_AUTH_OKHTTP)), BASE_URL, get())
     }
     single(named(AUTH_RETROFIT)) {
-        retrofit(get(named(AUTH_OKHTTP)), get(), get())
+        retrofit(get(named(AUTH_OKHTTP)), BASE_URL, get())
     }
 
     single { authApi(get(named(NO_AUTH_RETROFIT))) }
