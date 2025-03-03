@@ -6,6 +6,7 @@ import org.koin.core.context.startKoin
 import ru.hitsbank.clientbankapplication.di.applicationModule
 import ru.hitsbank.clientbankapplication.di.dataModule
 import ru.hitsbank.clientbankapplication.di.domainModule
+import ru.hitsbank.clientbankapplication.di.navigationModule
 import ru.hitsbank.clientbankapplication.di.networkModule
 import ru.hitsbank.clientbankapplication.di.presentationModule
 
@@ -17,6 +18,7 @@ class App : Application() {
             modules(
                 applicationModule(),
                 presentationModule(),
+                navigationModule(),
                 domainModule(),
                 dataModule(),
                 networkModule(),

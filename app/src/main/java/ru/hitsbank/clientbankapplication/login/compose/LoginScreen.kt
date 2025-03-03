@@ -21,9 +21,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import ru.hitsbank.clientbankapplication.LocalSnackbarController
+import ru.hitsbank.clientbankapplication.core.constants.Constants.GENERAL_ERROR_TEXT
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
+import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
+import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
 import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
 import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
+import ru.hitsbank.clientbankapplication.login.event.LoginEffect
 import ru.hitsbank.clientbankapplication.login.event.LoginEvent
 import ru.hitsbank.clientbankapplication.login.model.LoginScreenModel
 import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
@@ -34,6 +39,13 @@ internal fun LoginScreenWrapper(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)
+    val snackbar = LocalSnackbarController.current
+
+    viewModel.effects.observeWithLifecycle { effect ->
+        when (effect) {
+            LoginEffect.OnError -> snackbar.show(GENERAL_ERROR_TEXT)
+        }
+    }
 
     LoginScreen(
         uiState = uiState,
@@ -47,14 +59,11 @@ internal fun LoginScreen(
     onEvent: (LoginEvent) -> Unit,
 ) {
     when (uiState) {
-        is BankUiState.Error -> Unit // TODO
-
-        BankUiState.Loading -> Unit // TODO
-
         is BankUiState.Ready -> LoginScreenReady(
             model = uiState.model,
             onEvent = onEvent,
         )
+        else -> Unit
     }
 }
 
@@ -106,5 +115,9 @@ internal fun LoginScreenReady(
                 textAlign = TextAlign.Center,
             )
         }
+    }
+
+    if (model.isLoading) {
+        LoadingContentOverlay()
     }
 }
