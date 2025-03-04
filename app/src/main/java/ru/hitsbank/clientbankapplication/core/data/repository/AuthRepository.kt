@@ -2,7 +2,6 @@ package ru.hitsbank.clientbankapplication.core.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
-import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
@@ -12,9 +11,7 @@ import ru.hitsbank.clientbankapplication.core.data.model.RefreshRequest
 import ru.hitsbank.clientbankapplication.core.data.model.TokenType
 import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
-import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
-import ru.hitsbank.clientbankapplication.core.domain.model.ProfileEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 
 class AuthRepository(

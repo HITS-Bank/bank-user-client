@@ -24,7 +24,7 @@ fun LoadingContent() {
             .padding(16.dp),
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(modifier = Modifier.size(64.dp))
+        CircularProgressIndicator(modifier = Modifier.size(32.dp))
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.hitsbank.clientbankapplication.R
+import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.core.navigation.base.BottomBarDestination
 
 object BottomBarDestinations {
@@ -73,12 +74,7 @@ fun BottomBarNavHost() {
             startDestination = BottomBarDestinations.Accounts.route,
         ) {
             composable(route = BottomBarDestinations.Accounts.route) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(text = "Счета")
-                }
+                AccountListScreenWrapper()
             }
             composable(route = BottomBarDestinations.Tariffs.route) {
                 Box(

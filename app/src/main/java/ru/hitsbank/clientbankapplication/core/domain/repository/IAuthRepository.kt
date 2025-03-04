@@ -3,8 +3,6 @@ package ru.hitsbank.clientbankapplication.core.domain.repository
 import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
-import ru.hitsbank.clientbankapplication.core.domain.model.ProfileEntity
-import ru.hitsbank.clientbankapplication.core.domain.model.TokenResponseEntity
 
 interface IAuthRepository {
 

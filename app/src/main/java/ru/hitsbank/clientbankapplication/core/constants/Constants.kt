@@ -5,4 +5,6 @@ object Constants {
     const val CLIENT_APP_CHANNEL = "CLIENT"
 
     const val GENERAL_ERROR_TEXT = "\"Что-то пошло не так…\""
+
+    const val DEFAULT_PAGE_SIZE = 10
 }
