@@ -19,7 +19,6 @@ import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 
 class AuthRepository(
     private val authApi: AuthApi,
-    private val profileApi: ProfileApi,
     private val mapper: AuthMapper,
     private val sessionManager: SessionManager,
 ) : IAuthRepository {
@@ -59,19 +58,6 @@ class AuthRepository(
                     }
                 }
                 .toCompletableResult()
-        }
-    }
-
-    override suspend fun getSelfProfile(): Result<ProfileEntity> {
-        return apiCall(Dispatchers.IO) {
-            profileApi.getSelfProfile()
-                .toResult()
-                .also { result ->
-                    if (result is Result.Success) {
-                        sessionManager.saveIsUserBlocked(result.data.isBanned)
-                    }
-                }
-                .map(mapper::map)
         }
     }
 

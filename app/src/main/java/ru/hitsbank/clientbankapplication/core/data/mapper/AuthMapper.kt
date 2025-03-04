@@ -24,17 +24,4 @@ class AuthMapper {
             refreshTokenExpiresAt = response.refreshTokenExpiresAt,
         )
     }
-
-    fun map(response: ProfileResponse): ProfileEntity {
-        with (response) {
-            return ProfileEntity(
-                id = id,
-                firstName = firstName,
-                lastName = lastName,
-                isBanned = isBanned,
-                email = email,
-                role = role,
-            )
-        }
-    }
 }

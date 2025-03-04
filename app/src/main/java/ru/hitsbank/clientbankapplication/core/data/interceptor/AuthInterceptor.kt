@@ -12,6 +12,7 @@ class AuthInterceptor(
     private val authRepository: IAuthRepository,
     private val sessionManager: SessionManager
 ) : Interceptor {
+
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val accessToken = sessionManager.fetchToken(TokenType.ACCESS)
