@@ -10,6 +10,7 @@ data class AccountListPaginationState(
     override val data: List<AccountItem>,
     override val pageNumber: Int,
     override val pageSize: Int,
+    val isUserBlocked: Boolean,
 ) : PaginationStateHolder<AccountItem> {
 
     override fun copyWith(
@@ -30,6 +31,7 @@ data class AccountListPaginationState(
             data = emptyList(),
             pageNumber = 0,
             pageSize = DEFAULT_PAGE_SIZE,
+            isUserBlocked = false,
         )
     }
 }

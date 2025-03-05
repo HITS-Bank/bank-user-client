@@ -7,4 +7,6 @@ sealed interface AccountListEvent {
     data class OnClickDetails(val accountNumber: String) : AccountListEvent
 
     data class OnPaginationEvent(val event: PaginationEvent) : AccountListEvent
+
+    data object OnCreateBankAccount : AccountListEvent
 }

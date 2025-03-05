@@ -5,7 +5,9 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import ru.hitsbank.clientbankapplication.core.data.model.TokenResponse
 import ru.hitsbank.clientbankapplication.core.data.model.TokenType
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeParseException
 
 class SessionManager(context: Context) {
@@ -71,7 +73,7 @@ class SessionManager(context: Context) {
 
     private fun String?.parseUtcDateTime(): LocalDateTime? {
         return try {
-            LocalDateTime.parse(this)
+            Instant.parse(this).atZone(ZoneOffset.UTC).toLocalDateTime()
         } catch (e: DateTimeParseException) {
             null
         }

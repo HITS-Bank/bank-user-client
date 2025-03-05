@@ -6,13 +6,17 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.hitsbank.clientbankapplication.R
@@ -81,6 +85,20 @@ internal fun AccountListScreenReady(
             },
         )
     },
+    floatingActionButton = {
+        if (!model.isUserBlocked) {
+            FloatingActionButton(
+                onClick = { onEvent.invoke(AccountListEvent.OnCreateBankAccount) },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_add_48),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+            }
+        }
+    }
 ) { paddings ->
     LazyColumn(
         modifier = Modifier.padding(paddings),
@@ -96,7 +114,9 @@ internal fun AccountListScreenReady(
                 title = item.number,
                 subtitle = item.description,
                 subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
-                end = ListItemEnd.Chevron,
+                end = ListItemEnd.Chevron(
+                    onClick = { onEvent.invoke(AccountListEvent.OnClickDetails(item.number)) },
+                ),
             )
         }
 
