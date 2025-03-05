@@ -2,6 +2,7 @@ package ru.hitsbank.clientbankapplication.bank_account.data.api
 
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 
@@ -12,4 +13,7 @@ interface BankAccountApi {
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
     ): Response<AccountListResponse>
+
+    @POST("bank_account/create")
+    suspend fun createAccount(): Response<BankAccountResponse>
 }

@@ -8,5 +8,9 @@ sealed interface AccountListEvent {
 
     data class OnPaginationEvent(val event: PaginationEvent) : AccountListEvent
 
-    data object OnCreateBankAccount : AccountListEvent
+    data object OnOpenCreateAccountDialog : AccountListEvent
+
+    data object OnDismissCreateAccountDialog : AccountListEvent
+
+    data object OnCreateAccount : AccountListEvent
 }

@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
 import ru.hitsbank.clientbankapplication.bank_account.data.mapper.BankAccountMapper
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
@@ -20,6 +21,15 @@ class BankAccountRepository(
             bankAccountApi.getAccountList(pageSize, pageNumber)
                 .toResult()
                 .map(mapper::map)
+        }
+    }
+
+    override suspend fun createAccount(): Result<BankAccountEntity> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.createAccount()
+                .toResult()
+                .map(mapper::map)
+
         }
     }
 }

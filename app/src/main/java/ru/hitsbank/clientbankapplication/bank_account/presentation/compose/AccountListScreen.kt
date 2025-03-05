@@ -19,7 +19,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
+import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListPaginationState
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
@@ -31,6 +33,7 @@ import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationErrorContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationLoadingContent
+import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
 import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
@@ -45,6 +48,13 @@ internal fun AccountListScreenWrapper(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)
     val readyListState = rememberPaginationListState(viewModel)
+    val snackbar = LocalSnackbarController.current
+
+    viewModel.effects.observeWithLifecycle { effect ->
+        when (effect) {
+            AccountListEffect.OnCreateAccountError -> snackbar.show("Не получилось открыть счет")
+        }
+    }
 
     AccountListScreen(
         state = state,
@@ -60,7 +70,7 @@ internal fun AccountListScreen(
     listState: LazyListState,
 ) = when (state) {
     BankUiState.Loading -> LoadingContent()
-    is BankUiState.Error -> ErrorContent { /* TODO */ }
+    is BankUiState.Error -> ErrorContent {}
     is BankUiState.Ready -> AccountListScreenReady(
         model = state.model,
         onEvent = onEvent,
@@ -88,7 +98,7 @@ internal fun AccountListScreenReady(
     floatingActionButton = {
         if (!model.isUserBlocked) {
             FloatingActionButton(
-                onClick = { onEvent.invoke(AccountListEvent.OnCreateBankAccount) },
+                onClick = { onEvent.invoke(AccountListEvent.OnOpenCreateAccountDialog) },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ) {
                 Icon(
@@ -134,5 +144,9 @@ internal fun AccountListScreenReady(
                 else -> Unit
             }
         }
+    }
+
+    if (model.isCreateAccountDialogShown) {
+        CreateAccountDialog(onEvent)
     }
 }
