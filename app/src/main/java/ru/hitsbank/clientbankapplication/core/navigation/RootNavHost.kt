@@ -21,19 +21,31 @@ object RootDestinations {
     object BottomBarRoot : Destination()
 
     object AccountDetails : Destination() {
-        const val BANK_ACCOUNT_ENTITY_JSON_ARG = "BANK_ACCOUNT_ENTITY_JSON_ARG"
+        const val OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG = "bankAccountEntity"
+        const val OPTIONAL_ACCOUNT_NUMBER_ARG = "accountNumber"
         const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
 
         fun withArgs(
-            bankAccountEntityJson: String,
+            bankAccountEntityJson: String?,
+            accountNumber: String?,
             isUserBlocked: Boolean,
         ): String {
-            return destinationWithArgs(bankAccountEntityJson, isUserBlocked)
+            return destinationWithArgs(
+                args = listOf(isUserBlocked),
+                optionalArgs = mapOf(
+                    OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG to bankAccountEntityJson,
+                    OPTIONAL_ACCOUNT_NUMBER_ARG to accountNumber,
+                )
+            )
         }
 
         override var arguments = listOf(
-            BANK_ACCOUNT_ENTITY_JSON_ARG,
-            IS_USER_BLOCKED_ARG
+            IS_USER_BLOCKED_ARG,
+        )
+
+        override var optionalArguments = listOf(
+            OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG,
+            OPTIONAL_ACCOUNT_NUMBER_ARG
         )
     }
 }
@@ -58,22 +70,32 @@ fun RootNavHost(
         composable(
             route = RootDestinations.AccountDetails.route,
             arguments = listOf(
-                navArgument(RootDestinations.AccountDetails.BANK_ACCOUNT_ENTITY_JSON_ARG) {
-                    type = NavType.StringType
-                },
                 navArgument(RootDestinations.AccountDetails.IS_USER_BLOCKED_ARG) {
                     type = NavType.BoolType
-                }
+                },
+                navArgument(RootDestinations.AccountDetails.OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument(RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
             ),
         ) { backStackEntry ->
-            val bankAccountEntityJson = backStackEntry.arguments?.getString(
-                RootDestinations.AccountDetails.BANK_ACCOUNT_ENTITY_JSON_ARG
-            )
             val isUserBlocked = backStackEntry.arguments?.getBoolean(
                 RootDestinations.AccountDetails.IS_USER_BLOCKED_ARG
             )
+            val bankAccountEntityJson = backStackEntry.arguments?.getString(
+                RootDestinations.AccountDetails.OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG
+            )
+            val accountNumber = backStackEntry.arguments?.getString(
+                RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG
+            )
             val viewModel: AccountDetailsViewModel = koinViewModel(
-                parameters = { parametersOf(bankAccountEntityJson, isUserBlocked) },
+                parameters = { parametersOf(bankAccountEntityJson, accountNumber, isUserBlocked) },
             )
 
             AccountDetailsScreenWrapper(viewModel)

@@ -47,7 +47,7 @@ class AccountListViewModel(
     fun onEvent(event: AccountListEvent) {
         when (event) {
             is AccountListEvent.OnPaginationEvent -> onPaginationEvent(event.event)
-            is AccountListEvent.OnClickDetails -> Unit // TODO
+            is AccountListEvent.OnClickDetails -> onClickDetails(event.accountNumber)
             AccountListEvent.OnOpenCreateAccountDialog -> onOpenCreateAccountDialog()
             AccountListEvent.OnDismissCreateAccountDialog -> onDismissCreateAccountDialog()
             AccountListEvent.OnCreateAccount -> onCreateAccount()
@@ -109,12 +109,23 @@ class AccountListViewModel(
                         navigationManager.navigate(
                             RootDestinations.AccountDetails.withArgs(
                                 bankAccountEntityJson = gson.toJson(state.data),
+                                accountNumber = null,
                                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
                             )
                         )
                     }
                 }
             }
+    }
+
+    private fun onClickDetails(number: String) = viewModelScope.launch {
+        navigationManager.navigate(
+            RootDestinations.AccountDetails.withArgs(
+                bankAccountEntityJson = null,
+                accountNumber = number,
+                isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
+            )
+        )
     }
 
     private fun sendEffect(effect: AccountListEffect) {

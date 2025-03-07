@@ -24,9 +24,10 @@ fun presentationModule() = module {
     viewModelOf(::AccountListViewModel) { bind<PaginationViewModel<AccountItem, AccountListPaginationState>>() }
     viewModel<AccountDetailsViewModel> { parameters ->
         AccountDetailsViewModel(
-            bankAccountEntityJson = parameters.getOrNull(),
-            isUserBlocked = parameters.get(),
-            get(), get(), get(),
+            bankAccountEntityJson = parameters[0],
+            accountNumber = parameters[1],
+            isUserBlocked = parameters[2],
+            get(), get(), get(), get(),
         )
     }
 }
