@@ -1,4 +1,4 @@
-package ru.hitsbank.clientbankapplication.bank_account.data.api
+package ru.hitsbank.clientbankapplication.bank_account.data.model
 
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 

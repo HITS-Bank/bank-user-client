@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.mapper
 
-import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
