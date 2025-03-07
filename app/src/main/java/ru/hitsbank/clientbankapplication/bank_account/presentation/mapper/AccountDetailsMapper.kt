@@ -11,14 +11,16 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTopUpDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAccountDialog
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
+import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 
 class AccountDetailsMapper {
 
     fun mapToAccountDetailsScreenModel(
         isUserBlocked: Boolean,
         bankAccountEntity: BankAccountEntity,
-        operationsHistoryEntity: List<OperationEntity>,
     ): AccountDetailsScreenModel {
         return AccountDetailsScreenModel(
             balance = bankAccountEntity.balance,
@@ -29,7 +31,6 @@ class AccountDetailsMapper {
                     add(getBalanceOrStatusInfo(bankAccountEntity))
                 }
             ),
-            operationsHistory = listOf(), // TODO
             topUpDialog = AccountDetailsTopUpDialogModel(
                 isShown = false,
                 amount = AccountDetailsTopUpDialogModel.DEFAULT_AMOUNT.toString(),
@@ -42,8 +43,22 @@ class AccountDetailsMapper {
             ),
             closeAccountDialog = CloseAccountDialog(isShown = false),
             isOverlayLoading = false,
-            isUserBlocked = isUserBlocked
+            isUserBlocked = isUserBlocked,
+            paginationState = PaginationState.Idle,
+            data = emptyList(),
+            pageNumber = 0,
+            pageSize = DEFAULT_PAGE_SIZE,
         )
+    }
+
+    fun mapToOperationHistoryItems(operationHistory: List<OperationEntity>): List<OperationHistoryItem> {
+        return operationHistory.map { operation ->
+            OperationHistoryItem(
+                title = "TODO",
+                description = "TODO",
+                operationType = OperationHistoryItem.OperationType.IN,
+            )
+        }
     }
 
     fun getUpdatedAccountDetails(

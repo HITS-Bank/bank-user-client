@@ -8,6 +8,8 @@ import retrofit2.http.Query
 import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.CloseAccountRequest
+import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationHistoryResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
@@ -43,4 +45,11 @@ interface BankAccountApi {
     suspend fun closeAccount(
         @Body closeAccountRequest: CloseAccountRequest,
     ): Response<Unit>
+
+    @POST("bank_account/operation_history")
+    suspend fun getOperationHistory(
+        @Body accountNumberRequest: AccountNumberRequest,
+        @Query("pageSize") pageSize: Int,
+        @Query("pageNumber") pageNumber: Int,
+    ): Response<OperationHistoryResponse>
 }

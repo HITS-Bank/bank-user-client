@@ -1,16 +1,35 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.model
 
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
+
 data class AccountDetailsScreenModel(
+    override val paginationState: PaginationState,
+    override val data: List<OperationHistoryItem>,
+    override val pageNumber: Int,
+    override val pageSize: Int,
     val balance: String,
     val number: String,
     val isUserBlocked: Boolean,
     val accountDetails: AccountDetailsModel,
-    val operationsHistory: List<OperationsHistoryItem>,
     val topUpDialog: AccountDetailsTopUpDialogModel,
     val withdrawDialog: AccountDetailsWithdrawDialogModel,
     val closeAccountDialog: CloseAccountDialog,
     val isOverlayLoading: Boolean,
-)
+) : PaginationStateHolder<OperationHistoryItem> {
+
+    override fun copyWith(
+        paginationState: PaginationState,
+        data: List<OperationHistoryItem>,
+        pageNumber: Int,
+    ): PaginationStateHolder<OperationHistoryItem> {
+        return copy(paginationState = paginationState, data = data, pageNumber = pageNumber)
+    }
+
+    override fun resetPagination(): PaginationStateHolder<OperationHistoryItem> {
+        return copy(data = emptyList(), pageNumber = 0)
+    }
+}
 
 data class AccountDetailsTopUpDialogModel(
     val isShown: Boolean,
@@ -55,7 +74,7 @@ data class AccountDetailsItem(
     val subtitle: String,
 )
 
-data class OperationsHistoryItem(
+data class OperationHistoryItem(
     val title: String,
     val description: String,
     val operationType: OperationType,

@@ -8,6 +8,7 @@ import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
@@ -64,6 +65,22 @@ class BankAccountRepository(
     override suspend fun getBankAccountByNumber(accountNumberRequest: AccountNumberRequest): Result<BankAccountEntity> {
         return apiCall(Dispatchers.IO) {
             bankAccountApi.getBankAccountByNumber(accountNumberRequest)
+                .toResult()
+                .map(mapper::map)
+        }
+    }
+
+    override suspend fun getOperationHistory(
+        accountNumberRequest: AccountNumberRequest,
+        pageSize: Int,
+        pageNumber: Int,
+    ): Result<List<OperationEntity>> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.getOperationHistory(
+                accountNumberRequest = accountNumberRequest,
+                pageSize = pageSize,
+                pageNumber = pageNumber,
+            )
                 .toResult()
                 .map(mapper::map)
         }

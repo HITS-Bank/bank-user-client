@@ -7,6 +7,7 @@ import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
 import ru.hitsbank.clientbankapplication.core.data.common.toState
@@ -48,5 +49,14 @@ class BankAccountInteractor(
     fun getBankAccountByNumber(accountNumberRequest: AccountNumberRequest): Flow<State<BankAccountEntity>> = flow {
         emit(State.Loading)
         emit(bankAccountRepository.getBankAccountByNumber(accountNumberRequest).toState())
+    }
+
+    fun getOperationHistory(
+        accountNumberRequest: AccountNumberRequest,
+        pageSize: Int,
+        pageNumber: Int,
+    ): Flow<State<List<OperationEntity>>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.getOperationHistory(accountNumberRequest, pageSize, pageNumber).toState())
     }
 }

@@ -1,12 +1,14 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,12 +22,17 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.Accoun
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTopUpDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
+import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.clientbankapplication.core.domain.common.State
+import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
 import ru.hitsbank.clientbankapplication.core.navigation.base.back
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 
 class AccountDetailsViewModel(
     private val bankAccountEntityJson: String?,
@@ -35,11 +42,9 @@ class AccountDetailsViewModel(
     private val accountDetailsMapper: AccountDetailsMapper,
     private val navigationManager: NavigationManager,
     private val bankAccountInteractor: BankAccountInteractor,
-) : ViewModel() {
-
-    private val _uiState: MutableStateFlow<BankUiState<AccountDetailsScreenModel>> =
-        MutableStateFlow(BankUiState.Loading)
-    val uiState = _uiState.asStateFlow()
+) : PaginationViewModel<OperationHistoryItem, AccountDetailsScreenModel>(
+    BankUiState.Loading,
+) {
 
     private val _effects = Channel<AccountDetailsEffect>()
     val effects = _effects.receiveAsFlow()
@@ -48,15 +53,30 @@ class AccountDetailsViewModel(
         when {
             bankAccountEntityJson != null -> {
                 getAccountDetailsModel()
+                onPaginationEvent(PaginationEvent.Reload)
             }
 
             accountNumber != null -> {
                 getAccountFromApi(accountNumber)
+                onPaginationEvent(PaginationEvent.Reload)
             }
 
             else -> {
-                _uiState.update { BankUiState.Error() }
+                _state.update { BankUiState.Error() }
             }
+        }
+    }
+
+    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<OperationHistoryItem>>> {
+        val accountNumber = _state.getIfSuccess()?.number ?: return flowOf(State.Error())
+        return bankAccountInteractor.getOperationHistory(
+            accountNumberRequest = AccountNumberRequest(
+                accountNumber = accountNumber,
+            ),
+            pageSize = DEFAULT_PAGE_SIZE,
+            pageNumber = pageNumber,
+        ).map { state ->
+            state.map(accountDetailsMapper::mapToOperationHistoryItems)
         }
     }
 
@@ -84,14 +104,13 @@ class AccountDetailsViewModel(
             }
 
         if (bankAccountEntity == null) {
-            _uiState.update { BankUiState.Error() }
+            _state.update { BankUiState.Error() }
         } else {
             val screenModel = accountDetailsMapper.mapToAccountDetailsScreenModel(
                 isUserBlocked = isUserBlocked,
                 bankAccountEntity = bankAccountEntity,
-                operationsHistoryEntity = listOf(),
-            ) // TODO operationsHistory
-            _uiState.update { BankUiState.Ready(screenModel) }
+            )
+            _state.update { BankUiState.Ready(screenModel) }
         }
     }
 
@@ -105,21 +124,20 @@ class AccountDetailsViewModel(
             when (state) {
                 State.Loading -> {
                     if (withLoader) {
-                        _uiState.update { BankUiState.Loading }
+                        _state.update { BankUiState.Loading }
                     }
                 }
 
                 is State.Error -> {
-                    _uiState.update { BankUiState.Error() }
+                    _state.update { BankUiState.Error() }
                 }
 
                 is State.Success -> {
                     val screenModel = accountDetailsMapper.mapToAccountDetailsScreenModel(
                         isUserBlocked = isUserBlocked,
                         bankAccountEntity = state.data,
-                        operationsHistoryEntity = listOf(),
-                    ) // TODO operationsHistory
-                    _uiState.update { BankUiState.Ready(screenModel) }
+                    )
+                    _state.update { BankUiState.Ready(screenModel) }
                 }
             }
         }
@@ -131,7 +149,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onDismissTopUpDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 topUpDialog = state.topUpDialog.copy(
                     isShown = false,
@@ -142,7 +160,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onDismissWithdrawDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     isShown = false,
@@ -153,7 +171,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onOpenTopUpDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 topUpDialog = state.topUpDialog.copy(
                     isShown = true,
@@ -164,7 +182,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onOpenWithdrawDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     isShown = true,
@@ -176,7 +194,7 @@ class AccountDetailsViewModel(
 
     private fun onTopUpAmountChange(amount: String) {
         val amountFloat = amount.toFloatOrNull()
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 topUpDialog = state.topUpDialog.copy(
                     amount = amount,
@@ -188,8 +206,8 @@ class AccountDetailsViewModel(
 
     private fun onWithdrawAmountChange(amount: String) {
         val amountFloat = amount.toFloatOrNull()
-        val maxWithdrawAmount = _uiState.getIfSuccess()?.balance?.toFloatOrNull()
-        _uiState.updateIfSuccess { state ->
+        val maxWithdrawAmount = _state.getIfSuccess()?.balance?.toFloatOrNull()
+        _state.updateIfSuccess { state ->
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     amount = amount,
@@ -202,8 +220,8 @@ class AccountDetailsViewModel(
     }
 
     private fun onTopUp() = viewModelScope.launch {
-        val accountNumber = _uiState.getIfSuccess()?.number ?: return@launch
-        val amount = _uiState.getIfSuccess()?.topUpDialog?.amount ?: return@launch
+        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
+        val amount = _state.getIfSuccess()?.topUpDialog?.amount ?: return@launch
         bankAccountInteractor.topUp(
             accountDetailsMapper.mapToTopUpRequest(
                 accountNumber = accountNumber,
@@ -212,13 +230,13 @@ class AccountDetailsViewModel(
         ).collectLatest { state ->
             when (state) {
                 State.Loading -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(isOverlayLoading = true)
                     }
                 }
 
                 is State.Error -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             isOverlayLoading = false,
                             topUpDialog = uiState.topUpDialog.copy(
@@ -230,7 +248,7 @@ class AccountDetailsViewModel(
                 }
 
                 is State.Success -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             isOverlayLoading = false,
                             topUpDialog = uiState.topUpDialog.copy(
@@ -242,7 +260,7 @@ class AccountDetailsViewModel(
 
                     sendEffect(AccountDetailsEffect.OnTopUpSuccess)
 
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         accountDetailsMapper.getUpdatedAccountDetails(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
@@ -254,8 +272,8 @@ class AccountDetailsViewModel(
     }
 
     private fun onWithdraw() = viewModelScope.launch {
-        val accountNumber = _uiState.getIfSuccess()?.number ?: return@launch
-        val amount = _uiState.getIfSuccess()?.topUpDialog?.amount ?: return@launch
+        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
+        val amount = _state.getIfSuccess()?.topUpDialog?.amount ?: return@launch
         bankAccountInteractor.withdraw(
             accountDetailsMapper.mapToWithdrawRequest(
                 accountNumber = accountNumber,
@@ -264,13 +282,13 @@ class AccountDetailsViewModel(
         ).collectLatest { state ->
             when (state) {
                 State.Loading -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(isOverlayLoading = true)
                     }
                 }
 
                 is State.Error -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             isOverlayLoading = false,
                             withdrawDialog = uiState.withdrawDialog.copy(
@@ -282,7 +300,7 @@ class AccountDetailsViewModel(
                 }
 
                 is State.Success -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             isOverlayLoading = false,
                             withdrawDialog = uiState.withdrawDialog.copy(
@@ -294,7 +312,7 @@ class AccountDetailsViewModel(
 
                     sendEffect(AccountDetailsEffect.OnWithdrawSuccess)
 
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         accountDetailsMapper.getUpdatedAccountDetails(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
@@ -306,7 +324,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onCloseAccount() = viewModelScope.launch {
-        val accountNumber = _uiState.getIfSuccess()?.number ?: return@launch
+        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
         bankAccountInteractor.closeAccount(
             CloseAccountRequest(
                 accountNumber = accountNumber,
@@ -314,7 +332,7 @@ class AccountDetailsViewModel(
         ).collectLatest { state ->
             when (state) {
                 is State.Error -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             closeAccountDialog = uiState.closeAccountDialog.copy(
                                 isShown = false,
@@ -326,11 +344,11 @@ class AccountDetailsViewModel(
                 }
 
                 State.Loading -> {
-                    _uiState.updateIfSuccess { it.copy(isOverlayLoading = true) }
+                    _state.updateIfSuccess { it.copy(isOverlayLoading = true) }
                 }
 
                 is State.Success -> {
-                    _uiState.updateIfSuccess { uiState ->
+                    _state.updateIfSuccess { uiState ->
                         uiState.copy(
                             closeAccountDialog = uiState.closeAccountDialog.copy(
                                 isShown = false,
@@ -347,7 +365,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onOpenCloseAccountDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 closeAccountDialog = state.closeAccountDialog.copy(
                     isShown = true,
@@ -357,7 +375,7 @@ class AccountDetailsViewModel(
     }
 
     private fun onDismissCloseAccountDialog() {
-        _uiState.updateIfSuccess { state ->
+        _state.updateIfSuccess { state ->
             state.copy(
                 closeAccountDialog = state.closeAccountDialog.copy(
                     isShown = false,

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,11 +32,16 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
+import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
+import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemEnd
+import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
 import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
 import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
 import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.rememberPaginationListState
 import ru.hitsbank.clientbankapplication.core.presentation.theme.S14_W400
 import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
 import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
@@ -44,8 +51,9 @@ import ru.hitsbank.clientbankapplication.core.presentation.theme.S24_W600
 internal fun AccountDetailsScreenWrapper(
     viewModel: AccountDetailsViewModel,
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.state.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)
+    val readyListState = rememberPaginationListState(viewModel)
     val snackbar = LocalSnackbarController.current
 
     viewModel.effects.observeWithLifecycle { effect ->
@@ -62,6 +70,7 @@ internal fun AccountDetailsScreenWrapper(
     AccountDetailsScreen(
         uiState = uiState,
         onEvent = onEvent,
+        listState = readyListState,
     )
 }
 
@@ -69,6 +78,7 @@ internal fun AccountDetailsScreenWrapper(
 private fun AccountDetailsScreen(
     uiState: BankUiState<AccountDetailsScreenModel>,
     onEvent: (AccountDetailsEvent) -> Unit,
+    listState: LazyListState,
 ) {
     when (uiState) {
         BankUiState.Loading -> {
@@ -87,6 +97,7 @@ private fun AccountDetailsScreen(
             AccountDetailsScreenReady(
                 model = uiState.model,
                 onEvent = onEvent,
+                listState = listState,
             )
         }
     }
@@ -97,6 +108,7 @@ private fun AccountDetailsScreen(
 private fun AccountDetailsScreenReady(
     model: AccountDetailsScreenModel,
     onEvent: (AccountDetailsEvent) -> Unit,
+    listState: LazyListState,
 ) {
     Scaffold(
         topBar = {
@@ -199,14 +211,31 @@ private fun AccountDetailsScreenReady(
                 style = S24_W600,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            LazyColumn {
-                item {
-                    16.dp.verticalSpacer()
-                    Text(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        text = "Пока тут ничего нет",
-                        style = S16_W400,
-                        color = MaterialTheme.colorScheme.onSurface,
+            LazyColumn(
+                state = listState,
+            ) {
+                if (model.data.isEmpty() && model.paginationState != PaginationState.Loading) {
+                    item {
+                        16.dp.verticalSpacer()
+                        Text(
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            text = "Пока тут ничего нет",
+                            style = S16_W400,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    }
+                }
+
+                items(model.data) { item ->
+                    ListItem(
+                        icon = ListItemIcon.SingleChar(
+                            char = '₽',
+                            backgroundColor = null, // TODO,
+                            charColor = null, // TODO
+                        ),
+                        title = item.title,
+                        subtitle = item.description,
+                        // TODO показать сумму
                     )
                 }
             }

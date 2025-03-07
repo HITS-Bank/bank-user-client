@@ -44,6 +44,15 @@ class AccountListViewModel(
         loadIsUserBlocked()
     }
 
+    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<AccountItem>>> {
+        return bankAccountInteractor.getAccountList(
+            pageSize = DEFAULT_PAGE_SIZE,
+            pageNumber = pageNumber,
+        ).map { state ->
+            state.map(mapper::map)
+        }
+    }
+
     fun onEvent(event: AccountListEvent) {
         when (event) {
             is AccountListEvent.OnPaginationEvent -> onPaginationEvent(event.event)
@@ -51,15 +60,6 @@ class AccountListViewModel(
             AccountListEvent.OnOpenCreateAccountDialog -> onOpenCreateAccountDialog()
             AccountListEvent.OnDismissCreateAccountDialog -> onDismissCreateAccountDialog()
             AccountListEvent.OnCreateAccount -> onCreateAccount()
-        }
-    }
-
-    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<AccountItem>>> {
-        return bankAccountInteractor.getAccountList(
-            pageSize = DEFAULT_PAGE_SIZE,
-            pageNumber = pageNumber,
-        ).map { state ->
-            state.map(mapper::map)
         }
     }
 
