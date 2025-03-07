@@ -10,6 +10,12 @@ val S24_W400 = TextStyle(
     letterSpacing = 0.sp,
 )
 
+val S24_W600 = TextStyle(
+    fontSize = 24.sp,
+    fontWeight = FontWeight.W600,
+    letterSpacing = 0.sp,
+)
+
 val S22_W400 = TextStyle(
     fontSize = 22.sp,
     fontWeight = FontWeight.W400,

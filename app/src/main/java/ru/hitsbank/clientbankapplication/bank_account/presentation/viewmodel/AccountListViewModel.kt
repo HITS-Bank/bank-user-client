@@ -1,6 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -16,7 +17,11 @@ import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_S
 import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
+import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
+import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
+import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
+import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
@@ -25,6 +30,8 @@ class AccountListViewModel(
     private val bankAccountInteractor: BankAccountInteractor,
     private val authInteractor: AuthInteractor,
     private val mapper: AccountListMapper,
+    private val navigationManager: NavigationManager,
+    private val gson: Gson,
 ) : PaginationViewModel<AccountItem, AccountListPaginationState>(
     BankUiState.Ready(AccountListPaginationState.EMPTY)
 ) {
@@ -83,12 +90,28 @@ class AccountListViewModel(
                     }
 
                     is State.Error -> {
+                        _state.updateIfSuccess {
+                            it.copy(
+                                isCreateAccountLoading = false,
+                                isCreateAccountDialogShown = false,
+                            )
+                        }
                         sendEffect(AccountListEffect.OnCreateAccountError)
                     }
 
                     is State.Success -> {
-                        _state.updateIfSuccess { it.copy(isCreateAccountLoading = false) }
-                        // TODO navigate to details с инфой о счете и о isBlocked
+                        _state.updateIfSuccess {
+                            it.copy(
+                                isCreateAccountLoading = false,
+                                isCreateAccountDialogShown = false,
+                            )
+                        }
+                        navigationManager.navigate(
+                            RootDestinations.AccountDetails.withArgs(
+                                bankAccountEntityJson = gson.toJson(state.data),
+                                isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
+                            )
+                        )
                     }
                 }
             }
