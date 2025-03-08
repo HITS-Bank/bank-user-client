@@ -2,7 +2,6 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -30,7 +29,6 @@ import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
-import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
@@ -164,118 +162,118 @@ private fun AccountDetailsScreenReady(
             }
         }
     ) { paddings ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(paddings)
                 .padding(horizontal = 16.dp),
+            state = listState,
         ) {
-            16.dp.verticalSpacer()
-            Text(
-                text = "Информация о счете",
-                style = S24_W600,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            16.dp.verticalSpacer()
-            model.accountDetails.items.forEach { item ->
-                8.dp.verticalSpacer()
+            item {
+                16.dp.verticalSpacer()
                 Text(
-                    text = item.title,
-                    style = S16_W400,
+                    text = "Информация о счете",
+                    style = S24_W600,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Text(
-                    text = item.subtitle,
-                    style = S14_W400,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                8.dp.verticalSpacer()
-            }
-            12.dp.verticalSpacer()
-            if (model.status != BankAccountStatusEntity.CLOSED) {
-                Row(
-                    modifier = Modifier.height(40.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    BankButton.Outlined(
-                        modifier = Modifier.weight(1f),
-                        text = "Пополнить",
-                        onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTopUpDialog) },
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_top_up_18),
-                        enabled = !model.isUserBlocked,
-                        borderColor = if (!model.isUserBlocked) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.outline
-                        },
+                16.dp.verticalSpacer()
+                model.accountDetails.items.forEach { item ->
+                    8.dp.verticalSpacer()
+                    Text(
+                        text = item.title,
+                        style = S16_W400,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
-                    BankButton.Regular(
-                        modifier = Modifier.weight(1f),
-                        text = "Вывести",
-                        onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenWithdrawDialog) },
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_withdraw_18),
-                        enabled = !model.isUserBlocked,
+                    Text(
+                        text = item.subtitle,
+                        style = S14_W400,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    8.dp.verticalSpacer()
                 }
-            }
-            32.dp.verticalSpacer()
-            Text(
-                text = "История операций",
-                style = S24_W600,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            LazyColumn(
-                state = listState,
-            ) {
-                item {
-                    16.dp.verticalSpacer()
-                }
-
-                if (
-                    model.data.isEmpty() &&
-                    (model.paginationState == PaginationState.Idle || model.paginationState == PaginationState.EndReached)
-                ) {
-                    item {
-                        Text(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            text = "Пока тут ничего нет",
-                            style = S16_W400,
-                            color = MaterialTheme.colorScheme.onSurface,
+                12.dp.verticalSpacer()
+                if (model.status != BankAccountStatusEntity.CLOSED) {
+                    Row(
+                        modifier = Modifier.height(40.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        BankButton.Outlined(
+                            modifier = Modifier.weight(1f),
+                            text = "Пополнить",
+                            onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTopUpDialog) },
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_top_up_18),
+                            enabled = !model.isUserBlocked,
+                            borderColor = if (!model.isUserBlocked) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.outline
+                            },
+                        )
+                        BankButton.Regular(
+                            modifier = Modifier.weight(1f),
+                            text = "Вывести",
+                            onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenWithdrawDialog) },
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_withdraw_18),
+                            enabled = !model.isUserBlocked,
                         )
                     }
                 }
+                32.dp.verticalSpacer()
+                Text(
+                    text = "История операций",
+                    style = S24_W600,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
 
-                items(model.data) { item ->
-                    ListItem(
-                        padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
-                        divider = Divider.None,
-                        icon = ListItemIcon.SingleChar(
-                            char = '₽',
-                            backgroundColor = colorResource(id = item.leftPartBackgroundColorId),
-                            charColor = colorResource(id = item.contentColorId),
-                        ),
-                        title = item.title,
-                        subtitle = item.description,
-                        end = ListItemEnd.Text(
-                            text = item.amountText,
-                            textColor = colorResource(id = item.contentColorId),
-                        ),
+            item {
+                16.dp.verticalSpacer()
+            }
+
+            if (
+                model.data.isEmpty() &&
+                (model.paginationState == PaginationState.Idle || model.paginationState == PaginationState.EndReached)
+            ) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        text = "Пока тут ничего нет",
+                        style = S16_W400,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
                 }
+            }
 
-                item {
-                    when (model.paginationState) {
-                        PaginationState.Loading -> {
-                            PaginationLoadingContent()
-                        }
+            items(model.data) { item ->
+                ListItem(
+                    padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
+                    divider = Divider.None,
+                    icon = ListItemIcon.SingleChar(
+                        char = '₽',
+                        backgroundColor = colorResource(id = item.leftPartBackgroundColorId),
+                        charColor = colorResource(id = item.contentColorId),
+                    ),
+                    title = item.title,
+                    subtitle = item.description,
+                    end = ListItemEnd.Text(
+                        text = item.amountText,
+                        textColor = colorResource(id = item.contentColorId),
+                    ),
+                )
+            }
 
-                        PaginationState.Error -> {
-                            PaginationErrorContent {
-                                onEvent(AccountDetailsEvent.OnPaginationEvent(PaginationEvent.LoadNextPage))
-                            }
-                        }
-
-                        else -> Unit
+            item {
+                when (model.paginationState) {
+                    PaginationState.Loading -> {
+                        PaginationLoadingContent()
                     }
+
+                    PaginationState.Error -> {
+                        PaginationErrorContent {
+                            onEvent(AccountDetailsEvent.OnPaginationEvent(PaginationEvent.LoadNextPage))
+                        }
+                    }
+
+                    else -> Unit
                 }
             }
         }

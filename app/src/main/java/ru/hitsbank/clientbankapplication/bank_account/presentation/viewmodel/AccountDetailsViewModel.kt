@@ -143,7 +143,6 @@ class AccountDetailsViewModel(
     }
 
     private fun onBack() {
-        // TODO backWithResult или navigateWithCallback, при возврате надо обновлять список
         navigationManager.back()
     }
 
@@ -357,7 +356,6 @@ class AccountDetailsViewModel(
                     }
                     sendEffect(AccountDetailsEffect.OnCloseAccountSuccess)
                     navigationManager.back()
-                    // TODO нужно обновить список счетов при возврате
                 }
             }
         }
