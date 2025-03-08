@@ -13,6 +13,7 @@ data class AccountListPaginationState(
     val isUserBlocked: Boolean,
     val isCreateAccountDialogShown: Boolean,
     val isCreateAccountLoading: Boolean,
+    val isSelectionMode: Boolean,
 ) : PaginationStateHolder<AccountItem> {
 
     override fun copyWith(
@@ -28,7 +29,7 @@ data class AccountListPaginationState(
     }
 
     companion object {
-        val EMPTY = AccountListPaginationState(
+        fun default(isSelectionMode: Boolean) = AccountListPaginationState(
             paginationState = PaginationState.Idle,
             data = emptyList(),
             pageNumber = 0,
@@ -36,6 +37,7 @@ data class AccountListPaginationState(
             isUserBlocked = false,
             isCreateAccountDialogShown = false,
             isCreateAccountLoading = false,
+            isSelectionMode = isSelectionMode,
         )
     }
 }

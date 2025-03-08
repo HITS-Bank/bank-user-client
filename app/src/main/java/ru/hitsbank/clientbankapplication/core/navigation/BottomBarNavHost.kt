@@ -1,7 +1,5 @@
 package ru.hitsbank.clientbankapplication.core.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -10,7 +8,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -18,9 +15,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.core.navigation.base.BottomBarDestination
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanListScreen
 
 object BottomBarDestinations {
 
@@ -74,15 +74,14 @@ fun BottomBarNavHost() {
             startDestination = BottomBarDestinations.Accounts.route,
         ) {
             composable(route = BottomBarDestinations.Accounts.route) {
-                AccountListScreenWrapper()
+                AccountListScreenWrapper(
+                    viewModel = koinViewModel(
+                        parameters = { parametersOf(false) }
+                    )
+                )
             }
             composable(route = BottomBarDestinations.Tariffs.route) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(text = "Кредиты")
-                }
+                LoanListScreen()
             }
         }
     }

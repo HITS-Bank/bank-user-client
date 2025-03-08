@@ -14,6 +14,9 @@ import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
 import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.interceptor.AuthInterceptor
+import ru.hitsbank.clientbankapplication.core.data.serialization.LocalDateTimeDeserializer
+import ru.hitsbank.clientbankapplication.core.data.serialization.LocalDateTimeSerializer
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 private const val TIMEOUT_SEC = 20L
@@ -25,9 +28,12 @@ private const val NO_AUTH_RETROFIT = "NO_AUTH_RETROFIT"
 
 private const val BASE_URL = "http://10.0.2.2:8080/"
 
-private fun loggingInterceptor() = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
+private fun loggingInterceptor() =
+    HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
 
-private fun gson() = GsonBuilder().create()
+private fun gson() =
+    GsonBuilder().registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeDeserializer)
+        .registerTypeAdapter(LocalDateTime::class.java, LocalDateTimeSerializer).create()
 
 private fun noAuthOkHttpClient(
     loggingInterceptor: HttpLoggingInterceptor,
