@@ -1,9 +1,9 @@
 package ru.hitsbank.clientbankapplication.core.navigation.base
 
 import androidx.navigation.NavOptionsBuilder
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationCommand
 
 class NavigationManager {
 
@@ -37,4 +37,26 @@ fun NavigationManager.forwardWithCallbackResult(destination: String, callback: (
 
 fun NavigationManager.back() {
     tryAddCommand(NavigationCommand.Back)
+}
+
+inline fun <reified T> NavigationManager.forwardWithJsonResult(
+    gson: Gson,
+    destination: String,
+    noinline callback: (T?) -> Unit
+) {
+    tryAddCommand(
+        NavigationCommand.ForwardWithJsonResult(
+            gson,
+            destination,
+            T::class.java,
+            callback,
+        )
+    )
+}
+
+fun <T> NavigationManager.backWithJsonResult(
+    gson: Gson,
+    resultData: T
+) {
+    tryAddCommand(NavigationCommand.BackWithJsonResult(gson, resultData))
 }

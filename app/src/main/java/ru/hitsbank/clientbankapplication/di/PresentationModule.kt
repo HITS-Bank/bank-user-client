@@ -14,8 +14,10 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanDetailsMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
+import ru.hitsbank.clientbankapplication.loan.presentation.mapper.TariffsScreenModelMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.TariffsScreenViewModel
 import ru.hitsbank.clientbankapplication.login.mapper.LoginScreenModelMapper
 import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
 
@@ -25,6 +27,7 @@ fun presentationModule() = module {
     singleOf(::AccountDetailsMapper)
     singleOf(::LoanListMapper)
     singleOf(::LoanDetailsMapper)
+    singleOf(::TariffsScreenModelMapper)
 
     viewModelOf(::LoginViewModel)
     viewModelOf(::AccountListViewModel) { bind<PaginationViewModel<AccountItem, AccountListPaginationState>>() }
@@ -45,4 +48,5 @@ fun presentationModule() = module {
             get(), get(), get(), get(),
         )
     }
+    viewModelOf(::TariffsScreenViewModel)
 }

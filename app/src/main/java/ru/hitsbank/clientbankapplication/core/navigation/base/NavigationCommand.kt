@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
+import com.google.gson.Gson
 
 sealed interface NavigationCommand {
 
@@ -44,7 +45,6 @@ sealed interface NavigationCommand {
         }
     }
 
-    /* Не тестировалось */
     class ForwardWithCallback(
         private val destination: String,
         private val callback: () -> Unit,
@@ -63,6 +63,43 @@ sealed interface NavigationCommand {
         }
     }
 
+    class ForwardWithJsonResult<T>(
+        private val gson: Gson,
+        private val destination: String,
+        private val type: Class<T>,
+        private val callback: (T?) -> Unit,
+    ) : NavigationCommand {
+
+        override fun execute(navController: NavController, activity: ComponentActivity) {
+            navController.navigate(destination)
+            val backstackEntry = navController.getBackStackEntry(destination)
+
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    val json = backstackEntry.savedStateHandle.get<String>(JSON_RESULT_KEY)
+                    val result = gson.fromJson(json, type)
+                    callback(result)
+                }
+            }
+            backstackEntry.lifecycle.addObserver(observer)
+        }
+    }
+
+    class BackWithJsonResult<T>(
+        private val gson: Gson,
+        private val resultData: T,
+    ) : NavigationCommand {
+
+        override fun execute(navController: NavController, activity: ComponentActivity) {
+            navController.currentBackStackEntry?.savedStateHandle?.set(JSON_RESULT_KEY, gson.toJson(resultData))
+            navController.navigateUp().also { navigated ->
+                if (!navigated) {
+                    activity.finish()
+                }
+            }
+        }
+    }
+
     object Back : NavigationCommand {
 
         override fun execute(navController: NavController, activity: ComponentActivity) {
@@ -72,5 +109,9 @@ sealed interface NavigationCommand {
                 }
             }
         }
+    }
+
+    companion object {
+        const val JSON_RESULT_KEY = "json"
     }
 }

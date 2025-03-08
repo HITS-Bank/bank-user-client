@@ -14,6 +14,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
 
@@ -82,8 +83,9 @@ object RootDestinations {
     }
 
     object CreateLoan : Destination()
-}
 
+    object TariffSelection : Destination()
+}
 
 @Composable
 fun RootNavHost(
@@ -174,6 +176,9 @@ fun RootNavHost(
                     navHostController.popBackStack()
                 }
             }
+        }
+        composable(route = RootDestinations.TariffSelection.route) {
+            TariffsScreen()
         }
     }
 }
