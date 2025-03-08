@@ -11,6 +11,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanDetailsMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.TariffsScreenModelMapper
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanCreateViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.TariffsScreenViewModel
@@ -41,7 +42,7 @@ fun presentationModule() = module {
             get(), get(), get(), get(),
         )
     }
-    viewModel { parameters ->
+    viewModel<LoanDetailsViewModel> { parameters ->
         LoanDetailsViewModel(
             loanNumber = parameters[0],
             loanEntityJson = parameters[1],
@@ -50,4 +51,10 @@ fun presentationModule() = module {
         )
     }
     viewModelOf(::TariffsScreenViewModel)
+    viewModel { parameters ->
+        LoanCreateViewModel(
+            isUserBlocked = parameters.get(),
+            get(), get(), get(),
+        )
+    }
 }

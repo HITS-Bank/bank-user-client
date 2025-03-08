@@ -37,7 +37,11 @@ class LoanListViewModel(
 
     fun onEvent(event: LoanListEvent) {
         when (event) {
-            LoanListEvent.CreateLoan -> navigationManager.forwardWithCallbackResult(RootDestinations.CreateLoan.destination) {
+            LoanListEvent.CreateLoan -> navigationManager.forwardWithCallbackResult(
+                RootDestinations.CreateLoan.destinationWithArgs(
+                    state.value.getIfSuccess()?.isUserBlocked ?: true
+                )
+            ) {
                 onPaginationEvent(PaginationEvent.Reload)
             }
 

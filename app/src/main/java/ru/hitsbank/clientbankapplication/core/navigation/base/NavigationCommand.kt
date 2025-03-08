@@ -75,7 +75,7 @@ sealed interface NavigationCommand {
             val backstackEntry = navController.getBackStackEntry(destination)
 
             val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_DESTROY) {
+                if (event == Lifecycle.Event.ON_STOP) {
                     val json = backstackEntry.savedStateHandle.get<String>(JSON_RESULT_KEY)
                     val result = gson.fromJson(json, type)
                     callback(result)

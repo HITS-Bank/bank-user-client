@@ -14,6 +14,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
@@ -83,7 +84,13 @@ object RootDestinations {
         )
     }
 
-    object CreateLoan : Destination()
+    object CreateLoan : Destination() {
+        const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
+
+        override var arguments = listOf(
+            IS_USER_BLOCKED_ARG,
+        )
+    }
 
     object TariffSelection : Destination()
 
@@ -97,7 +104,7 @@ fun RootNavHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = RootDestinations.BottomBarRoot.route,
+        startDestination = RootDestinations.Auth.destination,
         modifier = modifier,
     ) {
         composable(route = RootDestinations.Auth.route) {
@@ -139,10 +146,26 @@ fun RootNavHost(
 
             AccountDetailsScreenWrapper(viewModel)
         }
-        composable(route = RootDestinations.CreateLoan.route) {
+        composable(
+            route = RootDestinations.CreateLoan.route,
+            arguments = listOf(
+                navArgument(RootDestinations.CreateLoan.IS_USER_BLOCKED_ARG) {
+                    type = NavType.BoolType
+                }
+            ),
+        ) { backStackEntry ->
+            val isUserBlocked = backStackEntry.arguments?.getBoolean(
+                RootDestinations.CreateLoan.IS_USER_BLOCKED_ARG
+            )
 
+            LoanCreateScreen(
+                viewModel = koinViewModel(
+                    parameters = { parametersOf(isUserBlocked ?: true) }
+                )
+            )
         }
-        composable(route = RootDestinations.LoanDetails.route,
+        composable(
+            route = RootDestinations.LoanDetails.route,
             arguments = listOf(
                 navArgument(RootDestinations.LoanDetails.IS_USER_BLOCKED_ARG) {
                     type = NavType.BoolType
@@ -157,7 +180,7 @@ fun RootNavHost(
                     nullable = true
                     defaultValue = null
                 },
-            )
+            ),
         ) {
             val isUserBlocked = it.arguments?.getBoolean(
                 RootDestinations.LoanDetails.IS_USER_BLOCKED_ARG

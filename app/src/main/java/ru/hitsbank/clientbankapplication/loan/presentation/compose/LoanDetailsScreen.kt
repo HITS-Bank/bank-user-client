@@ -94,6 +94,8 @@ private fun LoanDetailsScreenContent(
                         text = "Кредит",
                         style = S22_W400,
                         color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 },
                 navigationIcon = {
