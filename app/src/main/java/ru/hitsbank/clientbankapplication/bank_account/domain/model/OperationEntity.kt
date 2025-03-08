@@ -4,7 +4,7 @@ data class OperationEntity(
     val id: String,
     val executedAt: String,
     val type: OperationTypeEntity,
-    val balance: String,
+    val amount: String,
 )
 
 enum class OperationTypeEntity {

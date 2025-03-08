@@ -1,5 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.event
 
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
+
 sealed interface AccountDetailsEvent {
 
     data object OnBack : AccountDetailsEvent
@@ -25,4 +27,6 @@ sealed interface AccountDetailsEvent {
     data object OnDismissCloseAccountDialog : AccountDetailsEvent
 
     data object OnCloseAccount : AccountDetailsEvent
+
+    data class OnPaginationEvent(val event: PaginationEvent) : AccountDetailsEvent
 }

@@ -1,6 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -90,6 +91,7 @@ internal fun AccountListScreenReady(
     topBar = {
         if (!model.isSelectionMode) {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0),
                 title = {
                     Text(
                         text = "Счета",
@@ -134,7 +136,8 @@ internal fun AccountListScreenReady(
                 )
             }
         }
-    }
+    },
+    contentWindowInsets = WindowInsets(0),
 ) { paddings ->
     LazyColumn(
         modifier = Modifier.padding(paddings),

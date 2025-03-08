@@ -23,6 +23,7 @@ import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
 import ru.hitsbank.clientbankapplication.core.navigation.base.back
 import ru.hitsbank.clientbankapplication.core.navigation.base.backWithJsonResult
 import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
+import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
@@ -119,12 +120,15 @@ class AccountListViewModel(
                                 isCreateAccountDialogShown = false,
                             )
                         }
-                        navigationManager.navigate(
-                            RootDestinations.AccountDetails.withArgs(
+                        navigationManager.forwardWithCallbackResult(
+                            destination = RootDestinations.AccountDetails.withArgs(
                                 bankAccountEntityJson = gson.toJson(state.data),
                                 accountNumber = null,
                                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
-                            )
+                            ),
+                            callback = {
+                                onPaginationEvent(PaginationEvent.Reload)
+                            },
                         )
                     }
                 }
@@ -132,12 +136,15 @@ class AccountListViewModel(
     }
 
     private fun onClickDetails(number: String) = viewModelScope.launch {
-        navigationManager.navigate(
-            RootDestinations.AccountDetails.withArgs(
+        navigationManager.forwardWithCallbackResult(
+            destination = RootDestinations.AccountDetails.withArgs(
                 bankAccountEntityJson = null,
                 accountNumber = number,
                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
-            )
+            ),
+            callback = {
+                onPaginationEvent(PaginationEvent.Reload)
+            },
         )
     }
 

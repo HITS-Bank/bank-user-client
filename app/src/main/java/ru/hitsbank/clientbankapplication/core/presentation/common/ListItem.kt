@@ -127,6 +127,21 @@ sealed interface ListItemEnd {
             )
         }
     }
+
+    data class Text(
+        val text: String,
+        val textColor: Color,
+    ) : ListItemEnd {
+
+        @Composable
+        override fun RowScope.End() {
+            Text(
+                modifier = Modifier.align(Alignment.Top),
+                text = text,
+                color = textColor,
+            )
+        }
+    }
 }
 
 sealed interface Divider {

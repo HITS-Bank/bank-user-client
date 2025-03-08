@@ -1,10 +1,12 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.mapper
 
+import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationTypeEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsItem
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
@@ -14,6 +16,8 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
+import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSumWithoutSpacers
+import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 
 class AccountDetailsMapper {
@@ -25,6 +29,7 @@ class AccountDetailsMapper {
         return AccountDetailsScreenModel(
             balance = bankAccountEntity.balance,
             number = bankAccountEntity.number,
+            status = bankAccountEntity.status,
             accountDetails = AccountDetailsModel(
                 items = buildList {
                     add(getAccountInfoItem(bankAccountEntity))
@@ -54,9 +59,28 @@ class AccountDetailsMapper {
     fun mapToOperationHistoryItems(operationHistory: List<OperationEntity>): List<OperationHistoryItem> {
         return operationHistory.map { operation ->
             OperationHistoryItem(
-                title = "TODO",
-                description = "TODO",
+                title = when (operation.type) {
+                    OperationTypeEntity.WITHDRAWAL -> "Вывод"
+                    OperationTypeEntity.TOP_UP -> "Пополнение"
+                    OperationTypeEntity.LOAN_PAYMENT -> "Выплата по кредиту"
+                },
+                description = operation.executedAt.utcDateTimeToReadableFormat(),
                 operationType = OperationHistoryItem.OperationType.IN,
+                amountText = if (operation.type == OperationTypeEntity.TOP_UP) {
+                    "+${operation.amount.formatToSumWithoutSpacers()}"
+                } else {
+                    "-${operation.amount.formatToSumWithoutSpacers()}"
+                },
+                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                    R.color.operationInContainer
+                } else {
+                    R.color.operationOutContainer
+                },
+                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                    R.color.operationInContent
+                } else {
+                    R.color.operationOutContent
+                },
             )
         }
     }

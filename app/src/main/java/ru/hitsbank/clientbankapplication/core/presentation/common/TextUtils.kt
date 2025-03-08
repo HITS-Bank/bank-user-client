@@ -1,10 +1,17 @@
 package ru.hitsbank.clientbankapplication.core.presentation.common
 
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+const val RUB_SYMBOL = "₽"
+
 fun String?.formatToSum(): String {
     if (this == null) return ""
 
     val digitsOnly = this.replace("\\D".toRegex(), "")
-    if (digitsOnly.isEmpty()) return "0 ₽"
+    if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
 
     val formattedAmount = StringBuilder()
     var count = 0
@@ -16,5 +23,29 @@ fun String?.formatToSum(): String {
         }
     }
 
-    return formattedAmount.reverse().toString() + " ₽"
+    return formattedAmount.reverse().toString() + " $RUB_SYMBOL"
+}
+
+fun String?.formatToSumWithoutSpacers(): String {
+    if (this == null) return ""
+
+    val digitsOnly = this.replace("\\D".toRegex(), "")
+    if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
+
+    return buildString {
+        append(digitsOnly)
+        append(" ")
+        append(RUB_SYMBOL)
+    }
+}
+
+fun String?.utcDateTimeToReadableFormat(): String {
+    try {
+        val zonedUtcDateTime = ZonedDateTime.parse(this)
+        val localDateTime = zonedUtcDateTime.withZoneSameInstant(ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern("HH:mm, d MMMM yyyy", Locale("ru"))
+        return localDateTime.format(formatter)
+    } catch (e: Exception) {
+        return ""
+    }
 }
