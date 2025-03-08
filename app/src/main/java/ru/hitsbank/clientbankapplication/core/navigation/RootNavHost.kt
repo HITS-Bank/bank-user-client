@@ -48,6 +48,37 @@ object RootDestinations {
             OPTIONAL_ACCOUNT_NUMBER_ARG
         )
     }
+
+    object LoanDetails : Destination() {
+        const val OPTIONAL_LOAN_ENTITY_JSON_ARG = "loanEntity"
+        const val OPTIONAL_LOAN_NUMBER_ARG = "loanId"
+        const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
+
+        fun withArgs(
+            loanEntityJson: String?,
+            loanNumber: String?,
+            isUserBlocked: Boolean,
+        ): String {
+            return destinationWithArgs(
+                args = listOf(isUserBlocked),
+                optionalArgs = mapOf(
+                    OPTIONAL_LOAN_ENTITY_JSON_ARG to loanEntityJson,
+                    OPTIONAL_LOAN_NUMBER_ARG to loanNumber,
+                )
+            )
+        }
+
+        override var arguments = listOf(
+            IS_USER_BLOCKED_ARG,
+        )
+
+        override var optionalArguments = listOf(
+            OPTIONAL_LOAN_ENTITY_JSON_ARG,
+            OPTIONAL_LOAN_NUMBER_ARG
+        )
+    }
+
+    object CreateLoan : Destination()
 }
 
 
@@ -58,7 +89,7 @@ fun RootNavHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = RootDestinations.Auth.route,
+        startDestination = RootDestinations.BottomBarRoot.route,
         modifier = modifier,
     ) {
         composable(route = RootDestinations.Auth.route) {
@@ -99,6 +130,37 @@ fun RootNavHost(
             )
 
             AccountDetailsScreenWrapper(viewModel)
+        }
+        composable(route = RootDestinations.CreateLoan.route) {
+
+        }
+        composable(route = RootDestinations.LoanDetails.route,
+            arguments = listOf(
+                navArgument(RootDestinations.LoanDetails.IS_USER_BLOCKED_ARG) {
+                    type = NavType.BoolType
+                },
+                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_ENTITY_JSON_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+            )
+        ) {
+            val isUserBlocked = it.arguments?.getBoolean(
+                RootDestinations.LoanDetails.IS_USER_BLOCKED_ARG
+            )
+            val loanEntityJson = it.arguments?.getString(
+                RootDestinations.LoanDetails.OPTIONAL_LOAN_ENTITY_JSON_ARG
+            )
+            val loanId = it.arguments?.getString(
+                RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG
+            )
+
         }
     }
 }

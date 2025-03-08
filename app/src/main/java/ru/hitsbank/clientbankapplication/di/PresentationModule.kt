@@ -12,6 +12,8 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListPaginationState
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
+import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
 import ru.hitsbank.clientbankapplication.login.mapper.LoginScreenModelMapper
 import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
 
@@ -19,9 +21,11 @@ fun presentationModule() = module {
     singleOf(::LoginScreenModelMapper)
     singleOf(::AccountListMapper)
     singleOf(::AccountDetailsMapper)
+    singleOf(::LoanListMapper)
 
     viewModelOf(::LoginViewModel)
     viewModelOf(::AccountListViewModel) { bind<PaginationViewModel<AccountItem, AccountListPaginationState>>() }
+    viewModelOf(::LoanListViewModel)
     viewModel<AccountDetailsViewModel> { parameters ->
         AccountDetailsViewModel(
             bankAccountEntityJson = parameters[0],
