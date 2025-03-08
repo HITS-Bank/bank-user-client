@@ -10,7 +10,13 @@ const val RUB_SYMBOL = "₽"
 fun String?.formatToSum(): String {
     if (this == null) return ""
 
-    val digitsOnly = this.replace("\\D".toRegex(), "")
+    val integralPart = this.substringBefore(".")
+    var fractionalPart = this.substringAfter(".", "")
+    if (fractionalPart.length == fractionalPart.count { it == '0' }) {
+        fractionalPart = ""
+    }
+
+    val digitsOnly = integralPart.replace("\\D".toRegex(), "")
     if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
 
     val formattedAmount = StringBuilder()
@@ -23,13 +29,17 @@ fun String?.formatToSum(): String {
         }
     }
 
-    return formattedAmount.reverse().toString() + " $RUB_SYMBOL"
+    return if (fractionalPart.isNotBlank()) {
+        formattedAmount.reverse().toString() + "," + fractionalPart + " $RUB_SYMBOL"
+    } else {
+        formattedAmount.reverse().toString() + " $RUB_SYMBOL"
+    }
 }
 
 fun String?.formatToSumWithoutSpacers(): String {
     if (this == null) return ""
 
-    val digitsOnly = this.replace("\\D".toRegex(), "")
+    val digitsOnly = this.replace("[^\\d.]".toRegex(), "")
     if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
 
     return buildString {
