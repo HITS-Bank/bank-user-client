@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountDetailsScreenWrapper
+import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
@@ -85,6 +86,8 @@ object RootDestinations {
     object CreateLoan : Destination()
 
     object TariffSelection : Destination()
+
+    object AccountSelection : Destination()
 }
 
 @Composable
@@ -179,6 +182,13 @@ fun RootNavHost(
         }
         composable(route = RootDestinations.TariffSelection.route) {
             TariffsScreen()
+        }
+        composable(route = RootDestinations.AccountSelection.route) {
+            AccountListScreenWrapper(
+                viewModel = koinViewModel(
+                    parameters = { parametersOf(true) }
+                )
+            )
         }
     }
 }

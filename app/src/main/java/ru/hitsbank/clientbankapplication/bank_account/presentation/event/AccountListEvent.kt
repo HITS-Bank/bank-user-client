@@ -13,4 +13,6 @@ sealed interface AccountListEvent {
     data object OnDismissCreateAccountDialog : AccountListEvent
 
     data object OnCreateAccount : AccountListEvent
+
+    data object Back : AccountListEvent
 }

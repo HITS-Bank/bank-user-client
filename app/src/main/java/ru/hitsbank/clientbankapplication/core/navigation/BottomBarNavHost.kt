@@ -15,6 +15,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.core.navigation.base.BottomBarDestination
@@ -72,7 +74,11 @@ fun BottomBarNavHost() {
             startDestination = BottomBarDestinations.Accounts.route,
         ) {
             composable(route = BottomBarDestinations.Accounts.route) {
-                AccountListScreenWrapper()
+                AccountListScreenWrapper(
+                    viewModel = koinViewModel(
+                        parameters = { parametersOf(false) }
+                    )
+                )
             }
             composable(route = BottomBarDestinations.Tariffs.route) {
                 LoanListScreen()

@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.hitsbank.clientbankapplication.bank_account.domain.interactor.BankAccountInteractor
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountNumberEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountListMapper
@@ -19,6 +20,8 @@ import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
+import ru.hitsbank.clientbankapplication.core.navigation.base.back
+import ru.hitsbank.clientbankapplication.core.navigation.base.backWithJsonResult
 import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
@@ -27,13 +30,14 @@ import ru.hitsbank.clientbankapplication.core.presentation.pagination.Pagination
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 
 class AccountListViewModel(
+    private val isSelectionMode: Boolean,
     private val bankAccountInteractor: BankAccountInteractor,
     private val authInteractor: AuthInteractor,
     private val mapper: AccountListMapper,
     private val navigationManager: NavigationManager,
     private val gson: Gson,
 ) : PaginationViewModel<AccountItem, AccountListPaginationState>(
-    BankUiState.Ready(AccountListPaginationState.EMPTY)
+    BankUiState.Ready(AccountListPaginationState.default(isSelectionMode))
 ) {
 
     private val _effects = Channel<AccountListEffect>()
@@ -56,10 +60,19 @@ class AccountListViewModel(
     fun onEvent(event: AccountListEvent) {
         when (event) {
             is AccountListEvent.OnPaginationEvent -> onPaginationEvent(event.event)
-            is AccountListEvent.OnClickDetails -> onClickDetails(event.accountNumber)
+            is AccountListEvent.OnClickDetails -> {
+                if (!isSelectionMode) {
+                    onClickDetails(event.accountNumber)
+                } else {
+                    onSelectedAccount(event.accountNumber)
+                }
+            }
             AccountListEvent.OnOpenCreateAccountDialog -> onOpenCreateAccountDialog()
             AccountListEvent.OnDismissCreateAccountDialog -> onDismissCreateAccountDialog()
             AccountListEvent.OnCreateAccount -> onCreateAccount()
+            AccountListEvent.Back -> {
+                navigationManager.back()
+            }
         }
     }
 
@@ -126,6 +139,10 @@ class AccountListViewModel(
                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
             )
         )
+    }
+
+    private fun onSelectedAccount(number: String) {
+        navigationManager.backWithJsonResult(gson, BankAccountNumberEntity(number))
     }
 
     private fun sendEffect(effect: AccountListEffect) {

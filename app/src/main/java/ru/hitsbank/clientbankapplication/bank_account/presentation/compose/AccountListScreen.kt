@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -11,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -86,17 +88,41 @@ internal fun AccountListScreenReady(
     listState: LazyListState,
 ) = Scaffold(
     topBar = {
-        CenterAlignedTopAppBar(
-            title = {
-                Text(
-                    text = "Счета",
-                    style = S22_W400,
-                )
-            },
-        )
+        if (!model.isSelectionMode) {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Счета",
+                        style = S22_W400,
+                    )
+                },
+            )
+        } else {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Выбор счета",
+                        style = S22_W400,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                navigationIcon = {
+                    Icon(
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                onEvent.invoke(AccountListEvent.Back)
+                            }
+                        ),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_back_48),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            )
+        }
     },
     floatingActionButton = {
-        if (!model.isUserBlocked) {
+        if (!model.isUserBlocked && !model.isSelectionMode) {
             FloatingActionButton(
                 onClick = { onEvent.invoke(AccountListEvent.OnOpenCreateAccountDialog) },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
