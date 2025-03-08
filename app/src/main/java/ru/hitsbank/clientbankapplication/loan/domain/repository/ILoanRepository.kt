@@ -17,6 +17,10 @@ interface ILoanRepository {
         query: String? = null,
     ): Result<List<LoanTariffEntity>>
 
+    suspend fun getLoanByNumber(
+        number: String,
+    ): Result<LoanEntity>
+
     suspend fun getLoans(
         pageInfo: PageInfo,
     ): Result<List<LoanEntity>>

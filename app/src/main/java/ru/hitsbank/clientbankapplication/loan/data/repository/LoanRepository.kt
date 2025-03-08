@@ -41,6 +41,26 @@ class LoanRepository : ILoanRepository {
         ))
     }
 
+    override suspend fun getLoanByNumber(number: String): Result<LoanEntity> {
+        //TODO
+        delay(1000)
+        return Result.Success(data = LoanEntity(
+            number = UUID.randomUUID().toString(),
+            tariff = LoanTariffEntity(
+                id = UUID.randomUUID().toString(),
+                name = "Тариф 1",
+                interestRate = "10.0",
+            ),
+            amount = "1000000",
+            termInMonths = 12,
+            bankAccountNumber = "12345678901234567890",
+            paymentAmount = "100000",
+            paymentSum = "1200000",
+            nextPaymentDateTime = LocalDateTime.now(),
+            currentDebt = "900000",
+        ))
+    }
+
     override suspend fun getLoans(pageInfo: PageInfo): Result<List<LoanEntity>> {
         //TODO
         delay(1000)

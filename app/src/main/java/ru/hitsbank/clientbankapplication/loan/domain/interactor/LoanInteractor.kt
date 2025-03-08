@@ -26,6 +26,11 @@ class LoanInteractor(private val loanRepository: ILoanRepository) {
         )
     }
 
+    fun getLoanByNumber(number: String): Flow<State<LoanEntity>> = flow {
+        emit(State.Loading)
+        emit(loanRepository.getLoanByNumber(number).toState())
+    }
+
     fun getLoans(pageInfo: PageInfo): Flow<State<List<LoanEntity>>> = flow {
         emit(State.Loading)
         emit(loanRepository.getLoans(pageInfo).toState())

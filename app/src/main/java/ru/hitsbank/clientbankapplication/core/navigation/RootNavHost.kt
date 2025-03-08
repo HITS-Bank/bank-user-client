@@ -1,6 +1,7 @@
 package ru.hitsbank.clientbankapplication.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -12,6 +13,8 @@ import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountDetailsScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
 
 object RootDestinations {
@@ -157,10 +160,20 @@ fun RootNavHost(
             val loanEntityJson = it.arguments?.getString(
                 RootDestinations.LoanDetails.OPTIONAL_LOAN_ENTITY_JSON_ARG
             )
-            val loanId = it.arguments?.getString(
+            val loanNumber = it.arguments?.getString(
                 RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG
             )
+            if (isUserBlocked != null) {
+                val viewModel: LoanDetailsViewModel = koinViewModel(
+                    parameters = { parametersOf(loanNumber, loanEntityJson, isUserBlocked) }
+                )
 
+                LoanDetailsScreen(viewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navHostController.popBackStack()
+                }
+            }
         }
     }
 }
