@@ -4,8 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -94,6 +92,7 @@ class AccountDetailsViewModel(
             AccountDetailsEvent.OnOpenCloseAccountDialog -> onOpenCloseAccountDialog()
             AccountDetailsEvent.OnDismissCloseAccountDialog -> onDismissCloseAccountDialog()
             AccountDetailsEvent.OnCloseAccount -> onCloseAccount()
+            is AccountDetailsEvent.OnPaginationEvent -> onPaginationEvent(event.event)
         }
     }
 

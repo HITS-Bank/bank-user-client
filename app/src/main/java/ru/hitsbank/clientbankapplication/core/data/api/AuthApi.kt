@@ -11,12 +11,16 @@ import ru.hitsbank.clientbankapplication.core.data.model.TokenResponse
 
 interface AuthApi {
 
+    // TODO
+//    @POST("users/auth/login")
     @POST("auth/login")
     suspend fun login(
         @Query("channel") channel: String,
         @Body request: LoginRequest,
     ): Response<TokenResponse>
 
+    // TODO
+//    @POST("users/auth/refresh")
     @POST("auth/refresh")
     suspend fun refresh(
         @Header("Authorization") expiredToken: String,

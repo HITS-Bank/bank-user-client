@@ -6,6 +6,6 @@ import ru.hitsbank.clientbankapplication.core.data.model.ProfileResponse
 
 interface ProfileApi {
 
-    @GET("/profile")
+    @GET("users/profile")
     suspend fun getSelfProfile(): Response<ProfileResponse>
 }

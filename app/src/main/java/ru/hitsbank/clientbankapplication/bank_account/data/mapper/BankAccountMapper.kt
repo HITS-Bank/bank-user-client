@@ -2,7 +2,7 @@ package ru.hitsbank.clientbankapplication.bank_account.data.mapper
 
 import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
-import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationHistoryResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationTypeResponse
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
@@ -32,8 +32,8 @@ class BankAccountMapper {
         )
     }
 
-    fun map(response: OperationHistoryResponse): List<OperationEntity> {
-        return response.operations.map { operation ->
+    fun map(response: List<OperationResponse>): List<OperationEntity> {
+        return response.map { operation ->
             OperationEntity(
                 id = operation.id,
                 executedAt = operation.executedAt,
@@ -42,7 +42,7 @@ class BankAccountMapper {
                     OperationTypeResponse.TOP_UP -> OperationTypeEntity.TOP_UP
                     OperationTypeResponse.LOAN_PAYMENT -> OperationTypeEntity.LOAN_PAYMENT
                 },
-                balance = operation.balance,
+                amount = operation.amount,
             )
         }
     }

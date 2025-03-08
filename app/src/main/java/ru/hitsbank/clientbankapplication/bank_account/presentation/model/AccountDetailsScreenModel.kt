@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.model
 
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 
@@ -11,6 +12,7 @@ data class AccountDetailsScreenModel(
     val balance: String,
     val number: String,
     val isUserBlocked: Boolean,
+    val status: BankAccountStatusEntity,
     val accountDetails: AccountDetailsModel,
     val topUpDialog: AccountDetailsTopUpDialogModel,
     val withdrawDialog: AccountDetailsWithdrawDialogModel,
@@ -78,6 +80,9 @@ data class OperationHistoryItem(
     val title: String,
     val description: String,
     val operationType: OperationType,
+    val amountText: String,
+    val leftPartBackgroundColorId: Int,
+    val contentColorId: Int,
 ) {
 
     enum class OperationType {

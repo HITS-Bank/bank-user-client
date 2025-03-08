@@ -3,6 +3,7 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,26 +21,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
+import ru.hitsbank.clientbankapplication.core.presentation.common.Divider
 import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
 import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemEnd
 import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
+import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationErrorContent
+import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationLoadingContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
 import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
 import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
+import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.rememberPaginationListState
 import ru.hitsbank.clientbankapplication.core.presentation.theme.S14_W400
@@ -135,23 +143,25 @@ private fun AccountDetailsScreenReady(
             )
         },
         floatingActionButton = {
-            BankButton.Outlined(
-                text = "Закрыть счет",
-                onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenCloseAccountDialog) },
-                icon = ImageVector.vectorResource(id = R.drawable.ic_block_18),
-                enabled = !model.isUserBlocked,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    contentColor = MaterialTheme.colorScheme.error,
-                    disabledContentColor = MaterialTheme.colorScheme.outline,
-                    disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                borderColor = if (!model.isUserBlocked) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.outline
-                },
-            )
+            if (model.status != BankAccountStatusEntity.CLOSED) {
+                BankButton.Outlined(
+                    text = "Закрыть счет",
+                    onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenCloseAccountDialog) },
+                    icon = ImageVector.vectorResource(id = R.drawable.ic_block_18),
+                    enabled = !model.isUserBlocked,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimary,
+                        contentColor = MaterialTheme.colorScheme.error,
+                        disabledContentColor = MaterialTheme.colorScheme.outline,
+                        disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                    borderColor = if (!model.isUserBlocked) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.outline
+                    },
+                )
+            }
         }
     ) { paddings ->
         Column(
@@ -181,29 +191,31 @@ private fun AccountDetailsScreenReady(
                 8.dp.verticalSpacer()
             }
             12.dp.verticalSpacer()
-            Row(
-                modifier = Modifier.height(40.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                BankButton.Outlined(
-                    modifier = Modifier.weight(1f),
-                    text = "Пополнить",
-                    onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTopUpDialog) },
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_top_up_18),
-                    enabled = !model.isUserBlocked,
-                    borderColor = if (!model.isUserBlocked) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.outline
-                    },
-                )
-                BankButton.Regular(
-                    modifier = Modifier.weight(1f),
-                    text = "Вывести",
-                    onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenWithdrawDialog) },
-                    icon = ImageVector.vectorResource(id = R.drawable.ic_withdraw_18),
-                    enabled = !model.isUserBlocked,
-                )
+            if (model.status != BankAccountStatusEntity.CLOSED) {
+                Row(
+                    modifier = Modifier.height(40.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    BankButton.Outlined(
+                        modifier = Modifier.weight(1f),
+                        text = "Пополнить",
+                        onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTopUpDialog) },
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_top_up_18),
+                        enabled = !model.isUserBlocked,
+                        borderColor = if (!model.isUserBlocked) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.outline
+                        },
+                    )
+                    BankButton.Regular(
+                        modifier = Modifier.weight(1f),
+                        text = "Вывести",
+                        onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenWithdrawDialog) },
+                        icon = ImageVector.vectorResource(id = R.drawable.ic_withdraw_18),
+                        enabled = !model.isUserBlocked,
+                    )
+                }
             }
             32.dp.verticalSpacer()
             Text(
@@ -214,9 +226,15 @@ private fun AccountDetailsScreenReady(
             LazyColumn(
                 state = listState,
             ) {
-                if (model.data.isEmpty() && model.paginationState != PaginationState.Loading) {
+                item {
+                    16.dp.verticalSpacer()
+                }
+
+                if (
+                    model.data.isEmpty() &&
+                    (model.paginationState == PaginationState.Idle || model.paginationState == PaginationState.EndReached)
+                ) {
                     item {
-                        16.dp.verticalSpacer()
                         Text(
                             modifier = Modifier.padding(vertical = 16.dp),
                             text = "Пока тут ничего нет",
@@ -228,15 +246,36 @@ private fun AccountDetailsScreenReady(
 
                 items(model.data) { item ->
                     ListItem(
+                        padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
+                        divider = Divider.None,
                         icon = ListItemIcon.SingleChar(
                             char = '₽',
-                            backgroundColor = null, // TODO,
-                            charColor = null, // TODO
+                            backgroundColor = colorResource(id = item.leftPartBackgroundColorId),
+                            charColor = colorResource(id = item.contentColorId),
                         ),
                         title = item.title,
                         subtitle = item.description,
-                        // TODO показать сумму
+                        end = ListItemEnd.Text(
+                            text = item.amountText,
+                            textColor = colorResource(id = item.contentColorId),
+                        ),
                     )
+                }
+
+                item {
+                    when (model.paginationState) {
+                        PaginationState.Loading -> {
+                            PaginationLoadingContent()
+                        }
+
+                        PaginationState.Error -> {
+                            PaginationErrorContent {
+                                onEvent(AccountDetailsEvent.OnPaginationEvent(PaginationEvent.LoadNextPage))
+                            }
+                        }
+
+                        else -> Unit
+                    }
                 }
             }
         }
