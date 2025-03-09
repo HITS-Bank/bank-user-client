@@ -16,6 +16,7 @@ import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.interceptor.AuthInterceptor
 import ru.hitsbank.clientbankapplication.core.data.serialization.LocalDateTimeDeserializer
 import ru.hitsbank.clientbankapplication.core.data.serialization.LocalDateTimeSerializer
+import ru.hitsbank.clientbankapplication.loan.data.api.LoanApi
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
@@ -26,7 +27,7 @@ private const val NO_AUTH_OKHTTP = "NO_AUTH_OKHTTP"
 private const val AUTH_RETROFIT = "AUTH_RETROFIT"
 private const val NO_AUTH_RETROFIT = "NO_AUTH_RETROFIT"
 
-private const val BASE_URL = "http://10.0.2.2:9446/"
+private const val BASE_URL = "http://192.168.0.101:9446/"
 
 private fun loggingInterceptor() =
     HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
@@ -72,6 +73,8 @@ private fun profileApi(retrofit: Retrofit) = retrofit.create(ProfileApi::class.j
 
 private fun bankAccountApi(retrofit: Retrofit) = retrofit.create(BankAccountApi::class.java)
 
+private fun loanApi(retrofit: Retrofit) = retrofit.create(LoanApi::class.java)
+
 fun networkModule() = module {
     singleOf(::loggingInterceptor)
     singleOf(::AuthInterceptor)
@@ -94,4 +97,5 @@ fun networkModule() = module {
     single { authApi(get(named(NO_AUTH_RETROFIT))) }
     single { profileApi(get(named(AUTH_RETROFIT))) }
     single { bankAccountApi(get(named(AUTH_RETROFIT))) }
+    single { loanApi(get(named(AUTH_RETROFIT))) }
 }
