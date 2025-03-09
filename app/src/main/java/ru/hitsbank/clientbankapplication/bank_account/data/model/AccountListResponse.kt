@@ -6,6 +6,6 @@ import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 
 data class AccountListResponse(
     @SerializedName("accounts")
-    val bankAccounts: List<BankAccountEntity>,
+    val bankAccounts: List<BankAccountResponse>,
     val pageInfo: PageInfo,
 )

@@ -1,12 +1,15 @@
 package ru.hitsbank.clientbankapplication.core.presentation.common
 
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 const val RUB_SYMBOL = "₽"
 
+// TODO обрезать копейки если они .00
 fun String?.formatToSum(): String {
     if (this == null) return ""
 
@@ -50,12 +53,14 @@ fun String?.formatToSumWithoutSpacers(): String {
 }
 
 fun String?.utcDateTimeToReadableFormat(): String {
-    try {
-        val zonedUtcDateTime = ZonedDateTime.parse(this)
-        val localDateTime = zonedUtcDateTime.withZoneSameInstant(ZoneId.systemDefault())
+    if (this == null) return ""
+    return try {
+        val localDateTime = LocalDateTime.parse(this)
+        val zonedUtcDateTime = localDateTime.atZone(ZoneOffset.UTC)
+        val localDateTimeInDefaultZone = zonedUtcDateTime.withZoneSameInstant(ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofPattern("HH:mm, d MMMM yyyy", Locale("ru"))
-        return localDateTime.format(formatter)
+        localDateTimeInDefaultZone.format(formatter)
     } catch (e: Exception) {
-        return ""
+        ""
     }
 }

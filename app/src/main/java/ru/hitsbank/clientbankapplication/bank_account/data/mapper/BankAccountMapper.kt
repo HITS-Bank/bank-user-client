@@ -16,9 +16,13 @@ class BankAccountMapper {
         return AccountListEntity(
             bankAccounts = response.bankAccounts.map { response ->
                 BankAccountEntity(
-                    number = response.number,
+                    number = response.accountNumber,
                     balance = response.balance,
-                    status = response.status,
+                    status = when {
+                        response.closed -> BankAccountStatusEntity.CLOSED
+                        response.blocked -> BankAccountStatusEntity.BLOCKED
+                        else -> BankAccountStatusEntity.OPEN
+                    },
                 )
             },
             pageInfo = response.pageInfo,
@@ -43,7 +47,7 @@ class BankAccountMapper {
                 id = operation.id,
                 executedAt = operation.executedAt,
                 type = when (operation.type) {
-                    OperationTypeResponse.WITHDRAWAL -> OperationTypeEntity.WITHDRAWAL
+                    OperationTypeResponse.WITHDRAW -> OperationTypeEntity.WITHDRAWAL
                     OperationTypeResponse.TOP_UP -> OperationTypeEntity.TOP_UP
                     OperationTypeResponse.LOAN_PAYMENT -> OperationTypeEntity.LOAN_PAYMENT
                 },
