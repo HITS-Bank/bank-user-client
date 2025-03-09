@@ -77,6 +77,7 @@ data class AccountDetailsItem(
 )
 
 data class OperationHistoryItem(
+    val id: String,
     val title: String,
     val description: String,
     val operationType: OperationType,
