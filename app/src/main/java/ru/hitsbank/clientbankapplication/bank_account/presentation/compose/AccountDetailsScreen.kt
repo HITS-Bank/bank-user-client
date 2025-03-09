@@ -243,7 +243,7 @@ private fun AccountDetailsScreenReady(
                 }
             }
 
-            items(model.data) { item ->
+            items(model.data, key = { it.id }) { item ->
                 ListItem(
                     padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
                     divider = Divider.None,

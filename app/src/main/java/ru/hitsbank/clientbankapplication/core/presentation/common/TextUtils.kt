@@ -10,7 +10,7 @@ import java.util.Locale
 const val RUB_SYMBOL = "₽"
 
 // TODO обрезать копейки если они .00
-fun String?.formatToSum(): String {
+fun String?.formatToSum(isWithoutSpacers: Boolean = false): String {
     if (this == null) return ""
 
     val integralPart = this.substringBefore(".")
@@ -32,23 +32,11 @@ fun String?.formatToSum(): String {
         }
     }
 
+    val mainPart = formattedAmount.reverse().toString().also { if (isWithoutSpacers) this.replace(" ", "") }
     return if (fractionalPart.isNotBlank()) {
-        formattedAmount.reverse().toString() + "," + fractionalPart + " $RUB_SYMBOL"
+        "$mainPart,$fractionalPart $RUB_SYMBOL"
     } else {
-        formattedAmount.reverse().toString() + " $RUB_SYMBOL"
-    }
-}
-
-fun String?.formatToSumWithoutSpacers(): String {
-    if (this == null) return ""
-
-    val digitsOnly = this.replace("[^\\d.]".toRegex(), "")
-    if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
-
-    return buildString {
-        append(digitsOnly)
-        append(" ")
-        append(RUB_SYMBOL)
+        "$mainPart $RUB_SYMBOL"
     }
 }
 

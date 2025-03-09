@@ -16,7 +16,6 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSumWithoutSpacers
 import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 
@@ -59,6 +58,7 @@ class AccountDetailsMapper {
     fun mapToOperationHistoryItems(operationHistory: List<OperationEntity>): List<OperationHistoryItem> {
         return operationHistory.map { operation ->
             OperationHistoryItem(
+                id = operation.id,
                 title = when (operation.type) {
                     OperationTypeEntity.WITHDRAWAL -> "Вывод"
                     OperationTypeEntity.TOP_UP -> "Пополнение"
@@ -67,9 +67,9 @@ class AccountDetailsMapper {
                 description = operation.executedAt.utcDateTimeToReadableFormat(),
                 operationType = OperationHistoryItem.OperationType.IN,
                 amountText = if (operation.type == OperationTypeEntity.TOP_UP) {
-                    "+${operation.amount.formatToSumWithoutSpacers()}"
+                    "+${operation.amount.formatToSum(true)}"
                 } else {
-                    "-${operation.amount.formatToSumWithoutSpacers()}"
+                    "-${operation.amount.formatToSum(true)}"
                 },
                 leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
                     R.color.operationInContainer
