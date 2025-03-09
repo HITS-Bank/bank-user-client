@@ -1,9 +1,8 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.model
 
-import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
-
 data class BankAccountResponse(
-    val number: String,
+    val accountNumber: String,
     val balance: String,
-    val status: BankAccountStatusEntity,
+    val blocked: Boolean,
+    val closed: Boolean,
 )
