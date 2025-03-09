@@ -28,7 +28,7 @@ class LoanMapper {
             bankAccountNumber = loanResponse.bankAccountNumber,
             paymentAmount = loanResponse.paymentAmount,
             paymentSum = loanResponse.paymentSum,
-            nextPaymentDateTime = LocalDateTime.parse(loanResponse.nexPaymentDateTime).atZone(ZoneOffset.UTC).toLocalDateTime(),
+            nextPaymentDateTime = LocalDateTime.parse(loanResponse.nextPaymentDateTime).atZone(ZoneOffset.UTC).toLocalDateTime(),
             currentDebt = loanResponse.currentDebt,
         )
     }

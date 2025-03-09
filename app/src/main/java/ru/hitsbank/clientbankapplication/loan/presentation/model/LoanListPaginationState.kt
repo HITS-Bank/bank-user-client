@@ -21,14 +21,14 @@ data class LoanListPaginationState(
     }
 
     override fun resetPagination(): PaginationStateHolder<LoanItem> {
-        return copy(data = emptyList(), pageNumber = 1)
+        return copy(data = emptyList(), pageNumber = 0)
     }
 
     companion object {
         val EMPTY = LoanListPaginationState(
             paginationState = PaginationState.Idle,
             data = emptyList(),
-            pageNumber = 1,
+            pageNumber = 0,
             pageSize = LoanListViewModel.PAGE_SIZE,
             isUserBlocked = false,
         )
