@@ -6,6 +6,7 @@ import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationRespon
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationTypeResponse
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationTypeEntity
 
@@ -26,9 +27,13 @@ class BankAccountMapper {
 
     fun map(response: BankAccountResponse): BankAccountEntity {
         return BankAccountEntity(
-            number = response.number,
+            number = response.accountNumber,
             balance = response.balance,
-            status = response.status,
+            status = when {
+                response.closed -> BankAccountStatusEntity.CLOSED
+                response.blocked -> BankAccountStatusEntity.BLOCKED
+                else -> BankAccountStatusEntity.OPEN
+            },
         )
     }
 
