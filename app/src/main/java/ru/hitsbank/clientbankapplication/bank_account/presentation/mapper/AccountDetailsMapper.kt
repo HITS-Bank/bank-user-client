@@ -51,7 +51,7 @@ class AccountDetailsMapper {
             isUserBlocked = isUserBlocked,
             paginationState = PaginationState.Idle,
             data = emptyList(),
-            pageNumber = 0,
+            pageNumber = 1,
             pageSize = DEFAULT_PAGE_SIZE,
         )
     }
@@ -85,7 +85,7 @@ class AccountDetailsMapper {
         }
     }
 
-    fun getUpdatedAccountDetails(
+    fun getUpdatedAccountDetailsScreen(
         oldModel: AccountDetailsScreenModel,
         bankAccountEntity: BankAccountEntity
     ): AccountDetailsScreenModel {
@@ -96,6 +96,8 @@ class AccountDetailsMapper {
                     add(getBalanceOrStatusInfo(bankAccountEntity))
                 },
             ),
+            balance = bankAccountEntity.balance,
+            status = bankAccountEntity.status,
         )
     }
 

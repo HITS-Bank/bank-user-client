@@ -31,6 +31,8 @@ import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
+import kotlin.math.max
+import kotlin.math.min
 
 class AccountDetailsViewModel(
     private val bankAccountEntityJson: String?,
@@ -181,10 +183,13 @@ class AccountDetailsViewModel(
 
     private fun onOpenWithdrawDialog() {
         _state.updateIfSuccess { state ->
+            val maxWithdrawAmount = _state.getIfSuccess()?.balance?.substringBefore(".")?.toIntOrNull()
+            val defaultWithdrawAmount = min(AccountDetailsWithdrawDialogModel.DEFAULT_AMOUNT, maxWithdrawAmount ?: 0)
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     isShown = true,
-                    amount = AccountDetailsWithdrawDialogModel.DEFAULT_AMOUNT.toString(),
+                    amount = defaultWithdrawAmount.toString(),
+                    isDataValid = defaultWithdrawAmount > 0,
                 )
             )
         }
@@ -211,7 +216,8 @@ class AccountDetailsViewModel(
                     amount = amount,
                     isDataValid = amountFloat != null
                             && maxWithdrawAmount != null
-                            && amountFloat <= maxWithdrawAmount,
+                            && amountFloat <= maxWithdrawAmount
+                            && amountFloat > 0,
                 )
             )
         }
@@ -259,11 +265,13 @@ class AccountDetailsViewModel(
                     sendEffect(AccountDetailsEffect.OnTopUpSuccess)
 
                     _state.updateIfSuccess { uiState ->
-                        accountDetailsMapper.getUpdatedAccountDetails(
+                        accountDetailsMapper.getUpdatedAccountDetailsScreen(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
                         )
                     }
+
+                    onPaginationEvent(PaginationEvent.Reload)
                 }
             }
         }
@@ -271,7 +279,7 @@ class AccountDetailsViewModel(
 
     private fun onWithdraw() = viewModelScope.launch {
         val accountNumber = _state.getIfSuccess()?.number ?: return@launch
-        val amount = _state.getIfSuccess()?.topUpDialog?.amount ?: return@launch
+        val amount = _state.getIfSuccess()?.withdrawDialog?.amount ?: return@launch
         bankAccountInteractor.withdraw(
             accountDetailsMapper.mapToWithdrawRequest(
                 accountNumber = accountNumber,
@@ -311,11 +319,13 @@ class AccountDetailsViewModel(
                     sendEffect(AccountDetailsEffect.OnWithdrawSuccess)
 
                     _state.updateIfSuccess { uiState ->
-                        accountDetailsMapper.getUpdatedAccountDetails(
+                        accountDetailsMapper.getUpdatedAccountDetailsScreen(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
                         )
                     }
+
+                    onPaginationEvent(PaginationEvent.Reload)
                 }
             }
         }

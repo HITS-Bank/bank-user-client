@@ -7,8 +7,9 @@ data class OperationResponse(
     val amount: String,
 )
 
+// TODO с сервера должен приходить WITHDRAW
 enum class OperationTypeResponse {
-    WITHDRAWAL,
+    WITHDRAW,
     TOP_UP,
     LOAN_PAYMENT,
 }

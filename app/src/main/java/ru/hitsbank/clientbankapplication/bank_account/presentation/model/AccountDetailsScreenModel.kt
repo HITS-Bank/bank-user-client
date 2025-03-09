@@ -29,7 +29,7 @@ data class AccountDetailsScreenModel(
     }
 
     override fun resetPagination(): PaginationStateHolder<OperationHistoryItem> {
-        return copy(data = emptyList(), pageNumber = 0)
+        return copy(data = emptyList(), pageNumber = 1)
     }
 }
 

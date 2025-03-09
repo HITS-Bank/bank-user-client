@@ -25,14 +25,14 @@ data class AccountListPaginationState(
     }
 
     override fun resetPagination(): PaginationStateHolder<AccountItem> {
-        return copy(data = emptyList(), pageNumber = 0)
+        return copy(data = emptyList(), pageNumber = 1)
     }
 
     companion object {
         fun default(isSelectionMode: Boolean) = AccountListPaginationState(
             paginationState = PaginationState.Idle,
             data = emptyList(),
-            pageNumber = 0,
+            pageNumber = 1,
             pageSize = DEFAULT_PAGE_SIZE,
             isUserBlocked = false,
             isCreateAccountDialogShown = false,
