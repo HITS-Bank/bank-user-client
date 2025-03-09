@@ -259,7 +259,7 @@ class AccountDetailsViewModel(
                     sendEffect(AccountDetailsEffect.OnTopUpSuccess)
 
                     _state.updateIfSuccess { uiState ->
-                        accountDetailsMapper.getUpdatedAccountDetails(
+                        accountDetailsMapper.getUpdatedAccountDetailsScreen(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
                         )
@@ -311,7 +311,7 @@ class AccountDetailsViewModel(
                     sendEffect(AccountDetailsEffect.OnWithdrawSuccess)
 
                     _state.updateIfSuccess { uiState ->
-                        accountDetailsMapper.getUpdatedAccountDetails(
+                        accountDetailsMapper.getUpdatedAccountDetailsScreen(
                             oldModel = uiState,
                             bankAccountEntity = state.data,
                         )
