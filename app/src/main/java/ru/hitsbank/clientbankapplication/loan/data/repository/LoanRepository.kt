@@ -1,7 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.data.repository
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
@@ -16,8 +15,6 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
-import java.time.LocalDateTime
-import java.util.UUID
 
 class LoanRepository(
     private val loanApi: LoanApi,
@@ -46,25 +43,11 @@ class LoanRepository(
     }
 
     override suspend fun getLoanByNumber(number: String): Result<LoanEntity> {
-        //TODO
-        delay(1000)
-        return Result.Success(
-            data = LoanEntity(
-                number = UUID.randomUUID().toString(),
-                tariff = LoanTariffEntity(
-                    id = UUID.randomUUID().toString(),
-                    name = "Тариф 1",
-                    interestRate = "10.0",
-                ),
-                amount = "1000000",
-                termInMonths = 12,
-                bankAccountNumber = "12345678901234567890",
-                paymentAmount = "100000",
-                paymentSum = "1200000",
-                nextPaymentDateTime = LocalDateTime.now(),
-                currentDebt = "900000",
-            )
-        )
+        return apiCall(Dispatchers.IO) {
+            loanApi.getLoanByNumber(number).toResult { loan ->
+                mapper.map(loan)
+            }
+        }
     }
 
     override suspend fun getLoans(pageInfo: PageInfo): Result<List<LoanEntity>> {

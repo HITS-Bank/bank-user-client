@@ -5,6 +5,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanCreateRequest
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanPage
@@ -22,6 +23,9 @@ interface LoanApi {
         @Query("pageSize") pageSize: Int,
         @Query("nameQuery") nameQuery: String? = null,
     ): Response<LoanTariffsPage>
+
+    @GET("credit/loan/{loanNumber}")
+    suspend fun getLoanByNumber(@Path("loanNumber") loanNumber: String): Response<LoanResponse>
 
     @POST("credit/loan/create")
     suspend fun createLoan(@Body loanCreateRequest: LoanCreateRequest): Response<LoanResponse>
