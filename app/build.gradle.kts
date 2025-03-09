@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "ru.hitsbank.clientbankapplication"
-        minSdk = 24
+        minSdk = 26
         //noinspection EditedTargetSdkVersion
         targetSdk = 35
         versionCode = 1
@@ -41,6 +41,17 @@ android {
 }
 
 dependencies {
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.retrofit)
+    implementation(libs.logging.interceptor)
+    implementation(libs.gson)
+    implementation(libs.converter.gson)
+    implementation(libs.androidx.security.crypto)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

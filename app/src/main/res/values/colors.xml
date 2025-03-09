@@ -7,4 +7,12 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="onPrimaryContainer">#FF005142</color>
+    <color name="onErrorContainer">#FF93000A</color>
+    <color name="onSurfaceVariant">#FF3F4945</color>
+    <color name="operationInContainer">#FFBEE7C5</color>
+    <color name="operationInContent">#FF2D993F</color>
+    <color name="operationOutContainer">#FFFFD0D1</color>
+    <color name="operationOutContent">#FFC94B4D</color>
 </resources>

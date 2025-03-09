@@ -1,47 +1,72 @@
 package ru.hitsbank.clientbankapplication
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import ru.hitsbank.clientbankapplication.ui.theme.ClientBankApplicationTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
+import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
+import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val navigationManager by inject<NavigationManager>()
+
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ClientBankApplicationTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+            val snackbarHostState = remember { SnackbarHostState() }
+            val navController = rememberNavController()
+
+            LaunchedEffect(Unit) {
+                navigationManager.commands.collect { command ->
+                    command.execute(navController, this@MainActivity)
+                }
+            }
+
+            AppTheme {
+                CompositionLocalProvider(
+                    LocalSnackbarController provides SnackbarController(
+                        snackbarHostState = snackbarHostState,
+                        coroutineScope = rememberCoroutineScope(),
                     )
+                ) {
+                    Scaffold(
+                        snackbarHost = { SnackbarHost(snackbarHostState) }
+                    ) {
+                        RootNavHost(navController)
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+val LocalSnackbarController = compositionLocalOf<SnackbarController> { error("SnackbarController not provided") }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ClientBankApplicationTheme {
-        Greeting("Android")
+class SnackbarController(
+    private val snackbarHostState: SnackbarHostState,
+    private val coroutineScope: CoroutineScope,
+) {
+
+    fun show(message: String) {
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(message)
+        }
     }
 }
