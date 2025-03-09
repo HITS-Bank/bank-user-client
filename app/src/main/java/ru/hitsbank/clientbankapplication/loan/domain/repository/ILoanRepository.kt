@@ -30,7 +30,7 @@ interface ILoanRepository {
     ): Result<LoanEntity>
 
     suspend fun makeLoanPayment(
-        loanId: String,
+        loanNumber: String,
         amount: String,
     ): Result<LoanEntity>
 }

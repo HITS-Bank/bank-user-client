@@ -13,6 +13,7 @@ import ru.hitsbank.clientbankapplication.core.data.repository.AuthRepository
 import ru.hitsbank.clientbankapplication.core.data.repository.ProfileRepository
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 import ru.hitsbank.clientbankapplication.core.domain.repository.IProfileRepository
+import ru.hitsbank.clientbankapplication.loan.data.mapper.LoanMapper
 import ru.hitsbank.clientbankapplication.loan.data.repository.LoanRepository
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
 
@@ -20,6 +21,7 @@ fun dataModule() = module {
     singleOf(::AuthMapper)
     singleOf(::ProfileMapper)
     singleOf(::BankAccountMapper)
+    singleOf(::LoanMapper)
     singleOf(::AuthRepository) bind IAuthRepository::class
     singleOf(::ProfileRepository) bind IProfileRepository::class
     singleOf(::BankAccountRepository) bind IBankAccountRepository::class
