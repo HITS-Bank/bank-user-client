@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.hitsbank.clientbankapplication.bank_account.data.model.CloseAccountRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.interactor.BankAccountInteractor
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
@@ -22,6 +21,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
@@ -31,12 +31,11 @@ import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
-import kotlin.math.max
 import kotlin.math.min
 
 class AccountDetailsViewModel(
     private val bankAccountEntityJson: String?,
-    private val accountNumber: String?,
+    private val accountId: String?,
     private val isUserBlocked: Boolean,
     private val gson: Gson,
     private val accountDetailsMapper: AccountDetailsMapper,
@@ -56,8 +55,8 @@ class AccountDetailsViewModel(
                 onPaginationEvent(PaginationEvent.Reload)
             }
 
-            accountNumber != null -> {
-                getAccountFromApi(accountNumber)
+            accountId != null -> {
+                getAccountFromApi(accountId)
                 onPaginationEvent(PaginationEvent.Reload)
             }
 
@@ -116,11 +115,11 @@ class AccountDetailsViewModel(
     }
 
     private fun getAccountFromApi(
-        accountNumber: String,
+        accountId: String,
         withLoader: Boolean = true,
     ) = viewModelScope.launch {
-        bankAccountInteractor.getBankAccountByNumber(
-            accountNumberRequest = AccountNumberRequest(accountNumber),
+        bankAccountInteractor.getBankAccountById(
+            accountId = accountId,
         ).collectLatest { state ->
             when (state) {
                 State.Loading -> {
@@ -224,11 +223,12 @@ class AccountDetailsViewModel(
     }
 
     private fun onTopUp() = viewModelScope.launch {
-        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
+        val accountId = _state.getIfSuccess()?.id ?: return@launch
         val amount = _state.getIfSuccess()?.topUpDialog?.amount ?: return@launch
         bankAccountInteractor.topUp(
-            accountDetailsMapper.mapToTopUpRequest(
-                accountNumber = accountNumber,
+            accountId = accountId,
+            topUpRequest = accountDetailsMapper.mapToTopUpRequest(
+                currencyCode = CurrencyCode.RUB,
                 amount = amount,
             )
         ).collectLatest { state ->
@@ -278,11 +278,12 @@ class AccountDetailsViewModel(
     }
 
     private fun onWithdraw() = viewModelScope.launch {
-        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
+        val accountId = _state.getIfSuccess()?.id ?: return@launch
         val amount = _state.getIfSuccess()?.withdrawDialog?.amount ?: return@launch
         bankAccountInteractor.withdraw(
-            accountDetailsMapper.mapToWithdrawRequest(
-                accountNumber = accountNumber,
+            accountId = accountId,
+            withdrawRequest = accountDetailsMapper.mapToWithdrawRequest(
+                currencyCode = CurrencyCode.RUB,
                 amount = amount,
             )
         ).collectLatest { state ->
@@ -332,11 +333,9 @@ class AccountDetailsViewModel(
     }
 
     private fun onCloseAccount() = viewModelScope.launch {
-        val accountNumber = _state.getIfSuccess()?.number ?: return@launch
+        val accountId = _state.getIfSuccess()?.id ?: return@launch
         bankAccountInteractor.closeAccount(
-            CloseAccountRequest(
-                accountNumber = accountNumber,
-            )
+            accountId = accountId,
         ).collectLatest { state ->
             when (state) {
                 is State.Error -> {

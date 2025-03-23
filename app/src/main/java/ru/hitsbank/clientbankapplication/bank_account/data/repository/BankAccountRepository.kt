@@ -3,7 +3,6 @@ package ru.hitsbank.clientbankapplication.bank_account.data.repository
 import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
 import ru.hitsbank.clientbankapplication.bank_account.data.mapper.BankAccountMapper
-import ru.hitsbank.clientbankapplication.bank_account.data.model.CloseAccountRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
@@ -14,6 +13,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.common.map
@@ -31,40 +31,46 @@ class BankAccountRepository(
         }
     }
 
-    override suspend fun createAccount(): Result<BankAccountEntity> {
+    override suspend fun createAccount(currencyCode: CurrencyCode): Result<BankAccountEntity> {
         return apiCall(Dispatchers.IO) {
-            bankAccountApi.createAccount()
+            bankAccountApi.createAccount(currencyCode)
                 .toResult()
                 .map(mapper::map)
         }
     }
 
-    override suspend fun topUp(topUpRequest: TopUpRequest): Result<BankAccountEntity> {
+    override suspend fun topUp(
+        accountId: String,
+        topUpRequest: TopUpRequest,
+    ): Result<BankAccountEntity> {
         return apiCall(Dispatchers.IO) {
-            bankAccountApi.topUp(topUpRequest)
+            bankAccountApi.topUp(accountId, topUpRequest)
                 .toResult()
                 .map(mapper::map)
         }
     }
 
-    override suspend fun withdraw(withdrawRequest: WithdrawRequest): Result<BankAccountEntity> {
+    override suspend fun withdraw(
+        accountId: String,
+        withdrawRequest: WithdrawRequest,
+    ): Result<BankAccountEntity> {
         return apiCall(Dispatchers.IO) {
-            bankAccountApi.withdraw(withdrawRequest)
+            bankAccountApi.withdraw(accountId, withdrawRequest)
                 .toResult()
                 .map(mapper::map)
         }
     }
 
-    override suspend fun closeAccount(closeAccountRequest: CloseAccountRequest): Result<Completable> {
+    override suspend fun closeAccount(accountId: String): Result<Completable> {
         return apiCall(Dispatchers.IO) {
-            bankAccountApi.closeAccount(closeAccountRequest)
+            bankAccountApi.closeAccount(accountId)
                 .toCompletableResult()
         }
     }
 
-    override suspend fun getBankAccountByNumber(accountNumberRequest: AccountNumberRequest): Result<BankAccountEntity> {
+    override suspend fun getBankAccountById(accountId: String): Result<BankAccountEntity> {
         return apiCall(Dispatchers.IO) {
-            bankAccountApi.getBankAccountByNumber(accountNumberRequest)
+            bankAccountApi.getBankAccountById(accountId)
                 .toResult()
                 .map(mapper::map)
         }

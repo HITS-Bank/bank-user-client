@@ -1,6 +1,5 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.mapper
 
-import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationTypeResponse
@@ -12,27 +11,18 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationType
 
 class BankAccountMapper {
 
-    fun map(response: AccountListResponse): AccountListEntity {
+    fun map(response: List<BankAccountResponse>): AccountListEntity {
         return AccountListEntity(
-            bankAccounts = response.bankAccounts.map { response ->
-                BankAccountEntity(
-                    number = response.accountNumber,
-                    balance = response.balance,
-                    status = when {
-                        response.closed -> BankAccountStatusEntity.CLOSED
-                        response.blocked -> BankAccountStatusEntity.BLOCKED
-                        else -> BankAccountStatusEntity.OPEN
-                    },
-                )
-            },
-            pageInfo = response.pageInfo,
+            bankAccounts = response.map(::map),
         )
     }
 
     fun map(response: BankAccountResponse): BankAccountEntity {
         return BankAccountEntity(
+            id = response.accountId,
             number = response.accountNumber,
             balance = response.balance,
+            currencyCode = response.currencyCode,
             status = when {
                 response.closed -> BankAccountStatusEntity.CLOSED
                 response.blocked -> BankAccountStatusEntity.BLOCKED

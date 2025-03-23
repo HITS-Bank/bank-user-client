@@ -80,6 +80,7 @@ class LoanCreateViewModel(
                     RootDestinations.AccountSelection.destination
                 ) { account ->
                     if (account != null) {
+                        // TODO Вероятно, нужно также передавать id
                         _state.update { state -> state.copy(accountNumber = account.number) }
                     }
                 }

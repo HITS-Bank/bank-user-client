@@ -11,6 +11,7 @@ class AccountListMapper {
     fun map(entity: AccountListEntity): List<AccountItem> {
         return entity.bankAccounts.map { accountEntity ->
             AccountItem(
+                id = accountEntity.id,
                 number = accountEntity.number,
                 description = getBankAccountDescription(accountEntity.balance, accountEntity.status),
                 descriptionColorId = getBankAccountColorId(accountEntity.status),

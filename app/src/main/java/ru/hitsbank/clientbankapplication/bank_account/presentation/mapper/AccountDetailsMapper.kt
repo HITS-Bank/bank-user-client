@@ -15,6 +15,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAccountDialog
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
@@ -26,6 +27,7 @@ class AccountDetailsMapper {
         bankAccountEntity: BankAccountEntity,
     ): AccountDetailsScreenModel {
         return AccountDetailsScreenModel(
+            id = bankAccountEntity.id,
             balance = bankAccountEntity.balance,
             number = bankAccountEntity.number,
             status = bankAccountEntity.status,
@@ -102,21 +104,21 @@ class AccountDetailsMapper {
     }
 
     fun mapToTopUpRequest(
-        accountNumber: String,
+        currencyCode: CurrencyCode,
         amount: String,
     ): TopUpRequest {
         return TopUpRequest(
-            accountNumber = accountNumber,
+            currencyCode = currencyCode,
             amount = amount,
         )
     }
 
     fun mapToWithdrawRequest(
-        accountNumber: String,
+        currencyCode: CurrencyCode,
         amount: String,
     ): WithdrawRequest {
         return WithdrawRequest(
-            accountNumber = accountNumber,
+            currencyCode = currencyCode,
             amount = amount,
         )
     }

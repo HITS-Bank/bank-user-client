@@ -142,7 +142,7 @@ private fun LoanDetailsScreenContent(
                         title = item.value,
                         subtitle = item.name,
                         end = ListItemEnd.Chevron(
-                            onClick = { onEvent(LoanDetailsEvent.OpenBankAccount(item.accountNumber)) },
+                            onClick = { onEvent(LoanDetailsEvent.OpenBankAccount(item.accountId)) },
                         ),
                     )
 

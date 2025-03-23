@@ -49,9 +49,11 @@ class LoanDetailsMapper {
                 name = "Текущий долг",
             ),
             LoanDetailsListItem.LoanBankAccount(
-                value = loan.bankAccountNumber,
+                accountId = loan.bankAccountId,
+                // TODO В value должен быть bankAccountNumber. На согласовании
+                value = loan.bankAccountId,
                 name = "Счет кредита",
-                accountNumber = loan.bankAccountNumber,
+                accountNumber = loan.bankAccountId,
             ),
             LoanDetailsListItem.MakePaymentButton,
         )

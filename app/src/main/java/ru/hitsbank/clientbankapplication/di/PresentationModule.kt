@@ -37,7 +37,7 @@ fun presentationModule() = module {
     viewModel<AccountDetailsViewModel> { parameters ->
         AccountDetailsViewModel(
             bankAccountEntityJson = parameters[0],
-            accountNumber = parameters[1],
+            accountId = parameters[1],
             isUserBlocked = parameters[2],
             get(), get(), get(), get(),
         )

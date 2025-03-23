@@ -55,7 +55,7 @@ class LoanDetailsViewModel(
                 navigationManager.forwardWithCallbackResult(
                     RootDestinations.AccountDetails.withArgs(
                         bankAccountEntityJson = null,
-                        accountNumber = event.accountNumber,
+                        accountId = event.accountId,
                         isUserBlocked = isUserBlocked,
                     )
                 ) {

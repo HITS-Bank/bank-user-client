@@ -28,19 +28,19 @@ object RootDestinations {
 
     object AccountDetails : Destination() {
         const val OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG = "bankAccountEntity"
-        const val OPTIONAL_ACCOUNT_NUMBER_ARG = "accountNumber"
+        const val OPTIONAL_ACCOUNT_ID_ARG = "accountId"
         const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
 
         fun withArgs(
             bankAccountEntityJson: String?,
-            accountNumber: String?,
+            accountId: String?,
             isUserBlocked: Boolean,
         ): String {
             return destinationWithArgs(
                 args = listOf(isUserBlocked),
                 optionalArgs = mapOf(
                     OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG to bankAccountEntityJson,
-                    OPTIONAL_ACCOUNT_NUMBER_ARG to accountNumber,
+                    OPTIONAL_ACCOUNT_ID_ARG to accountId,
                 )
             )
         }
@@ -51,7 +51,7 @@ object RootDestinations {
 
         override var optionalArguments = listOf(
             OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG,
-            OPTIONAL_ACCOUNT_NUMBER_ARG
+            OPTIONAL_ACCOUNT_ID_ARG
         )
     }
 
@@ -124,7 +124,7 @@ fun RootNavHost(
                     nullable = true
                     defaultValue = null
                 },
-                navArgument(RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG) {
+                navArgument(RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_ID_ARG) {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -138,7 +138,7 @@ fun RootNavHost(
                 RootDestinations.AccountDetails.OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG
             )
             val accountNumber = backStackEntry.arguments?.getString(
-                RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG
+                RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_ID_ARG
             )
             val viewModel: AccountDetailsViewModel = koinViewModel(
                 parameters = { parametersOf(bankAccountEntityJson, accountNumber, isUserBlocked) },

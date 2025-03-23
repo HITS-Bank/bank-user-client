@@ -8,9 +8,10 @@ sealed interface LoanDetailsListItem {
     ) : LoanDetailsListItem
 
     data class LoanBankAccount(
+        val accountId: String,
+        val accountNumber: String,
         val value: String,
         val name: String,
-        val accountNumber: String,
     ) : LoanDetailsListItem
 
     data object LoanInfoHeader : LoanDetailsListItem
