@@ -4,7 +4,10 @@ import ru.hitsbank.clientbankapplication.core.presentation.pagination.Pagination
 
 sealed interface AccountListEvent {
 
-    data class OnClickDetails(val accountNumber: String) : AccountListEvent
+    data class OnClickDetails(
+        val accountId: String,
+        val accountNumber: String,
+    ) : AccountListEvent
 
     data class OnPaginationEvent(val event: PaginationEvent) : AccountListEvent
 

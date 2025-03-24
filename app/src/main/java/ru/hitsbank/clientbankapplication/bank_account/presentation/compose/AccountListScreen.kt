@@ -154,7 +154,7 @@ internal fun AccountListScreenReady(
                 subtitle = item.description,
                 subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
                 end = ListItemEnd.Chevron(
-                    onClick = { onEvent.invoke(AccountListEvent.OnClickDetails(item.number)) },
+                    onClick = { onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number)) },
                 ),
             )
         }

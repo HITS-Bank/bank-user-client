@@ -9,6 +9,7 @@ data class AccountDetailsScreenModel(
     override val data: List<OperationHistoryItem>,
     override val pageNumber: Int,
     override val pageSize: Int,
+    val id: String,
     val balance: String,
     val number: String,
     val isUserBlocked: Boolean,

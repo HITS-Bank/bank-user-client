@@ -15,6 +15,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.event.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountListMapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
 import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
@@ -22,7 +23,6 @@ import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
 import ru.hitsbank.clientbankapplication.core.navigation.base.back
 import ru.hitsbank.clientbankapplication.core.navigation.base.backWithJsonResult
-import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
 import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
@@ -63,7 +63,7 @@ class AccountListViewModel(
             is AccountListEvent.OnPaginationEvent -> onPaginationEvent(event.event)
             is AccountListEvent.OnClickDetails -> {
                 if (!isSelectionMode) {
-                    onClickDetails(event.accountNumber)
+                    onClickDetails(event.accountId)
                 } else {
                     onSelectedAccount(event.accountNumber)
                 }
@@ -96,7 +96,7 @@ class AccountListViewModel(
     }
 
     private fun onCreateAccount() = viewModelScope.launch {
-        bankAccountInteractor.createAccount()
+        bankAccountInteractor.createAccount(currencyCode = CurrencyCode.RUB)
             .collectLatest { state ->
                 when (state) {
                     State.Loading -> {
@@ -123,7 +123,7 @@ class AccountListViewModel(
                         navigationManager.forwardWithCallbackResult(
                             destination = RootDestinations.AccountDetails.withArgs(
                                 bankAccountEntityJson = gson.toJson(state.data),
-                                accountNumber = null,
+                                accountId = null,
                                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
                             ),
                             callback = {
@@ -135,11 +135,11 @@ class AccountListViewModel(
             }
     }
 
-    private fun onClickDetails(number: String) = viewModelScope.launch {
+    private fun onClickDetails(id: String) = viewModelScope.launch {
         navigationManager.forwardWithCallbackResult(
             destination = RootDestinations.AccountDetails.withArgs(
                 bankAccountEntityJson = null,
-                accountNumber = number,
+                accountId = id,
                 isUserBlocked = _state.getIfSuccess()?.isUserBlocked ?: false,
             ),
             callback = {
@@ -148,6 +148,7 @@ class AccountListViewModel(
         )
     }
 
+    // TODO Вероятно, нужно также передавать id
     private fun onSelectedAccount(number: String) {
         navigationManager.backWithJsonResult(gson, BankAccountNumberEntity(number))
     }
