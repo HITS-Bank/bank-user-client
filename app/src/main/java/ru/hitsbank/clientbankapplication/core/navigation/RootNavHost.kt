@@ -57,19 +57,19 @@ object RootDestinations {
 
     object LoanDetails : Destination() {
         const val OPTIONAL_LOAN_ENTITY_JSON_ARG = "loanEntity"
-        const val OPTIONAL_LOAN_NUMBER_ARG = "loanId"
+        const val OPTIONAL_LOAN_ID_ARG = "loanId"
         const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
 
         fun withArgs(
             loanEntityJson: String?,
-            loanNumber: String?,
+            loanId: String?,
             isUserBlocked: Boolean,
         ): String {
             return destinationWithArgs(
                 args = listOf(isUserBlocked),
                 optionalArgs = mapOf(
                     OPTIONAL_LOAN_ENTITY_JSON_ARG to loanEntityJson,
-                    OPTIONAL_LOAN_NUMBER_ARG to loanNumber,
+                    OPTIONAL_LOAN_ID_ARG to loanId,
                 )
             )
         }
@@ -80,7 +80,7 @@ object RootDestinations {
 
         override var optionalArguments = listOf(
             OPTIONAL_LOAN_ENTITY_JSON_ARG,
-            OPTIONAL_LOAN_NUMBER_ARG
+            OPTIONAL_LOAN_ID_ARG
         )
     }
 
@@ -175,7 +175,7 @@ fun RootNavHost(
                     nullable = true
                     defaultValue = null
                 },
-                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG) {
+                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_ID_ARG) {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -188,12 +188,12 @@ fun RootNavHost(
             val loanEntityJson = it.arguments?.getString(
                 RootDestinations.LoanDetails.OPTIONAL_LOAN_ENTITY_JSON_ARG
             )
-            val loanNumber = it.arguments?.getString(
-                RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG
+            val loanId = it.arguments?.getString(
+                RootDestinations.LoanDetails.OPTIONAL_LOAN_ID_ARG
             )
             if (isUserBlocked != null) {
                 val viewModel: LoanDetailsViewModel = koinViewModel(
-                    parameters = { parametersOf(loanNumber, loanEntityJson, isUserBlocked) }
+                    parameters = { parametersOf(loanId, loanEntityJson, isUserBlocked) }
                 )
 
                 LoanDetailsScreen(viewModel)

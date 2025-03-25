@@ -50,8 +50,7 @@ class LoanDetailsMapper {
             ),
             LoanDetailsListItem.LoanBankAccount(
                 accountId = loan.bankAccountId,
-                // TODO В value должен быть bankAccountNumber. На согласовании
-                value = loan.bankAccountId,
+                value = loan.bankAccountNumber,
                 name = "Счет кредита",
                 accountNumber = loan.bankAccountId,
             ),

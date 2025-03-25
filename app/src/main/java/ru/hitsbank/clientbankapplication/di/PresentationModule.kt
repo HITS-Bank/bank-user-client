@@ -44,7 +44,7 @@ fun presentationModule() = module {
     }
     viewModel<LoanDetailsViewModel> { parameters ->
         LoanDetailsViewModel(
-            loanNumber = parameters[0],
+            loanId = parameters[0],
             loanEntityJson = parameters[1],
             isUserBlocked = parameters[2],
             get(), get(), get(), get(),

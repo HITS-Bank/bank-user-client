@@ -47,7 +47,7 @@ class LoanListViewModel(
 
             is LoanListEvent.OpenLoanDetails -> navigationManager.forwardWithCallbackResult(
                 RootDestinations.LoanDetails.withArgs(
-                    loanNumber = event.loanNumber,
+                    loanId = event.loanId,
                     loanEntityJson = null,
                     isUserBlocked = state.value.getIfSuccess()?.isUserBlocked ?: true
                 )

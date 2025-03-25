@@ -28,7 +28,7 @@ import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsStat
 import ru.hitsbank.clientbankapplication.loan.presentation.model.getAmount
 
 class LoanDetailsViewModel(
-    private val loanNumber: String?,
+    private val loanId: String?,
     private val loanEntityJson: String?,
     private val isUserBlocked: Boolean,
     private val gson: Gson,
@@ -43,7 +43,7 @@ class LoanDetailsViewModel(
     private val _effects = MutableSharedFlow<LoanDetailsEffect>()
     val effects = _effects.asSharedFlow()
 
-    private lateinit var actualLoanNumber: String
+    private lateinit var actualLoanId: String
 
     init {
         loadLoanDetails()
@@ -59,7 +59,7 @@ class LoanDetailsViewModel(
                         isUserBlocked = isUserBlocked,
                     )
                 ) {
-                    forceReloadLoanDetails(actualLoanNumber)
+                    forceReloadLoanDetails(actualLoanId)
                 }
             }
 
@@ -87,7 +87,7 @@ class LoanDetailsViewModel(
                 if (amount != null) {
                     viewModelScope.launch {
                         val makeLoanPaymentRequest =
-                            loanInteractor.makeLoanPayment(actualLoanNumber, amount)
+                            loanInteractor.makeLoanPayment(actualLoanId, amount)
                         makeLoanPaymentRequest.collectLatest { state ->
                             when (state) {
                                 State.Loading -> _state.updateIfSuccess { it.copy(isPerformingAction = true) }
@@ -123,18 +123,18 @@ class LoanDetailsViewModel(
     private fun loadLoanDetails() {
         if (loanEntityJson != null) {
             val loanEntity = gson.fromJson(loanEntityJson, LoanEntity::class.java)
-            actualLoanNumber = loanEntity.number
+            actualLoanId = loanEntity.id
             _state.update { BankUiState.Ready(LoanDetailsState.default(mapper.map(loanEntity), isUserBlocked)) }
-        } else if (loanNumber != null) {
-            actualLoanNumber = loanNumber
-            forceReloadLoanDetails(loanNumber)
+        } else if (loanId != null) {
+            actualLoanId = loanId
+            forceReloadLoanDetails(loanId)
         } else {
             _state.update { BankUiState.Error() }
         }
     }
 
-    private fun forceReloadLoanDetails(loanNumber: String) {
-        val loanEntityRequest = loanInteractor.getLoanByNumber(loanNumber)
+    private fun forceReloadLoanDetails(loanId: String) {
+        val loanEntityRequest = loanInteractor.getLoanById(loanId)
         viewModelScope.launch {
             loanEntityRequest.collectLatest { state ->
                 _state.update {

@@ -10,6 +10,7 @@ data class LoanEntity(
     val amount: String,
     val termInMonths: Int,
     val bankAccountId: String,
+    val bankAccountNumber: String,
     val paymentAmount: String,
     val paymentSum: String,
     val currencyCode: CurrencyCode,
