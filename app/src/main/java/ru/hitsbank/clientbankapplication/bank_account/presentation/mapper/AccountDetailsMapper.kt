@@ -65,20 +65,22 @@ class AccountDetailsMapper {
                     OperationTypeEntity.WITHDRAWAL -> "Вывод"
                     OperationTypeEntity.TOP_UP -> "Пополнение"
                     OperationTypeEntity.LOAN_PAYMENT -> "Выплата по кредиту"
+                    OperationTypeEntity.TRANSFER_INCOMING -> "Входящий перевод"
+                    OperationTypeEntity.TRANSFER_OUTGOING -> "Исходящий перевод"
                 },
                 description = operation.executedAt.utcDateTimeToReadableFormat(),
                 operationType = OperationHistoryItem.OperationType.IN,
-                amountText = if (operation.type == OperationTypeEntity.TOP_UP) {
-                    "+${operation.amount.formatToSum(true)}"
+                amountText = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
+                    "+${operation.amount.formatToSum(operation.currencyCode, true)}"
                 } else {
-                    "-${operation.amount.formatToSum(true)}"
+                    "-${operation.amount.formatToSum(operation.currencyCode, true)}"
                 },
-                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
                     R.color.operationInContainer
                 } else {
                     R.color.operationOutContainer
                 },
-                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
                     R.color.operationInContent
                 } else {
                     R.color.operationOutContent
@@ -133,7 +135,7 @@ class AccountDetailsMapper {
     private fun getBalanceOrStatusInfo(bankAccountEntity: BankAccountEntity): AccountDetailsItem {
         return AccountDetailsItem(
             title = if (bankAccountEntity.status != BankAccountStatusEntity.CLOSED) {
-                bankAccountEntity.balance.formatToSum()
+                bankAccountEntity.balance.formatToSum(bankAccountEntity.currencyCode)
             } else {
                 "Закрыт"
             },

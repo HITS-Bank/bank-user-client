@@ -40,8 +40,11 @@ class BankAccountMapper {
                     OperationTypeResponse.WITHDRAW -> OperationTypeEntity.WITHDRAWAL
                     OperationTypeResponse.TOP_UP -> OperationTypeEntity.TOP_UP
                     OperationTypeResponse.LOAN_PAYMENT -> OperationTypeEntity.LOAN_PAYMENT
+                    OperationTypeResponse.TRANSFER_INCOMING -> OperationTypeEntity.TRANSFER_INCOMING
+                    OperationTypeResponse.TRANSFER_OUTGOING -> OperationTypeEntity.TRANSFER_OUTGOING
                 },
                 amount = operation.amount,
+                currencyCode = operation.currencyCode,
             )
         }
     }
