@@ -15,17 +15,24 @@ class AuthInteractor(
     private val profileRepository: IProfileRepository,
 ) {
 
-    fun login(
-        channel: String,
-        request: LoginRequestEntity,
-    ): Flow<State<Completable>> = flow {
-        emit(State.Loading)
-        emit(authRepository.login(channel, request).toState())
+//    fun login(
+//        channel: String,
+//        request: LoginRequestEntity,
+//    ): Flow<State<Completable>> = flow {
+//        emit(State.Loading)
+//        emit(authRepository.login(channel, request).toState())
+//
+//        when (val userProfile = profileRepository.getSelfProfile()) {
+//            is Result.Error -> emit(userProfile.toState())
+//            is Result.Success -> authRepository.saveIsUserBlocked(userProfile.data.isBanned)
+//        }
+//    }
 
-        when (val userProfile = profileRepository.getSelfProfile()) {
-            is Result.Error -> emit(userProfile.toState())
-            is Result.Success -> authRepository.saveIsUserBlocked(userProfile.data.isBanned)
-        }
+    fun exchangeAuthCodeForToken(code: String): Flow<State<Completable>> = flow {
+        // TODO
+        emit(State.Loading)
+        emit(authRepository.exchangeAuthCodeForToken(code).toState())
+        // TODO check if is banned
     }
 
     fun getIsUserBlocked(): Flow<State<Boolean>> = flow {

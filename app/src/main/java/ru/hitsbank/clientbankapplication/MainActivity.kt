@@ -1,7 +1,9 @@
 package ru.hitsbank.clientbankapplication
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,8 +19,12 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
+import ru.hitsbank.clientbankapplication.core.navigation.base.forward
+import ru.hitsbank.clientbankapplication.core.navigation.base.navigate
+import ru.hitsbank.clientbankapplication.core.navigation.base.replace
 import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -50,6 +56,17 @@ class MainActivity : ComponentActivity() {
                         snackbarHost = { SnackbarHost(snackbarHostState) }
                     ) {
                         RootNavHost(navController)
+
+                        LaunchedEffect(Unit) {
+                            intent?.data?.let { uri ->
+                                Log.d("MainActivity", "got intent $uri")
+                                if (uri.scheme == "hitsbankapp" && uri.host == "authorized") {
+                                    val code = uri.getQueryParameter("code")
+                                    Log.d("MainActivity", "got code $code")
+                                    navigationManager.replace(RootDestinations.Auth.withArgs(code))
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -57,7 +74,8 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-val LocalSnackbarController = compositionLocalOf<SnackbarController> { error("SnackbarController not provided") }
+val LocalSnackbarController =
+    compositionLocalOf<SnackbarController> { error("SnackbarController not provided") }
 
 class SnackbarController(
     private val snackbarHostState: SnackbarHostState,

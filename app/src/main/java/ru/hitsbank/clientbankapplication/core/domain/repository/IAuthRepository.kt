@@ -6,10 +6,7 @@ import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 
 interface IAuthRepository {
 
-    suspend fun login(
-        channel: String,
-        request: LoginRequestEntity,
-    ): Result<Completable>
+    suspend fun exchangeAuthCodeForToken(code: String): Result<Completable>
 
     suspend fun refresh(): Result<Completable>
 

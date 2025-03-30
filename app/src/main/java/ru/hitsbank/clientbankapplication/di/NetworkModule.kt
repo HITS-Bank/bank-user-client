@@ -11,6 +11,7 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
+import ru.hitsbank.clientbankapplication.core.constants.Constants
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
 import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.interceptor.AuthInterceptor
@@ -27,7 +28,7 @@ private const val NO_AUTH_OKHTTP = "NO_AUTH_OKHTTP"
 private const val AUTH_RETROFIT = "AUTH_RETROFIT"
 private const val NO_AUTH_RETROFIT = "NO_AUTH_RETROFIT"
 
-private const val BASE_URL = "http://192.168.0.101:9446/"
+private const val BASE_URL = "http://10.0.2.2:9446/"
 
 private fun loggingInterceptor() =
     HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
@@ -88,7 +89,7 @@ fun networkModule() = module {
     }
 
     single(named(NO_AUTH_RETROFIT)) {
-        retrofit(get(named(NO_AUTH_OKHTTP)), BASE_URL, get())
+        retrofit(get(named(NO_AUTH_OKHTTP)), Constants.AUTH_BASE_URL, get())
     }
     single(named(AUTH_RETROFIT)) {
         retrofit(get(named(AUTH_OKHTTP)), BASE_URL, get())

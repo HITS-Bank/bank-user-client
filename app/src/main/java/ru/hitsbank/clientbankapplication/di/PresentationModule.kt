@@ -26,7 +26,12 @@ fun presentationModule() = module {
     singleOf(::LoanDetailsMapper)
     singleOf(::TariffsScreenModelMapper)
 
-    viewModelOf(::LoginViewModel)
+    viewModel { parameters ->
+        LoginViewModel(
+            authCode = parameters.getOrNull(),
+            get(), get(), get(),
+        )
+    }
     viewModel { parameters ->
         AccountListViewModel(
             isSelectionMode = parameters.get(),

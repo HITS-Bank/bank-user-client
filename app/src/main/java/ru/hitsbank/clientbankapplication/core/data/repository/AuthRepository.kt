@@ -1,6 +1,8 @@
 package ru.hitsbank.clientbankapplication.core.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import ru.hitsbank.clientbankapplication.core.constants.Constants.AUTH_CLIENT_ID
+import ru.hitsbank.clientbankapplication.core.constants.Constants.AUTH_REDIRECT_URI
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
 import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
@@ -14,18 +16,23 @@ import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 
+private const val AUTH_CODE_GRANT_TYPE = "authorization_code"
+private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
+
 class AuthRepository(
     private val authApi: AuthApi,
     private val mapper: AuthMapper,
     private val sessionManager: SessionManager,
 ) : IAuthRepository {
 
-    override suspend fun login(
-        channel: String,
-        request: LoginRequestEntity,
-    ): Result<Completable> {
+    override suspend fun exchangeAuthCodeForToken(code: String): Result<Completable> {
         return apiCall(Dispatchers.IO) {
-            authApi.login(channel, mapper.map(request))
+            authApi.exchangeAuthCodeForToken(
+                clientId = AUTH_CLIENT_ID,
+                grantType = AUTH_CODE_GRANT_TYPE,
+                code = code,
+                redirectUri = AUTH_REDIRECT_URI,
+            )
                 .toResult()
                 .also { result ->
                     if (result is Result.Success) {
@@ -37,16 +44,14 @@ class AuthRepository(
     }
 
     override suspend fun refresh(): Result<Completable> {
-        val accessToken = sessionManager.fetchToken(TokenType.ACCESS)
         val refreshToken = sessionManager.fetchToken(TokenType.REFRESH)
-        if (accessToken == null || refreshToken == null) {
-            return Result.Error(Exception("could not retrieve tokens"))
-        }
+            ?: return Result.Error(Exception("could not retrieve refresh token"))
 
         return apiCall(Dispatchers.IO) {
-            authApi.refresh(
-                expiredToken = "Bearer $accessToken",
-                request = RefreshRequest(refreshToken),
+            authApi.refreshToken(
+                clientId = AUTH_CLIENT_ID,
+                grantType = REFRESH_TOKEN_GRANT_TYPE,
+                refreshToken = refreshToken,
             )
                 .toResult()
                 .also { result ->

@@ -1,7 +1,6 @@
 package ru.hitsbank.clientbankapplication.core.data.mapper
 
 import ru.hitsbank.clientbankapplication.core.data.model.LoginRequest
-import ru.hitsbank.clientbankapplication.core.data.model.TokenResponse
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 import ru.hitsbank.clientbankapplication.core.domain.model.TokenResponseEntity
 
@@ -14,12 +13,12 @@ class AuthMapper {
         )
     }
 
-    fun map(response: TokenResponse): TokenResponseEntity {
-        return TokenResponseEntity(
-            accessToken = response.accessToken,
-            accessTokenExpiresAt = response.accessTokenExpiresAt,
-            refreshToken = response.refreshToken,
-            refreshTokenExpiresAt = response.refreshTokenExpiresAt,
-        )
-    }
+//    fun map(response: TokenResponse): TokenResponseEntity {
+//        return TokenResponseEntity(
+//            accessToken = response.accessToken,
+//            accessTokenExpiresAt = response.accessTokenExpiresAt,
+//            refreshToken = response.refreshToken,
+//            refreshTokenExpiresAt = response.refreshTokenExpiresAt,
+//        )
+//    }
 }

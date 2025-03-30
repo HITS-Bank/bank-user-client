@@ -19,10 +19,26 @@ import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsSc
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
+import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
 
 object RootDestinations {
 
-    object Auth : Destination()
+    object Auth : Destination() {
+        const val OPTIONAL_AUTH_CODE_ARG = "authCode"
+
+        fun withArgs(authCode: String?): String {
+            return destinationWithArgs(
+                args = emptyList(),
+                optionalArgs = mapOf(
+                    OPTIONAL_AUTH_CODE_ARG to authCode,
+                )
+            )
+        }
+
+        override var optionalArguments = listOf(
+            OPTIONAL_AUTH_CODE_ARG,
+        )
+    }
 
     object BottomBarRoot : Destination()
 
@@ -104,11 +120,26 @@ fun RootNavHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = RootDestinations.Auth.destination,
+        startDestination = RootDestinations.Auth.route,
         modifier = modifier,
     ) {
-        composable(route = RootDestinations.Auth.route) {
-            LoginScreenWrapper()
+        composable(
+            route = RootDestinations.Auth.route,
+            arguments = listOf(
+                navArgument(RootDestinations.Auth.OPTIONAL_AUTH_CODE_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+            )
+        ) { backStackEntry ->
+            val authCode = backStackEntry.arguments?.getString(
+                RootDestinations.Auth.OPTIONAL_AUTH_CODE_ARG
+            )
+            val viewModel: LoginViewModel = koinViewModel(
+                parameters = { parametersOf(authCode) },
+            )
+            LoginScreenWrapper(viewModel)
         }
         composable(route = RootDestinations.BottomBarRoot.route) {
             BottomBarNavHost()

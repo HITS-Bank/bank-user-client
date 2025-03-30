@@ -15,9 +15,11 @@ class SessionManager(context: Context) {
     private companion object {
         const val TOKEN_PREFERENCES_KEY = "token_preferences"
         const val ACCESS_TOKEN = "access_token"
-        const val ACCESS_TOKEN_EXPIRES_AT = "access_token_expires_at"
+        const val ACCESS_TOKEN_ISSUED_AT = "access_token_issued_at"
+        const val ACCESS_TOKEN_EXPIRES_IN = "access_token_expires_in"
         const val REFRESH_TOKEN = "refresh_token"
-        const val REFRESH_TOKEN_EXPIRES_AT = "refresh_token_expires_at"
+        const val REFRESH_TOKEN_ISSUED_AT = "refresh_token_issued_at"
+        const val REFRESH_TOKEN_EXPIRES_IN = "refresh_token_expires_in"
         const val IS_USER_BLOCKED = "is_user_blocked"
     }
 
@@ -41,24 +43,37 @@ class SessionManager(context: Context) {
     }
 
     fun saveTokens(tokenResponse: TokenResponse) {
+        val currentTimeMillis = System.currentTimeMillis()
         sharedPreferences.edit()
             .putString(ACCESS_TOKEN, tokenResponse.accessToken)
-            .putString(ACCESS_TOKEN_EXPIRES_AT, tokenResponse.accessTokenExpiresAt)
+            .putLong(ACCESS_TOKEN_ISSUED_AT, currentTimeMillis)
+            .putLong(ACCESS_TOKEN_EXPIRES_IN, tokenResponse.accessTokenExpiresIn)
             .putString(REFRESH_TOKEN, tokenResponse.refreshToken)
-            .putString(REFRESH_TOKEN_EXPIRES_AT, tokenResponse.refreshTokenExpiresAt)
+            .putLong(ACCESS_TOKEN_ISSUED_AT, currentTimeMillis)
+            .putLong(REFRESH_TOKEN_EXPIRES_IN, tokenResponse.refreshTokenExpiresIn)
             .apply()
     }
 
     fun isTokenExpired(tokenType: TokenType): Boolean {
         return when (tokenType) {
             TokenType.ACCESS -> {
-                val expiresAt = sharedPreferences.getString(ACCESS_TOKEN_EXPIRES_AT, "").parseUtcDateTime()
-                expiresAt?.let { it < LocalDateTime.now() } ?: true
+                val issuedAt = sharedPreferences.getLong(ACCESS_TOKEN_ISSUED_AT, 0)
+                val expiresIn = sharedPreferences.getLong(ACCESS_TOKEN_EXPIRES_IN, 0)
+                if (issuedAt == 0L) return true
+
+                val currentTimeMillis = System.currentTimeMillis()
+                val expirationTimeMillis = issuedAt + expiresIn * 1000
+                currentTimeMillis >= expirationTimeMillis
             }
 
             TokenType.REFRESH -> {
-                val expiresAt = sharedPreferences.getString(REFRESH_TOKEN_EXPIRES_AT, "").parseUtcDateTime()
-                expiresAt?.let { it < LocalDateTime.now() } ?: true
+                val issuedAt = sharedPreferences.getLong(REFRESH_TOKEN_ISSUED_AT, 0)
+                val expiresIn = sharedPreferences.getLong(REFRESH_TOKEN_EXPIRES_IN, 0)
+                if (issuedAt == 0L) return true
+
+                val currentTimeMillis = System.currentTimeMillis()
+                val expirationTimeMillis = issuedAt + expiresIn * 1000
+                currentTimeMillis >= expirationTimeMillis
             }
         }
     }
