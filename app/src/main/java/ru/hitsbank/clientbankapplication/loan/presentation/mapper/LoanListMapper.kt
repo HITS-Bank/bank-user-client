@@ -8,8 +8,9 @@ class LoanListMapper {
 
     fun map(loan: LoanEntity): LoanItem {
         return LoanItem(
+            id = loan.id,
             number = loan.number,
-            description = "Долг: ${loan.currentDebt.formatToSum()}",
+            description = "Долг: ${loan.currentDebt.formatToSum(loan.currencyCode)}",
         )
     }
 }

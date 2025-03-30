@@ -4,6 +4,7 @@ import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 
 class AccountListMapper {
@@ -13,7 +14,11 @@ class AccountListMapper {
             AccountItem(
                 id = accountEntity.id,
                 number = accountEntity.number,
-                description = getBankAccountDescription(accountEntity.balance, accountEntity.status),
+                description = getBankAccountDescription(
+                    accountEntity.balance,
+                    accountEntity.currencyCode,
+                    accountEntity.status,
+                ),
                 descriptionColorId = getBankAccountColorId(accountEntity.status),
             )
         }
@@ -21,6 +26,7 @@ class AccountListMapper {
 
     private fun getBankAccountDescription(
         balance: String,
+        currencyCode: CurrencyCode,
         statusEntity: BankAccountStatusEntity,
     ): String {
         return when (statusEntity) {
@@ -33,7 +39,7 @@ class AccountListMapper {
             }
 
             else -> {
-                "Баланс: ${balance.formatToSum()}"
+                "Баланс: ${balance.formatToSum(currencyCode)}"
             }
         }
     }

@@ -6,6 +6,7 @@ data class LoanCreateState(
     val tariffId: String?,
     val tariffName: String?,
     val accountNumber: String?,
+    val accountId: String?,
     val isPerformingAction: Boolean,
 ) {
     val canCreateLoan: Boolean
@@ -26,6 +27,7 @@ data class LoanCreateState(
             tariffId = null,
             tariffName = null,
             accountNumber = null,
+            accountId = null,
             isPerformingAction = false,
         )
     }

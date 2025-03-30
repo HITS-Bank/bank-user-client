@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.hitsbank.clientbankapplication.bank_account.domain.interactor.BankAccountInteractor
-import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountNumberEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountShortEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountListMapper
@@ -65,7 +65,7 @@ class AccountListViewModel(
                 if (!isSelectionMode) {
                     onClickDetails(event.accountId)
                 } else {
-                    onSelectedAccount(event.accountNumber)
+                    onSelectedAccount(event.accountNumber, event.accountId)
                 }
             }
             AccountListEvent.OnOpenCreateAccountDialog -> onOpenCreateAccountDialog()
@@ -148,9 +148,8 @@ class AccountListViewModel(
         )
     }
 
-    // TODO Вероятно, нужно также передавать id
-    private fun onSelectedAccount(number: String) {
-        navigationManager.backWithJsonResult(gson, BankAccountNumberEntity(number))
+    private fun onSelectedAccount(number: String, id: String) {
+        navigationManager.backWithJsonResult(gson, BankAccountShortEntity(id, number))
     }
 
     private fun sendEffect(effect: AccountListEffect) {

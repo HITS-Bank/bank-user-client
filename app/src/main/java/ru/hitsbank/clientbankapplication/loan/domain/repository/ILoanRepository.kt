@@ -17,8 +17,8 @@ interface ILoanRepository {
         query: String? = null,
     ): Result<List<LoanTariffEntity>>
 
-    suspend fun getLoanByNumber(
-        number: String,
+    suspend fun getLoanById(
+        loanId: String,
     ): Result<LoanEntity>
 
     suspend fun getLoans(
@@ -30,7 +30,7 @@ interface ILoanRepository {
     ): Result<LoanEntity>
 
     suspend fun makeLoanPayment(
-        loanNumber: String,
+        loanId: String,
         amount: String,
     ): Result<LoanEntity>
 }
