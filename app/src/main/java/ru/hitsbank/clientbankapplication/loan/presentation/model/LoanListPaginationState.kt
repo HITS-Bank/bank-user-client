@@ -21,7 +21,7 @@ data class LoanListPaginationState(
     }
 
     override fun resetPagination(): PaginationStateHolder<LoanItem> {
-        return copy(data = emptyList(), pageNumber = 0)
+        return copy(data = emptyList(), pageNumber = 1)
     }
 
     companion object {

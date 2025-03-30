@@ -1,6 +1,5 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -11,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountNumberEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountShortEntity
 import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
@@ -20,7 +19,6 @@ import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithJsonRes
 import ru.hitsbank.clientbankapplication.core.navigation.base.replace
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanCreateEntity
-import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEffect
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEvent
@@ -75,13 +73,17 @@ class LoanCreateViewModel(
 
             LoanCreateEvent.SelectAccount -> {
                 if (state.value.isPerformingAction) return
-                navigationManager.forwardWithJsonResult<BankAccountNumberEntity>(
+                navigationManager.forwardWithJsonResult<BankAccountShortEntity>(
                     gson,
                     RootDestinations.AccountSelection.destination
                 ) { account ->
                     if (account != null) {
-                        // TODO Вероятно, нужно также передавать id
-                        _state.update { state -> state.copy(accountNumber = account.number) }
+                        _state.update { state ->
+                            state.copy(
+                                accountNumber = account.number,
+                                accountId = account.id,
+                            )
+                        }
                     }
                 }
             }
@@ -91,7 +93,8 @@ class LoanCreateViewModel(
                 val termInMonths = state.value.termInMonths.toIntOrNull()
                 val tariffId = state.value.tariffId
                 val accountNumber = state.value.accountNumber
-                if (termInMonths == null || tariffId == null || accountNumber == null) {
+                val accountId = state.value.accountId
+                if (termInMonths == null || tariffId == null || accountNumber == null || accountId == null) {
                     return
                 }
 
@@ -101,6 +104,7 @@ class LoanCreateViewModel(
                         amount = amount,
                         termInMonths = termInMonths,
                         bankAccountNumber = accountNumber,
+                        bankAccountId = accountId,
                     )
                     loanInteractor.createLoan(createRequest)
                         .collectLatest { state ->
@@ -116,14 +120,10 @@ class LoanCreateViewModel(
 
                                 is State.Success -> {
                                     _state.update { oldState -> oldState.copy(isPerformingAction = false) }
-                                    val json = gson.toJson(state.data)
-                                    Log.e("AAA", json)
-                                    val deserializedData = gson.fromJson(json, LoanEntity::class.java)
-                                    Log.e("AAA", deserializedData.toString())
                                     navigationManager.replace(
                                         RootDestinations.LoanDetails.withArgs(
                                             loanEntityJson = gson.toJson(state.data),
-                                            loanNumber = null,
+                                            loanId = null,
                                             isUserBlocked = isUserBlocked,
                                         )
                                     )

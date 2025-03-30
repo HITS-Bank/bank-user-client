@@ -1,16 +1,22 @@
 package ru.hitsbank.clientbankapplication.core.presentation.common
 
+import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-const val RUB_SYMBOL = "₽"
+private fun CurrencyCode.toSymbol(): Char {
+    return when (this) {
+        CurrencyCode.RUB -> '₽'
+        CurrencyCode.KZT -> '₸'
+        CurrencyCode.CNY -> '¥'
+    }
+}
 
 // TODO обрезать копейки если они .00
-fun String?.formatToSum(isWithoutSpacers: Boolean = false): String {
+fun String?.formatToSum(currencyCode: CurrencyCode, isWithoutSpacers: Boolean = false): String {
     if (this == null) return ""
 
     val integralPart = this.substringBefore(".")
@@ -20,7 +26,7 @@ fun String?.formatToSum(isWithoutSpacers: Boolean = false): String {
     }
 
     val digitsOnly = integralPart.replace("\\D".toRegex(), "")
-    if (digitsOnly.isEmpty()) return "0 $RUB_SYMBOL"
+    if (digitsOnly.isEmpty()) return "0 ${currencyCode.toSymbol()}"
 
     val formattedAmount = StringBuilder()
     var count = 0
@@ -34,9 +40,9 @@ fun String?.formatToSum(isWithoutSpacers: Boolean = false): String {
 
     val mainPart = formattedAmount.reverse().toString().also { if (isWithoutSpacers) this.replace(" ", "") }
     return if (fractionalPart.isNotBlank()) {
-        "$mainPart,$fractionalPart $RUB_SYMBOL"
+        "$mainPart,$fractionalPart ${currencyCode.toSymbol()}"
     } else {
-        "$mainPart $RUB_SYMBOL"
+        "$mainPart ${currencyCode.toSymbol()}"
     }
 }
 

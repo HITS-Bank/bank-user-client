@@ -27,6 +27,7 @@ class LoanMapper {
             amount = loanResponse.amount,
             termInMonths = loanResponse.termInMonths,
             bankAccountId = loanResponse.bankAccountId,
+            bankAccountNumber = loanResponse.bankAccountNumber,
             paymentAmount = loanResponse.paymentAmount,
             paymentSum = loanResponse.paymentSum,
             currencyCode = loanResponse.currencyCode,
@@ -40,6 +41,7 @@ class LoanMapper {
             tariffId = loanCreateEntity.tariffId,
             amount = loanCreateEntity.amount,
             termInMonths = loanCreateEntity.termInMonths,
+            bankAccountId = loanCreateEntity.bankAccountId,
             bankAccountNumber = loanCreateEntity.bankAccountNumber,
         )
     }

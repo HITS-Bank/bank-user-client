@@ -113,7 +113,7 @@ fun LoanListReadyContent(
                     title = item.number,
                     subtitle = item.description,
                     end = ListItemEnd.Chevron(
-                        onClick = { onEvent.invoke(LoanListEvent.OpenLoanDetails(item.number)) },
+                        onClick = { onEvent.invoke(LoanListEvent.OpenLoanDetails(item.id)) },
                     ),
                 )
             }

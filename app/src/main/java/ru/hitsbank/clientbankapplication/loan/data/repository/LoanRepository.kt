@@ -2,7 +2,6 @@ package ru.hitsbank.clientbankapplication.loan.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.clientbankapplication.core.data.common.apiCall
-import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
 import ru.hitsbank.clientbankapplication.core.data.common.toResult
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
@@ -35,16 +34,16 @@ class LoanRepository(
                 pageSize = pageInfo.pageSize,
                 nameQuery = query,
             ).toResult { page ->
-                page.loanTariffs.map { tariff ->
+                page.map { tariff ->
                     mapper.map(tariff)
                 }
             }
         }
     }
 
-    override suspend fun getLoanByNumber(number: String): Result<LoanEntity> {
+    override suspend fun getLoanById(loanId: String): Result<LoanEntity> {
         return apiCall(Dispatchers.IO) {
-            loanApi.getLoanByNumber(number).toResult { loan ->
+            loanApi.getLoanById(loanId).toResult { loan ->
                 mapper.map(loan)
             }
         }
@@ -54,7 +53,7 @@ class LoanRepository(
         return apiCall(Dispatchers.IO) {
             loanApi.getLoansPage(pageSize = pageInfo.pageSize, pageNumber = pageInfo.pageNumber)
                 .toResult { page ->
-                    page.loans.map { loan ->
+                    page.map { loan ->
                         mapper.map(loan)
                     }
                 }
@@ -70,19 +69,14 @@ class LoanRepository(
         }
     }
 
-    override suspend fun makeLoanPayment(loanNumber: String, amount: String): Result<LoanEntity> {
-        val paymentResult = apiCall(Dispatchers.IO) {
+    override suspend fun makeLoanPayment(loanId: String, amount: String): Result<LoanEntity> {
+        return apiCall(Dispatchers.IO) {
             loanApi.makeLoanPayment(
-                LoanPaymentRequest(
-                    loanNumber = loanNumber,
-                    paymentAmount = amount
-                )
-            ).toCompletableResult()
-        }
-        return if (paymentResult is Result.Success) {
-            getLoanByNumber(loanNumber)
-        } else {
-            Result.Error()
+                loanId = loanId,
+                paymentRequest = LoanPaymentRequest(amount = amount),
+            ).toResult { loan ->
+                mapper.map(loan)
+            }
         }
     }
 }

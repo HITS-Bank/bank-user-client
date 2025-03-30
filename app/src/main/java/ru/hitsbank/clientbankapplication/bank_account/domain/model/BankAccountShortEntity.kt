@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.domain.model
 
-data class BankAccountNumberEntity(
+data class BankAccountShortEntity(
+    val id: String,
     val number: String,
 )
