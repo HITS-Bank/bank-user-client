@@ -3,20 +3,21 @@ package ru.hitsbank.clientbankapplication.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountDetailsScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanCreateViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
 import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
@@ -136,9 +137,12 @@ fun RootNavHost(
             val authCode = backStackEntry.arguments?.getString(
                 RootDestinations.Auth.OPTIONAL_AUTH_CODE_ARG
             )
-            val viewModel: LoginViewModel = koinViewModel(
-                parameters = { parametersOf(authCode) },
+            val viewModel: LoginViewModel = hiltViewModel<LoginViewModel, LoginViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(authCode = authCode)
+                }
             )
+
             LoginScreenWrapper(viewModel)
         }
         composable(route = RootDestinations.BottomBarRoot.route) {
@@ -168,14 +172,23 @@ fun RootNavHost(
             val bankAccountEntityJson = backStackEntry.arguments?.getString(
                 RootDestinations.AccountDetails.OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG
             )
-            val accountNumber = backStackEntry.arguments?.getString(
+            val accountId = backStackEntry.arguments?.getString(
                 RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_ID_ARG
             )
-            val viewModel: AccountDetailsViewModel = koinViewModel(
-                parameters = { parametersOf(bankAccountEntityJson, accountNumber, isUserBlocked) },
-            )
 
-            AccountDetailsScreenWrapper(viewModel)
+            isUserBlocked?.let {
+                val viewModel: AccountDetailsViewModel =
+                    hiltViewModel<AccountDetailsViewModel, AccountDetailsViewModel.Factory>(
+                        creationCallback = { factory ->
+                            factory.create(
+                                bankAccountEntityJson = bankAccountEntityJson,
+                                accountId = accountId,
+                                isUserBlocked = isUserBlocked,
+                            )
+                        }
+                    )
+                AccountDetailsScreenWrapper(viewModel)
+            }
         }
         composable(
             route = RootDestinations.CreateLoan.route,
@@ -189,11 +202,12 @@ fun RootNavHost(
                 RootDestinations.CreateLoan.IS_USER_BLOCKED_ARG
             )
 
-            LoanCreateScreen(
-                viewModel = koinViewModel(
-                    parameters = { parametersOf(isUserBlocked ?: true) }
-                )
+            val viewModel: LoanCreateViewModel = hiltViewModel<LoanCreateViewModel, LoanCreateViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(isUserBlocked = isUserBlocked ?: true)
+                }
             )
+            LoanCreateScreen(viewModel)
         }
         composable(
             route = RootDestinations.LoanDetails.route,
@@ -223,8 +237,14 @@ fun RootNavHost(
                 RootDestinations.LoanDetails.OPTIONAL_LOAN_ID_ARG
             )
             if (isUserBlocked != null) {
-                val viewModel: LoanDetailsViewModel = koinViewModel(
-                    parameters = { parametersOf(loanId, loanEntityJson, isUserBlocked) }
+                val viewModel: LoanDetailsViewModel = hiltViewModel<LoanDetailsViewModel, LoanDetailsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(
+                            loanId = loanId,
+                            loanEntityJson = loanEntityJson,
+                            isUserBlocked = isUserBlocked,
+                        )
+                    }
                 )
 
                 LoanDetailsScreen(viewModel)
@@ -238,11 +258,14 @@ fun RootNavHost(
             TariffsScreen()
         }
         composable(route = RootDestinations.AccountSelection.route) {
-            AccountListScreenWrapper(
-                viewModel = koinViewModel(
-                    parameters = { parametersOf(true) }
-                )
+            val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(
+                        isSelectionMode = true,
+                    )
+                }
             )
+            AccountListScreenWrapper(viewModel)
         }
     }
 }

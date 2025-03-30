@@ -2,6 +2,10 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -33,10 +37,14 @@ import ru.hitsbank.clientbankapplication.core.presentation.pagination.Pagination
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 import kotlin.math.min
 
-class AccountDetailsViewModel(
-    private val bankAccountEntityJson: String?,
-    private val accountId: String?,
-    private val isUserBlocked: Boolean,
+private const val BANK_ACCOUNT_ENTITY_JSON = "BANK_ACCOUNT_ENTITY_JSON_ARG"
+private const val ACCOUNT_ID = "ACCOUNT_ID"
+
+@HiltViewModel(assistedFactory = AccountDetailsViewModel.Factory::class)
+class AccountDetailsViewModel @AssistedInject constructor(
+    @Assisted(BANK_ACCOUNT_ENTITY_JSON) private val bankAccountEntityJson: String?,
+    @Assisted(ACCOUNT_ID) private val accountId: String?,
+    @Assisted private val isUserBlocked: Boolean,
     private val gson: Gson,
     private val accountDetailsMapper: AccountDetailsMapper,
     private val navigationManager: NavigationManager,
@@ -392,5 +400,14 @@ class AccountDetailsViewModel(
 
     private fun sendEffect(effect: AccountDetailsEffect) {
         _effects.trySend(effect)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted(BANK_ACCOUNT_ENTITY_JSON) bankAccountEntityJson: String?,
+            @Assisted(ACCOUNT_ID) accountId: String?,
+            isUserBlocked: Boolean,
+        ): AccountDetailsViewModel
     }
 }

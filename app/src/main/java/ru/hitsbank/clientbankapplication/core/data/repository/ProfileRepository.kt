@@ -10,8 +10,9 @@ import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.common.map
 import ru.hitsbank.clientbankapplication.core.domain.model.ProfileEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IProfileRepository
+import javax.inject.Inject
 
-class ProfileRepository(
+class ProfileRepository @Inject constructor(
     private val profileApi: ProfileApi,
     private val sessionManager: SessionManager,
     private val mapper: ProfileMapper,

@@ -17,8 +17,9 @@ import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.common.map
+import javax.inject.Inject
 
-class BankAccountRepository(
+class BankAccountRepository @Inject constructor(
     private val bankAccountApi: BankAccountApi,
     private val mapper: BankAccountMapper,
 ) : IBankAccountRepository {

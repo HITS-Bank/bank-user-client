@@ -8,8 +8,9 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import javax.inject.Inject
 
-class LoanMapper {
+class LoanMapper @Inject constructor() {
 
     fun map(loanTariffResponse: LoanTariffResponse): LoanTariffEntity {
         return LoanTariffEntity(

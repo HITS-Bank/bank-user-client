@@ -3,6 +3,10 @@ package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,8 +28,9 @@ import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCrea
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.create.LoanCreateState
 
-class LoanCreateViewModel(
-    private val isUserBlocked: Boolean,
+@HiltViewModel(assistedFactory = LoanCreateViewModel.Factory::class)
+class LoanCreateViewModel @AssistedInject constructor(
+    @Assisted private val isUserBlocked: Boolean,
     private val navigationManager: NavigationManager,
     private val gson: Gson,
     private val loanInteractor: LoanInteractor,
@@ -133,5 +138,12 @@ class LoanCreateViewModel(
                 }
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            isUserBlocked: Boolean,
+        ): LoanCreateViewModel
     }
 }

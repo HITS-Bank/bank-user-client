@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.core.constants.Constants.GENERAL_ERROR_TEXT
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState

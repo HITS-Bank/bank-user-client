@@ -2,6 +2,10 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -30,8 +34,9 @@ import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSucces
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 
-class AccountListViewModel(
-    private val isSelectionMode: Boolean,
+@HiltViewModel(assistedFactory = AccountListViewModel.Factory::class)
+class AccountListViewModel @AssistedInject constructor(
+    @Assisted private val isSelectionMode: Boolean,
     private val bankAccountInteractor: BankAccountInteractor,
     private val authInteractor: AuthInteractor,
     private val mapper: AccountListMapper,
@@ -154,5 +159,12 @@ class AccountListViewModel(
 
     private fun sendEffect(effect: AccountListEffect) {
         _effects.trySend(effect)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            isSelectionMode: Boolean,
+        ): AccountListViewModel
     }
 }

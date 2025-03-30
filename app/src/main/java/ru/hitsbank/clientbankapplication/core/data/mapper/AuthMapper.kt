@@ -3,8 +3,9 @@ package ru.hitsbank.clientbankapplication.core.data.mapper
 import ru.hitsbank.clientbankapplication.core.data.model.LoginRequest
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 import ru.hitsbank.clientbankapplication.core.domain.model.TokenResponseEntity
+import javax.inject.Inject
 
-class AuthMapper {
+class AuthMapper @Inject constructor() {
 
     fun map(entity: LoginRequestEntity): LoginRequest {
         return LoginRequest(

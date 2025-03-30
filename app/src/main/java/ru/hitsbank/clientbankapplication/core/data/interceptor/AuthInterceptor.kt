@@ -7,8 +7,9 @@ import ru.hitsbank.clientbankapplication.core.data.datasource.SessionManager
 import ru.hitsbank.clientbankapplication.core.data.model.TokenType
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
+import javax.inject.Inject
 
-class AuthInterceptor(
+class AuthInterceptor @Inject constructor(
     private val authRepository: IAuthRepository,
     private val sessionManager: SessionManager
 ) : Interceptor {

@@ -11,8 +11,11 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
+import javax.inject.Inject
 
-class LoanInteractor(private val loanRepository: ILoanRepository) {
+class LoanInteractor @Inject constructor(
+    private val loanRepository: ILoanRepository,
+) {
 
     fun getLoanTariffs(
         pageInfo: PageInfo,

@@ -2,6 +2,7 @@ package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.event.tariff.TariffsScreenEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.tariff.TariffModel
 import ru.hitsbank.clientbankapplication.loan.presentation.model.tariff.TariffsPaginationState
@@ -30,8 +31,10 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrde
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.TariffsScreenModelMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.model.tariff.toDomain
+import javax.inject.Inject
 
-class TariffsScreenViewModel(
+@HiltViewModel
+class TariffsScreenViewModel @Inject constructor(
     private val loanInteractor: LoanInteractor,
     private val mapper: TariffsScreenModelMapper,
     private val navigationManager: NavigationManager,

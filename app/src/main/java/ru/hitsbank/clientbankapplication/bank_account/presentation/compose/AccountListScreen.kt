@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
@@ -46,7 +45,7 @@ import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
 
 @Composable
 internal fun AccountListScreenWrapper(
-    viewModel: AccountListViewModel = koinViewModel(),
+    viewModel: AccountListViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)

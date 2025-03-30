@@ -14,8 +14,9 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
+import javax.inject.Inject
 
-class LoanRepository(
+class LoanRepository @Inject constructor(
     private val loanApi: LoanApi,
     private val mapper: LoanMapper
 ) : ILoanRepository {

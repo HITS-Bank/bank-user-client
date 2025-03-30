@@ -15,11 +15,12 @@ import ru.hitsbank.clientbankapplication.core.domain.common.Completable
 import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
+import javax.inject.Inject
 
 private const val AUTH_CODE_GRANT_TYPE = "authorization_code"
 private const val REFRESH_TOKEN_GRANT_TYPE = "refresh_token"
 
-class AuthRepository(
+class AuthRepository @Inject constructor(
     private val authApi: AuthApi,
     private val mapper: AuthMapper,
     private val sessionManager: SessionManager,

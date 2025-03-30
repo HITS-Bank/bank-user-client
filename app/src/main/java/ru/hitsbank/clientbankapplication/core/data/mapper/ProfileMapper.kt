@@ -2,8 +2,9 @@ package ru.hitsbank.clientbankapplication.core.data.mapper
 
 import ru.hitsbank.clientbankapplication.core.data.model.ProfileResponse
 import ru.hitsbank.clientbankapplication.core.domain.model.ProfileEntity
+import javax.inject.Inject
 
-class ProfileMapper {
+class ProfileMapper @Inject constructor() {
 
     fun map(response: ProfileResponse): ProfileEntity {
         with (response) {

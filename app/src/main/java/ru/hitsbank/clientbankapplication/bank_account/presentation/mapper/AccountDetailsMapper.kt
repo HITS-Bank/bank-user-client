@@ -19,8 +19,9 @@ import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import javax.inject.Inject
 
-class AccountDetailsMapper {
+class AccountDetailsMapper @Inject constructor() {
 
     fun mapToAccountDetailsScreenModel(
         isUserBlocked: Boolean,

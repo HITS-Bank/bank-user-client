@@ -15,18 +15,21 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
 import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
 import ru.hitsbank.clientbankapplication.core.navigation.base.replace
 import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val navigationManager by inject<NavigationManager>()
+    @Inject
+    lateinit var navigationManager: NavigationManager
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {

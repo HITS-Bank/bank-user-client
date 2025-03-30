@@ -3,8 +3,9 @@ package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanItem
+import javax.inject.Inject
 
-class LoanListMapper {
+class LoanListMapper @Inject constructor() {
 
     fun map(loan: LoanEntity): LoanItem {
         return LoanItem(

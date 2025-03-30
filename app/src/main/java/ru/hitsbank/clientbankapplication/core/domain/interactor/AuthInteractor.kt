@@ -9,8 +9,9 @@ import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.domain.model.LoginRequestEntity
 import ru.hitsbank.clientbankapplication.core.domain.repository.IAuthRepository
 import ru.hitsbank.clientbankapplication.core.domain.repository.IProfileRepository
+import javax.inject.Inject
 
-class AuthInteractor(
+class AuthInteractor @Inject constructor(
     private val authRepository: IAuthRepository,
     private val profileRepository: IProfileRepository,
 ) {

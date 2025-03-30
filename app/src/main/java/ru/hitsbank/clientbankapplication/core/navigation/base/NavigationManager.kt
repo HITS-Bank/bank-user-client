@@ -4,8 +4,9 @@ import androidx.navigation.NavOptionsBuilder
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import javax.inject.Inject
 
-class NavigationManager {
+class NavigationManager @Inject constructor() {
 
     private val _commands = MutableSharedFlow<NavigationCommand>(extraBufferCapacity = 1)
     val commands = _commands.asSharedFlow()

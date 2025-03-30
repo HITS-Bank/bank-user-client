@@ -1,6 +1,7 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
@@ -22,8 +23,10 @@ import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanListEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanItem
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanListPaginationState
+import javax.inject.Inject
 
-class LoanListViewModel(
+@HiltViewModel
+class LoanListViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
     private val loanInteractor: LoanInteractor,
     private val mapper: LoanListMapper,
