@@ -90,7 +90,7 @@ class LoginViewModel @AssistedInject constructor(
         _state.updateIfSuccess { it.copy(isLoading = true) }
         sendEffect(
             LoginEffect.OpenAuthPage(
-                uri = Uri.parse("${Constants.AUTH_BASE_URL}${Constants.AUTH_PAGE_PATH}")
+                uri = Uri.parse("${Constants.KEYCLOAK_BASE_URL}${Constants.AUTH_PAGE_PATH}")
                     .buildUpon()
                     .appendQueryParameter("client_id", "bank-rest-api")
                     .appendQueryParameter("response_type", "code")

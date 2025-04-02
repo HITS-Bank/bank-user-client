@@ -30,10 +30,13 @@ class AuthInteractor @Inject constructor(
 //    }
 
     fun exchangeAuthCodeForToken(code: String): Flow<State<Completable>> = flow {
-        // TODO
         emit(State.Loading)
         emit(authRepository.exchangeAuthCodeForToken(code).toState())
-        // TODO check if is banned
+
+        when (val userProfile = profileRepository.getSelfProfile()) {
+            is Result.Error -> emit(userProfile.toState())
+            is Result.Success -> authRepository.saveIsUserBlocked(userProfile.data.isBanned)
+        }
     }
 
     fun getIsUserBlocked(): Flow<State<Boolean>> = flow {

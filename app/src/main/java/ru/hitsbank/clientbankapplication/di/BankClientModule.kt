@@ -19,6 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
 import ru.hitsbank.clientbankapplication.bank_account.data.repository.BankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
+import ru.hitsbank.clientbankapplication.core.constants.Constants.KEYCLOAK_BASE_URL
 import ru.hitsbank.clientbankapplication.core.data.api.AuthApi
 import ru.hitsbank.clientbankapplication.core.data.api.ProfileApi
 import ru.hitsbank.clientbankapplication.core.data.interceptor.AuthInterceptor
@@ -107,7 +108,7 @@ abstract class BankClientModule {
             gson: Gson,
         ): Retrofit {
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(KEYCLOAK_BASE_URL)
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()

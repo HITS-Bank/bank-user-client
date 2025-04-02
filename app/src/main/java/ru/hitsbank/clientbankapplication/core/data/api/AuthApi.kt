@@ -17,7 +17,6 @@ interface AuthApi {
         @Field("grant_type") grantType: String,
         @Field("code") code: String,
         @Field("redirect_uri") redirectUri: String,
-//        @Field("scope") scope: String, // TODO протестить. если все ок, то scope = "openid"
     ): Response<TokenResponse>
 
     @FormUrlEncoded
@@ -26,6 +25,5 @@ interface AuthApi {
         @Field("client_id") clientId: String,
         @Field("grant_type") grantType: String,
         @Field("refresh_token") refreshToken: String,
-//        @Field("scope") scope: String, // TODO протестить. если все ок, то scope = "openid"
     ): Response<TokenResponse>
 }
