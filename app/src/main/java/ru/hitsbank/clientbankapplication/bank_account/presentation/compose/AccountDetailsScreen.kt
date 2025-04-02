@@ -281,6 +281,7 @@ private fun AccountDetailsScreenReady(
 
     if (model.topUpDialog.isShown) {
         TopUpDialog(
+            items = model.currencyCodeDropdownItems,
             model = model.topUpDialog,
             onEvent = onEvent,
         )
@@ -288,6 +289,7 @@ private fun AccountDetailsScreenReady(
 
     if (model.withdrawDialog.isShown) {
         WithdrawDialog(
+            items = model.currencyCodeDropdownItems,
             model = model.withdrawDialog,
             onEvent = onEvent,
         )

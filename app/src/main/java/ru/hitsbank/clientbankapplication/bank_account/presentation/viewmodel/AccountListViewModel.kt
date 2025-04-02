@@ -75,9 +75,33 @@ class AccountListViewModel @AssistedInject constructor(
             }
             AccountListEvent.OnOpenCreateAccountDialog -> onOpenCreateAccountDialog()
             AccountListEvent.OnDismissCreateAccountDialog -> onDismissCreateAccountDialog()
-            AccountListEvent.OnCreateAccount -> onCreateAccount()
+            is AccountListEvent.OnCreateAccount -> {
+                onCreateAccount(event.currencyCode)
+            }
             AccountListEvent.Back -> {
                 navigationManager.back()
+            }
+            is AccountListEvent.OnSelectAccountCurrencyCode -> {
+                _state.updateIfSuccess { state ->
+                    state.copy(
+                        createAccountDialogState = CreateAccountDialogState.Shown(
+                            currencyCode = event.currencyCode,
+                            isDropdownExpanded = false,
+                        )
+                    )
+                }
+            }
+            is AccountListEvent.OnSetAccountCreateDropdownExpanded -> {
+                val currentDialogState =
+                    _state.getIfSuccess()?.createAccountDialogState as? CreateAccountDialogState.Shown ?: return
+                _state.updateIfSuccess { state ->
+                    state.copy(
+                        createAccountDialogState = CreateAccountDialogState.Shown(
+                            currencyCode = currentDialogState.currencyCode,
+                            isDropdownExpanded = event.isExpanded,
+                        )
+                    )
+                }
             }
         }
     }
@@ -93,15 +117,15 @@ class AccountListViewModel @AssistedInject constructor(
     }
 
     private fun onOpenCreateAccountDialog() {
-        _state.updateIfSuccess { it.copy(isCreateAccountDialogShown = true) }
+        _state.updateIfSuccess { it.copy(createAccountDialogState = CreateAccountDialogState.Shown(CurrencyCode.RUB, false)) }
     }
 
     private fun onDismissCreateAccountDialog() {
-        _state.updateIfSuccess { it.copy(isCreateAccountDialogShown = false) }
+        _state.updateIfSuccess { it.copy(createAccountDialogState = CreateAccountDialogState.Hidden) }
     }
 
-    private fun onCreateAccount() = viewModelScope.launch {
-        bankAccountInteractor.createAccount(currencyCode = CurrencyCode.RUB)
+    private fun onCreateAccount(currencyCode: CurrencyCode) = viewModelScope.launch {
+        bankAccountInteractor.createAccount(currencyCode = currencyCode)
             .collectLatest { state ->
                 when (state) {
                     State.Loading -> {
@@ -109,10 +133,10 @@ class AccountListViewModel @AssistedInject constructor(
                     }
 
                     is State.Error -> {
-                        _state.updateIfSuccess {
-                            it.copy(
+                        _state.updateIfSuccess { oldState ->
+                            oldState.copy(
                                 isCreateAccountLoading = false,
-                                isCreateAccountDialogShown = false,
+                                createAccountDialogState = CreateAccountDialogState.Hidden,
                             )
                         }
                         sendEffect(AccountListEffect.OnCreateAccountError)
@@ -122,7 +146,7 @@ class AccountListViewModel @AssistedInject constructor(
                         _state.updateIfSuccess {
                             it.copy(
                                 isCreateAccountLoading = false,
-                                isCreateAccountDialogShown = false,
+                                createAccountDialogState = CreateAccountDialogState.Hidden,
                             )
                         }
                         navigationManager.forwardWithCallbackResult(
