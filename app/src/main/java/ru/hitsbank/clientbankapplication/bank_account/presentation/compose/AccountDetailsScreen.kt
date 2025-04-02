@@ -248,7 +248,7 @@ private fun AccountDetailsScreenReady(
                     padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
                     divider = Divider.None,
                     icon = ListItemIcon.SingleChar(
-                        char = '₽',
+                        char = item.currencyCodeChar,
                         backgroundColor = colorResource(id = item.leftPartBackgroundColorId),
                         charColor = colorResource(id = item.contentColorId),
                     ),

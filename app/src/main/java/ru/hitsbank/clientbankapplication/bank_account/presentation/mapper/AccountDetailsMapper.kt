@@ -16,6 +16,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.common.toSymbol
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
@@ -86,6 +87,7 @@ class AccountDetailsMapper @Inject constructor() {
                 } else {
                     R.color.operationOutContent
                 },
+                currencyCodeChar = operation.currencyCode.toSymbol(),
             )
         }
     }

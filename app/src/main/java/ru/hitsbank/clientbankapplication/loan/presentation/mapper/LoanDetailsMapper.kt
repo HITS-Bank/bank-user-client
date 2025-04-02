@@ -1,14 +1,12 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 
+import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsListItem
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class LoanDetailsMapper @Inject constructor() {
-
-    private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
 
     fun map(loan: LoanEntity): List<LoanDetailsListItem> {
         return listOf(
@@ -42,7 +40,7 @@ class LoanDetailsMapper @Inject constructor() {
                 name = "Сумма платежа"
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = dateTimeFormatter.format(loan.nextPaymentDateTime),
+                value = loan.nextPaymentDateTime.utcDateTimeToReadableFormat(),
                 name = "Время следующего платежа",
             ),
             LoanDetailsListItem.LoanDetailsProperty(

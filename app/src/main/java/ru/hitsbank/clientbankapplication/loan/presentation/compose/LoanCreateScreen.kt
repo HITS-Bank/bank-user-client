@@ -27,10 +27,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.component.Divider
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.PaginationLoadingContent
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
 import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
+import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationErrorContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.defaultTextFieldColors
 import ru.hitsbank.clientbankapplication.core.presentation.common.noRippleClickable
 import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
@@ -89,6 +95,16 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
+            when (val loanRating = uiState.loanRatingState) {
+                is BankUiState.Error -> PaginationErrorContent { onEvent(LoanCreateEvent.ReloadLoanRating) }
+                BankUiState.Loading -> PaginationLoadingContent()
+                is BankUiState.Ready -> ListItem(
+                    icon = ListItemIcon.None,
+                    title = loanRating.model.toString(),
+                    subtitle = "Кредитный рейтинг",
+                    divider = Divider.None,
+                )
+            }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth(),

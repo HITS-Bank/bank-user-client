@@ -82,6 +82,7 @@ data class OperationHistoryItem(
     val title: String,
     val description: String,
     val operationType: OperationType,
+    val currencyCodeChar: Char,
     val amountText: String,
     val leftPartBackgroundColorId: Int,
     val contentColorId: Int,

@@ -8,8 +8,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanCreateRequest
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanPaymentRequest
+import ru.hitsbank.clientbankapplication.loan.data.model.LoanPaymentResponse
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanResponse
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanTariffResponse
+import ru.hitsbank.clientbankapplication.loan.data.model.LoanUserRatingResponse
 
 interface LoanApi {
 
@@ -39,4 +41,14 @@ interface LoanApi {
         @Path("loanId") loanId: String,
         @Body paymentRequest: LoanPaymentRequest,
     ): Response<LoanResponse>
+
+    @GET("core/loan/{loanId}/payments")
+    suspend fun getLoanPayments(
+        @Path("loanId") loanId: String,
+    ): Response<List<LoanPaymentResponse>>
+
+    @GET("core/loan/{userId}/rating")
+    suspend fun getLoanUserRating(
+        @Path("userId") userId: String,
+    ): Response<LoanUserRatingResponse>
 }
