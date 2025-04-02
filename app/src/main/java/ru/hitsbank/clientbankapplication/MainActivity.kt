@@ -14,16 +14,23 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import ru.hitsbank.bank_common.Constants.DEEPLINK_APP_SCHEME
+import ru.hitsbank.bank_common.Constants.DEEPLINK_AUTH_HOST
+import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.replace
 import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val navigationManager by inject<NavigationManager>()
+    @Inject
+    lateinit var navigationManager: NavigationManager
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,14 +57,28 @@ class MainActivity : ComponentActivity() {
                         snackbarHost = { SnackbarHost(snackbarHostState) }
                     ) {
                         RootNavHost(navController)
+
+                        LaunchedEffect(Unit) {
+                            handleDeeplink()
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun handleDeeplink() {
+        intent?.data?.let { uri ->
+            if (uri.scheme == DEEPLINK_APP_SCHEME && uri.host == DEEPLINK_AUTH_HOST) {
+                val code = uri.getQueryParameter("code")
+                navigationManager.replace(RootDestinations.Auth.withArgs(code))
+            }
+        }
+    }
 }
 
-val LocalSnackbarController = compositionLocalOf<SnackbarController> { error("SnackbarController not provided") }
+val LocalSnackbarController =
+    compositionLocalOf<SnackbarController> { error("SnackbarController not provided") }
 
 class SnackbarController(
     private val snackbarHostState: SnackbarHostState,

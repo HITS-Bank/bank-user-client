@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.model
 
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 
 data class BankAccountResponse(
     val accountId: String,

@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.domain.model
 
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import java.time.LocalDateTime
 
 data class LoanEntity(

@@ -3,6 +3,10 @@ package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,13 +14,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.back
+import ru.hitsbank.bank_common.presentation.navigation.forwardWithJsonResult
+import ru.hitsbank.bank_common.presentation.navigation.replace
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountShortEntity
-import ru.hitsbank.clientbankapplication.core.domain.common.State
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.back
-import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithJsonResult
-import ru.hitsbank.clientbankapplication.core.navigation.base.replace
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanCreateEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
@@ -24,8 +28,9 @@ import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCrea
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.create.LoanCreateState
 
-class LoanCreateViewModel(
-    private val isUserBlocked: Boolean,
+@HiltViewModel(assistedFactory = LoanCreateViewModel.Factory::class)
+class LoanCreateViewModel @AssistedInject constructor(
+    @Assisted private val isUserBlocked: Boolean,
     private val navigationManager: NavigationManager,
     private val gson: Gson,
     private val loanInteractor: LoanInteractor,
@@ -133,5 +138,12 @@ class LoanCreateViewModel(
                 }
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            isUserBlocked: Boolean,
+        ): LoanCreateViewModel
     }
 }

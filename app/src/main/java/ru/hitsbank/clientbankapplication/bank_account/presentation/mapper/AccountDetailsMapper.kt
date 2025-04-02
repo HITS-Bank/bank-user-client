@@ -14,13 +14,14 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAccountDialog
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
-import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
+import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import javax.inject.Inject
 
-class AccountDetailsMapper {
+class AccountDetailsMapper @Inject constructor() {
 
     fun mapToAccountDetailsScreenModel(
         isUserBlocked: Boolean,

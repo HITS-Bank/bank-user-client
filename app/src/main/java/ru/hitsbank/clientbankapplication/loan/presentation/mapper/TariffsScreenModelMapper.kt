@@ -2,8 +2,9 @@ package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 
 import ru.hitsbank.clientbankapplication.loan.presentation.model.tariff.TariffModel
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
+import javax.inject.Inject
 
-class TariffsScreenModelMapper {
+class TariffsScreenModelMapper @Inject constructor() {
 
     fun map(loanTariffEntity: LoanTariffEntity): TariffModel {
         return TariffModel(

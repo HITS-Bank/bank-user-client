@@ -1,6 +1,12 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import ru.hitsbank.bank_common.data.utils.apiCall
+import ru.hitsbank.bank_common.data.utils.toCompletableResult
+import ru.hitsbank.bank_common.data.utils.toResult
+import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.domain.map
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
 import ru.hitsbank.clientbankapplication.bank_account.data.mapper.BankAccountMapper
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
@@ -10,15 +16,10 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEn
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.clientbankapplication.core.data.common.apiCall
-import ru.hitsbank.clientbankapplication.core.data.common.toCompletableResult
-import ru.hitsbank.clientbankapplication.core.data.common.toResult
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.domain.common.Completable
-import ru.hitsbank.clientbankapplication.core.domain.common.Result
-import ru.hitsbank.clientbankapplication.core.domain.common.map
+import ru.hitsbank.bank_common.domain.Result
+import javax.inject.Inject
 
-class BankAccountRepository(
+class BankAccountRepository @Inject constructor(
     private val bankAccountApi: BankAccountApi,
     private val mapper: BankAccountMapper,
 ) : IBankAccountRepository {

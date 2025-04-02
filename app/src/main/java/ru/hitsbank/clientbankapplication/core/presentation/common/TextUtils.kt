@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.core.presentation.common
 
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset

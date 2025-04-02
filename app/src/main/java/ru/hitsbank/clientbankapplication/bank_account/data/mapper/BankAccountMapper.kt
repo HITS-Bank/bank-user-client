@@ -8,8 +8,9 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEn
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationTypeEntity
+import javax.inject.Inject
 
-class BankAccountMapper {
+class BankAccountMapper @Inject constructor() {
 
     fun map(response: List<BankAccountResponse>): AccountListEntity {
         return AccountListEntity(

@@ -2,6 +2,10 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -14,24 +18,25 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.event.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountListMapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
-import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.domain.common.State
-import ru.hitsbank.clientbankapplication.core.domain.common.map
-import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.domain.map
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.back
+import ru.hitsbank.bank_common.presentation.navigation.backWithJsonResult
+import ru.hitsbank.bank_common.presentation.navigation.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.back
-import ru.hitsbank.clientbankapplication.core.navigation.base.backWithJsonResult
-import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 
-class AccountListViewModel(
-    private val isSelectionMode: Boolean,
+@HiltViewModel(assistedFactory = AccountListViewModel.Factory::class)
+class AccountListViewModel @AssistedInject constructor(
+    @Assisted private val isSelectionMode: Boolean,
     private val bankAccountInteractor: BankAccountInteractor,
     private val authInteractor: AuthInteractor,
     private val mapper: AccountListMapper,
@@ -154,5 +159,12 @@ class AccountListViewModel(
 
     private fun sendEffect(effect: AccountListEffect) {
         _effects.trySend(effect)
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            isSelectionMode: Boolean,
+        ): AccountListViewModel
     }
 }

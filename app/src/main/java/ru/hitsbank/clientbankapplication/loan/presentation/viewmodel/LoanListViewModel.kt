@@ -1,17 +1,18 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ru.hitsbank.clientbankapplication.core.domain.common.State
-import ru.hitsbank.clientbankapplication.core.domain.common.map
-import ru.hitsbank.clientbankapplication.core.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.domain.map
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
 import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
@@ -22,8 +23,10 @@ import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanListEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanItem
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanListPaginationState
+import javax.inject.Inject
 
-class LoanListViewModel(
+@HiltViewModel
+class LoanListViewModel @Inject constructor(
     private val authInteractor: AuthInteractor,
     private val loanInteractor: LoanInteractor,
     private val mapper: LoanListMapper,

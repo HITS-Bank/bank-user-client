@@ -18,8 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import org.koin.androidx.compose.koinViewModel
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
@@ -39,7 +39,7 @@ import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanListPaginat
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
 
 @Composable
-fun LoanListScreen(viewModel: LoanListViewModel = koinViewModel()) {
+fun LoanListScreen(viewModel: LoanListViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)
     val onPaginationEvent = rememberCallback(viewModel::onPaginationEvent)
