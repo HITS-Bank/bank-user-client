@@ -19,7 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
-import ru.hitsbank.clientbankapplication.core.navigation.base.BottomBarDestination
+import ru.hitsbank.bank_common.presentation.navigation.BottomBarDestination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanListScreen
 
 object BottomBarDestinations {

@@ -1,14 +1,14 @@
 package ru.hitsbank.clientbankapplication.bank_account.domain.repository
 
+import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.domain.common.Completable
-import ru.hitsbank.clientbankapplication.core.domain.common.Result
+import ru.hitsbank.bank_common.domain.Result
 
 interface IBankAccountRepository {
 

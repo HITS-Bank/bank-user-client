@@ -1,12 +1,12 @@
 package ru.hitsbank.clientbankapplication.loan.domain.repository
 
-import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanCreateEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
+import ru.hitsbank.bank_common.domain.Result
 
 interface ILoanRepository {
 

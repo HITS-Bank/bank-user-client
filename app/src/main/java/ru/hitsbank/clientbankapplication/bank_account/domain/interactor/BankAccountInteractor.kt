@@ -2,6 +2,7 @@ package ru.hitsbank.clientbankapplication.bank_account.domain.interactor
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import ru.hitsbank.bank_common.domain.Completable
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
@@ -9,10 +10,9 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEn
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.clientbankapplication.core.data.common.toState
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.domain.common.Completable
-import ru.hitsbank.clientbankapplication.core.domain.common.State
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.domain.toState
 import javax.inject.Inject
 
 class BankAccountInteractor @Inject constructor(
