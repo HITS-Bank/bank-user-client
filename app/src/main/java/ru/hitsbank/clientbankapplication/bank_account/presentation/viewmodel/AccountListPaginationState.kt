@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
-import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 

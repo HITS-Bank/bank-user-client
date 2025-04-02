@@ -2,7 +2,6 @@ package ru.hitsbank.clientbankapplication
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,10 +17,12 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.hitsbank.bank_common.Constants.DEEPLINK_APP_SCHEME
+import ru.hitsbank.bank_common.Constants.DEEPLINK_AUTH_HOST
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.replace
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.replace
 import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
 import javax.inject.Inject
 
@@ -58,17 +59,19 @@ class MainActivity : ComponentActivity() {
                         RootNavHost(navController)
 
                         LaunchedEffect(Unit) {
-                            intent?.data?.let { uri ->
-                                Log.d("MainActivity", "got intent $uri")
-                                if (uri.scheme == "hitsbankapp" && uri.host == "authorized") {
-                                    val code = uri.getQueryParameter("code")
-                                    Log.d("MainActivity", "got code $code")
-                                    navigationManager.replace(RootDestinations.Auth.withArgs(code))
-                                }
-                            }
+                            handleDeeplink()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleDeeplink() {
+        intent?.data?.let { uri ->
+            if (uri.scheme == DEEPLINK_APP_SCHEME && uri.host == DEEPLINK_AUTH_HOST) {
+                val code = uri.getQueryParameter("code")
+                navigationManager.replace(RootDestinations.Auth.withArgs(code))
             }
         }
     }

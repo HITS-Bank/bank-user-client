@@ -13,7 +13,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
-import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
+import ru.hitsbank.bank_common.presentation.navigation.Destination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen

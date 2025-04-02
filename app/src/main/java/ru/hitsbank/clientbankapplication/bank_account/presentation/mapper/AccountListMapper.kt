@@ -1,10 +1,10 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.mapper
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import javax.inject.Inject
 

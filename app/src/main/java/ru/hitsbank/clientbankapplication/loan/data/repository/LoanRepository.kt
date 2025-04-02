@@ -1,9 +1,8 @@
 package ru.hitsbank.clientbankapplication.loan.data.repository
 
 import kotlinx.coroutines.Dispatchers
-import ru.hitsbank.clientbankapplication.core.data.common.apiCall
-import ru.hitsbank.clientbankapplication.core.data.common.toResult
-import ru.hitsbank.clientbankapplication.core.domain.common.Result
+import ru.hitsbank.bank_common.data.utils.apiCall
+import ru.hitsbank.bank_common.data.utils.toResult
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.loan.data.api.LoanApi
 import ru.hitsbank.clientbankapplication.loan.data.mapper.LoanMapper
@@ -14,6 +13,7 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
+import ru.hitsbank.bank_common.domain.Result
 import javax.inject.Inject
 
 class LoanRepository @Inject constructor(

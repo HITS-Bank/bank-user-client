@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.data.model
 
-import ru.hitsbank.clientbankapplication.core.data.model.CurrencyCode
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 
 data class LoanResponse(
     val id: String,
