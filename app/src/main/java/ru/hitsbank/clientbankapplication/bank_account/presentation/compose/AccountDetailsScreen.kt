@@ -248,7 +248,7 @@ private fun AccountDetailsScreenReady(
                     padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
                     divider = Divider.None,
                     icon = ListItemIcon.SingleChar(
-                        char = '₽',
+                        char = item.currencyCodeChar,
                         backgroundColor = colorResource(id = item.leftPartBackgroundColorId),
                         charColor = colorResource(id = item.contentColorId),
                     ),
@@ -281,6 +281,7 @@ private fun AccountDetailsScreenReady(
 
     if (model.topUpDialog.isShown) {
         TopUpDialog(
+            items = model.currencyCodeDropdownItems,
             model = model.topUpDialog,
             onEvent = onEvent,
         )
@@ -288,6 +289,7 @@ private fun AccountDetailsScreenReady(
 
     if (model.withdrawDialog.isShown) {
         WithdrawDialog(
+            items = model.currencyCodeDropdownItems,
             model = model.withdrawDialog,
             onEvent = onEvent,
         )

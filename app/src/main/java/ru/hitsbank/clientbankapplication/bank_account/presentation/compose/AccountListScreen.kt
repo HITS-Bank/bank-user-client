@@ -27,6 +27,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.event.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListPaginationState
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.CreateAccountDialogState
 import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
 import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
 import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
@@ -174,7 +175,8 @@ internal fun AccountListScreenReady(
         }
     }
 
-    if (model.isCreateAccountDialogShown) {
-        CreateAccountDialog(onEvent)
+    when (val dialogState = model.createAccountDialogState) {
+        is CreateAccountDialogState.Shown -> CreateAccountDialog(model.currencyCodeItems, dialogState, onEvent)
+        CreateAccountDialogState.Hidden -> Unit
     }
 }

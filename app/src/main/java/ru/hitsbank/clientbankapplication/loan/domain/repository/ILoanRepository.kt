@@ -7,6 +7,7 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 
 interface ILoanRepository {
 
@@ -33,4 +34,10 @@ interface ILoanRepository {
         loanId: String,
         amount: String,
     ): Result<LoanEntity>
+
+    suspend fun getLoanRating(): Result<Int>
+
+    suspend fun getLoanPayments(
+        loanId: String,
+    ): Result<List<LoanPaymentEntity>>
 }

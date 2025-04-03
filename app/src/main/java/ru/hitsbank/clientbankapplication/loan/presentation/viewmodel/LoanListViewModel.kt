@@ -49,9 +49,8 @@ class LoanListViewModel @Inject constructor(
             }
 
             is LoanListEvent.OpenLoanDetails -> navigationManager.forwardWithCallbackResult(
-                RootDestinations.LoanDetails.withArgs(
+                RootDestinations.LoanPayments.withArgs(
                     loanId = event.loanId,
-                    loanEntityJson = null,
                     isUserBlocked = state.value.getIfSuccess()?.isUserBlocked ?: true
                 )
             ) {

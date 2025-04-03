@@ -1,7 +1,9 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
-import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
 import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CurrencyCodeDropdownItem
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 
@@ -11,10 +13,12 @@ data class AccountListPaginationState(
     override val pageNumber: Int,
     override val pageSize: Int,
     val isUserBlocked: Boolean,
-    val isCreateAccountDialogShown: Boolean,
+    val createAccountDialogState: CreateAccountDialogState,
     val isCreateAccountLoading: Boolean,
     val isSelectionMode: Boolean,
 ) : PaginationStateHolder<AccountItem> {
+
+    val currencyCodeItems = CurrencyCode.entries.map { code -> CurrencyCodeDropdownItem(code) }
 
     override fun copyWith(
         paginationState: PaginationState,
@@ -35,9 +39,22 @@ data class AccountListPaginationState(
             pageNumber = 1,
             pageSize = DEFAULT_PAGE_SIZE,
             isUserBlocked = false,
-            isCreateAccountDialogShown = false,
+            createAccountDialogState = CreateAccountDialogState.Hidden,
             isCreateAccountLoading = false,
             isSelectionMode = isSelectionMode,
         )
+    }
+}
+
+sealed interface CreateAccountDialogState {
+
+    data object Hidden : CreateAccountDialogState
+
+    data class Shown(
+        val currencyCode: CurrencyCode,
+        val isDropdownExpanded: Boolean,
+    ) : CreateAccountDialogState {
+
+        val currencyCodeItem = CurrencyCodeDropdownItem(currencyCode)
     }
 }

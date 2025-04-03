@@ -1,7 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.domain.model
 
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
-import java.time.LocalDateTime
 
 data class LoanEntity(
     val id: String,
@@ -14,6 +13,6 @@ data class LoanEntity(
     val paymentAmount: String,
     val paymentSum: String,
     val currencyCode: CurrencyCode,
-    val nextPaymentDateTime: LocalDateTime,
+    val nextPaymentDateTime: String,
     val currentDebt: String,
 )

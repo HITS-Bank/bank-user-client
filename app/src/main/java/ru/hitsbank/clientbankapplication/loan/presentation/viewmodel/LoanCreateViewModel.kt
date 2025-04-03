@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.presentation.common.BankUiState
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.back
 import ru.hitsbank.bank_common.presentation.navigation.forwardWithJsonResult
@@ -137,6 +138,38 @@ class LoanCreateViewModel @AssistedInject constructor(
                         }
                 }
             }
+
+            LoanCreateEvent.ReloadLoanRating -> {
+                if (state.value.isPerformingAction) return
+                refreshLoanRating()
+            }
+        }
+    }
+
+    private fun refreshLoanRating() {
+        viewModelScope.launch {
+            loanInteractor.getLoanRating()
+                .collect { state ->
+                    when (state) {
+                        is State.Error -> {
+                            _state.update { oldState ->
+                                oldState.copy(loanRatingState = BankUiState.Error(state.throwable))
+                            }
+                        }
+
+                        State.Loading -> {
+                            _state.update { oldState ->
+                                oldState.copy(loanRatingState = BankUiState.Loading)
+                            }
+                        }
+
+                        is State.Success -> {
+                            _state.update { oldState ->
+                                oldState.copy(loanRatingState = BankUiState.Ready(state.data))
+                            }
+                        }
+                    }
+                }
         }
     }
 

@@ -14,11 +14,14 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrde
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
 import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.bank_common.domain.repository.IProfileRepository
+import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 import javax.inject.Inject
 
 class LoanRepository @Inject constructor(
     private val loanApi: LoanApi,
-    private val mapper: LoanMapper
+    private val mapper: LoanMapper,
+    private val profileRepository: IProfileRepository,
 ) : ILoanRepository {
 
     override suspend fun getLoanTariffs(
@@ -77,6 +80,30 @@ class LoanRepository @Inject constructor(
                 paymentRequest = LoanPaymentRequest(amount = amount),
             ).toResult { loan ->
                 mapper.map(loan)
+            }
+        }
+    }
+
+    override suspend fun getLoanRating(): Result<Int> {
+        when (val profile = profileRepository.getSelfProfile()) {
+            is Result.Error -> return Result.Error(profile.throwable)
+            is Result.Success -> {
+                val userId = profile.data.id
+                return apiCall(Dispatchers.IO) {
+                    loanApi.getLoanUserRating(userId).toResult { rating ->
+                        rating.rating
+                    }
+                }
+            }
+        }
+    }
+
+    override suspend fun getLoanPayments(loanId: String): Result<List<LoanPaymentEntity>> {
+        return apiCall(Dispatchers.IO) {
+            loanApi.getLoanPayments(loanId).toResult { page ->
+                page.map { payment ->
+                    mapper.map(payment)
+                }
             }
         }
     }

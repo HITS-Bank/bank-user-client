@@ -102,6 +102,10 @@ class AccountDetailsViewModel @AssistedInject constructor(
             AccountDetailsEvent.OnDismissCloseAccountDialog -> onDismissCloseAccountDialog()
             AccountDetailsEvent.OnCloseAccount -> onCloseAccount()
             is AccountDetailsEvent.OnPaginationEvent -> onPaginationEvent(event.event)
+            is AccountDetailsEvent.OnTopUpCurrencyChange -> onTopUpCurrencyChange(event.currencyCode)
+            is AccountDetailsEvent.OnTopUpDropdownExpanded -> onTopUpDropdownExpanded(event.isExpanded)
+            is AccountDetailsEvent.OnWithdrawCurrencyChange -> onWithdrawCurrencyChange(event.currencyCode)
+            is AccountDetailsEvent.OnWithdrawDropdownExpanded -> onWithdrawDropdownExpanded(event.isExpanded)
         }
     }
 
@@ -230,13 +234,54 @@ class AccountDetailsViewModel @AssistedInject constructor(
         }
     }
 
+    private fun onTopUpCurrencyChange(currencyCode: CurrencyCode) {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                topUpDialog = state.topUpDialog.copy(
+                    currencyCode = currencyCode,
+                )
+            )
+        }
+    }
+
+    private fun onWithdrawCurrencyChange(currencyCode: CurrencyCode) {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                withdrawDialog = state.withdrawDialog.copy(
+                    currencyCode = currencyCode,
+                )
+            )
+        }
+    }
+
+    private fun onTopUpDropdownExpanded(isExpanded: Boolean) {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                topUpDialog = state.topUpDialog.copy(
+                    isDropdownExpanded = isExpanded,
+                )
+            )
+        }
+    }
+
+    private fun onWithdrawDropdownExpanded(isExpanded: Boolean) {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                withdrawDialog = state.withdrawDialog.copy(
+                    isDropdownExpanded = isExpanded,
+                )
+            )
+        }
+    }
+
     private fun onTopUp() = viewModelScope.launch {
         val accountId = _state.getIfSuccess()?.id ?: return@launch
         val amount = _state.getIfSuccess()?.topUpDialog?.amount ?: return@launch
+        val currencyCode = _state.getIfSuccess()?.topUpDialog?.currencyCode ?: return@launch
         bankAccountInteractor.topUp(
             accountId = accountId,
             topUpRequest = accountDetailsMapper.mapToTopUpRequest(
-                currencyCode = CurrencyCode.RUB,
+                currencyCode = currencyCode,
                 amount = amount,
             )
         ).collectLatest { state ->
@@ -288,10 +333,11 @@ class AccountDetailsViewModel @AssistedInject constructor(
     private fun onWithdraw() = viewModelScope.launch {
         val accountId = _state.getIfSuccess()?.id ?: return@launch
         val amount = _state.getIfSuccess()?.withdrawDialog?.amount ?: return@launch
+        val currencyCode = _state.getIfSuccess()?.withdrawDialog?.currencyCode ?: return@launch
         bankAccountInteractor.withdraw(
             accountId = accountId,
             withdrawRequest = accountDetailsMapper.mapToWithdrawRequest(
-                currencyCode = CurrencyCode.RUB,
+                currencyCode = currencyCode,
                 amount = amount,
             )
         ).collectLatest { state ->
