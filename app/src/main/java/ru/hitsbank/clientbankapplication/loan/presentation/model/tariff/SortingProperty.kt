@@ -1,6 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.model.tariff
 
-import ru.hitsbank.clientbankapplication.core.presentation.common.dropdown.DropdownItem
+import ru.hitsbank.bank_common.presentation.common.component.dropdown.DropdownItem
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 
 enum class SortingProperty(override val title: String) : DropdownItem {

@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.event
 
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
 
 sealed interface AccountListEvent {
 

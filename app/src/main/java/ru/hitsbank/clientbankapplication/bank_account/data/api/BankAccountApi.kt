@@ -10,6 +10,9 @@ import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferConfirmationModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferInfoModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferRequestModel
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
 
@@ -61,4 +64,14 @@ interface BankAccountApi {
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
     ): Response<List<OperationResponse>>
+
+    @POST("core/bank_account/transferInfo")
+    suspend fun getTransferInfo(
+        @Body transferRequestModel: TransferRequestModel
+    ) : Response<TransferInfoModel>
+
+    @POST("core/bank_account/transfer")
+    suspend fun transfer(
+        @Body transferConfirmationModel: TransferConfirmationModel
+    ) : Response<BankAccountResponse>
 }

@@ -1,4 +1,4 @@
-package ru.hitsbank.clientbankapplication.loan.presentation.compose
+package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,17 +21,17 @@ import ru.hitsbank.bank_common.presentation.common.horizontalSpacer
 import ru.hitsbank.bank_common.presentation.common.verticalSpacer
 import ru.hitsbank.bank_common.presentation.theme.S16_W400
 import ru.hitsbank.bank_common.presentation.theme.S16_W500
-import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEvent
-import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsDialogState
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTransferDialogModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LoanPaymentDialog(
-    model: LoanDetailsDialogState.MakePaymentDialog,
-    onEvent: (LoanDetailsEvent) -> Unit,
+internal fun TransferDialog(
+    model: AccountDetailsTransferDialogModel,
+    onEvent: (AccountDetailsEvent) -> Unit,
 ) {
     BasicAlertDialog(
-        onDismissRequest = { onEvent.invoke(LoanDetailsEvent.MakeLoanPaymentDialogClose) },
+        onDismissRequest = { onEvent.invoke(AccountDetailsEvent.OnDismissTransferDialog) },
     ) {
         Card(
             shape = RoundedCornerShape(16.dp),
@@ -40,14 +40,14 @@ internal fun LoanPaymentDialog(
                 modifier = Modifier.padding(16.dp),
             ) {
                 Text(
-                    text = "Внести платёж по кредиту",
+                    text = "Перевести средства",
                     style = S16_W500,
                 )
                 16.dp.verticalSpacer()
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = model.amount,
-                    onValueChange = { onEvent(LoanDetailsEvent.ChangeLoanPaymentAmount(it)) },
+                    onValueChange = { onEvent(AccountDetailsEvent.OnTransferAmountChange(it)) },
                     label = {
                         Text(text = "Сумма")
                     },
@@ -55,9 +55,20 @@ internal fun LoanPaymentDialog(
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 )
                 16.dp.verticalSpacer()
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = model.accountNumber,
+                    onValueChange = { onEvent(AccountDetailsEvent.OnTransferAccountChange(it)) },
+                    label = {
+                        Text(text = "Номер счета получателя")
+                    },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                )
+                16.dp.verticalSpacer()
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     Button(
-                        onClick = { onEvent(LoanDetailsEvent.MakeLoanPaymentDialogClose) },
+                        onClick = { onEvent(AccountDetailsEvent.OnDismissTransferDialog) },
                     ) {
                         Text(
                             text = "Отмена",
@@ -66,7 +77,7 @@ internal fun LoanPaymentDialog(
                     }
                     8.dp.horizontalSpacer()
                     Button(
-                        onClick = { onEvent(LoanDetailsEvent.ConfirmLoanPayment) },
+                        onClick = { onEvent(AccountDetailsEvent.Transfer) },
                         enabled = model.isDataValid,
                     ) {
                         Text(

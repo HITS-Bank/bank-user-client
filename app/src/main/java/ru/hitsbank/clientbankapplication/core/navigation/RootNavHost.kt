@@ -14,6 +14,8 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.bank_common.presentation.navigation.Destination
+import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.TransferDetailsScreen
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.TransferDetailsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanPaymentsScreen
@@ -71,6 +73,22 @@ object RootDestinations {
         override var optionalArguments = listOf(
             OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG,
             OPTIONAL_ACCOUNT_ID_ARG
+        )
+    }
+
+    object AccountTransferDetails : Destination() {
+        const val TRANSFER_INFO_JSON_ARG = "transferInfo"
+
+        fun withArgs(
+            transferInfoJson: String,
+        ): String {
+            return destinationWithArgs(
+                args = listOf(transferInfoJson),
+            )
+        }
+
+        override var arguments = listOf(
+            TRANSFER_INFO_JSON_ARG,
         )
     }
 
@@ -210,6 +228,31 @@ fun RootNavHost(
                         }
                     )
                 AccountDetailsScreenWrapper(viewModel)
+            }
+        }
+        composable(
+            route = RootDestinations.AccountTransferDetails.route,
+            arguments = listOf(
+                navArgument(RootDestinations.AccountTransferDetails.TRANSFER_INFO_JSON_ARG) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val transferInfoJson = backStackEntry.arguments?.getString(
+                RootDestinations.AccountTransferDetails.TRANSFER_INFO_JSON_ARG
+            )
+
+            if (transferInfoJson != null) {
+                val viewModel: TransferDetailsViewModel = hiltViewModel<TransferDetailsViewModel, TransferDetailsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(transferInfoJson)
+                    }
+                )
+                TransferDetailsScreen(viewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navHostController.popBackStack()
+                }
             }
         }
         composable(

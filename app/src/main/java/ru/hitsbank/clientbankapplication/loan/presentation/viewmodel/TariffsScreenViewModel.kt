@@ -16,16 +16,16 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.map
+import ru.hitsbank.bank_common.dropFirstBlank
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.getIfSuccess
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.back
 import ru.hitsbank.bank_common.presentation.navigation.backWithJsonResult
-import ru.hitsbank.clientbankapplication.core.common.dropFirstBlank
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationViewModel
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
@@ -39,8 +39,7 @@ class TariffsScreenViewModel @Inject constructor(
     private val mapper: TariffsScreenModelMapper,
     private val navigationManager: NavigationManager,
     private val gson: Gson,
-) : PaginationViewModel<TariffModel, TariffsPaginationState>(BankUiState.Ready(
-    TariffsPaginationState.EMPTY)) {
+) : PaginationViewModel<TariffModel, TariffsPaginationState>(BankUiState.Ready(TariffsPaginationState.EMPTY)) {
 
     private val queryFlow = MutableStateFlow("")
 
@@ -94,7 +93,7 @@ class TariffsScreenViewModel @Inject constructor(
         }
     }
 
-    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<TariffModel>>> {
+    override fun getNextPageContents(pageNumber: Int): Flow<State<List<TariffModel>>> {
         val pageInfo = PageInfo(
             pageNumber = pageNumber,
             pageSize = state.getIfSuccess()?.pageSize ?: PAGE_SIZE,

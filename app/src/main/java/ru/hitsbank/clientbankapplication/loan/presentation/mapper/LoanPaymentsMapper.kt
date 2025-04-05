@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 
+import ru.hitsbank.bank_common.presentation.common.formatToSum
 import ru.hitsbank.bank_common.presentation.common.toSymbol
 import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.bank_common.presentation.theme.grayBackground
@@ -8,7 +9,6 @@ import ru.hitsbank.bank_common.presentation.theme.topUpBackground
 import ru.hitsbank.bank_common.presentation.theme.topUpForeground
 import ru.hitsbank.bank_common.presentation.theme.withdrawBackground
 import ru.hitsbank.bank_common.presentation.theme.withdrawForeground
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentStatus
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanPaymentItem

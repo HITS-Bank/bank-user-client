@@ -15,13 +15,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.getIfSuccess
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.back
 import ru.hitsbank.bank_common.presentation.navigation.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEffect

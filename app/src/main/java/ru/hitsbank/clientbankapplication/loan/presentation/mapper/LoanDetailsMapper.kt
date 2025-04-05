@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 
+import ru.hitsbank.bank_common.presentation.common.formatToSum
 import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsListItem
 import javax.inject.Inject

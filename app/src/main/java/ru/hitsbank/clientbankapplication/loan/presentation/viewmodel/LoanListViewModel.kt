@@ -9,15 +9,15 @@ import kotlinx.coroutines.launch
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.interactor.AuthInteractor
 import ru.hitsbank.bank_common.domain.map
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.getIfSuccess
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.forwardWithCallbackResult
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationViewModel
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanListEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.mapper.LoanListMapper
@@ -69,7 +69,7 @@ class LoanListViewModel @Inject constructor(
             }
     }
 
-    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<LoanItem>>> {
+    override fun getNextPageContents(pageNumber: Int): Flow<State<List<LoanItem>>> {
         return loanInteractor.getLoans(PageInfo(pageNumber = pageNumber, pageSize = PAGE_SIZE))
             .map { state ->
                 state.map { list -> list.map { loan -> mapper.map(loan) } }

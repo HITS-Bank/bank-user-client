@@ -17,6 +17,9 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEnti
 import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
 import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
 import javax.inject.Inject
 
 class BankAccountRepository @Inject constructor(
@@ -88,6 +91,22 @@ class BankAccountRepository @Inject constructor(
                 pageSize = pageSize,
                 pageNumber = pageNumber,
             )
+                .toResult()
+                .map(mapper::map)
+        }
+    }
+
+    override suspend fun getTransferInfo(transferRequest: TransferRequest): Result<TransferInfo> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.getTransferInfo(mapper.map(transferRequest))
+                .toResult()
+                .map(mapper::map)
+        }
+    }
+
+    override suspend fun transfer(confirmation: TransferConfirmation): Result<BankAccountEntity> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.transfer(mapper.map(confirmation))
                 .toResult()
                 .map(mapper::map)
         }

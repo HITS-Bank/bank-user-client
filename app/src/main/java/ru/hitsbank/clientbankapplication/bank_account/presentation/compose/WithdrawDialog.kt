@@ -18,13 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.hitsbank.bank_common.presentation.common.component.dropdown.DropdownField
+import ru.hitsbank.bank_common.presentation.common.horizontalSpacer
+import ru.hitsbank.bank_common.presentation.common.verticalSpacer
+import ru.hitsbank.bank_common.presentation.theme.S16_W400
+import ru.hitsbank.bank_common.presentation.theme.S16_W500
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CurrencyCodeDropdownItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.horizontalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W500
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

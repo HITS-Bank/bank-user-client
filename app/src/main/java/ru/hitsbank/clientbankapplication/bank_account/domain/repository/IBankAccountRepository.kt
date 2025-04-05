@@ -9,6 +9,9 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEn
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
 import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
 
 interface IBankAccountRepository {
 
@@ -40,4 +43,12 @@ interface IBankAccountRepository {
         pageSize: Int,
         pageNumber: Int,
     ): Result<List<OperationEntity>>
+
+    suspend fun getTransferInfo(
+        transferRequest: TransferRequest
+    ): Result<TransferInfo>
+
+    suspend fun transfer(
+        confirmation: TransferConfirmation
+    ): Result<BankAccountEntity>
 }

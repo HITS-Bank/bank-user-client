@@ -13,6 +13,9 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.Accou
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.bank_common.domain.toState
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
 import javax.inject.Inject
 
 class BankAccountInteractor @Inject constructor(
@@ -65,5 +68,15 @@ class BankAccountInteractor @Inject constructor(
     ): Flow<State<List<OperationEntity>>> = flow {
         emit(State.Loading)
         emit(bankAccountRepository.getOperationHistory(accountNumberRequest, pageSize, pageNumber).toState())
+    }
+
+    fun getTransferInfo(transferRequest: TransferRequest): Flow<State<TransferInfo>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.getTransferInfo(transferRequest).toState())
+    }
+
+    fun transfer(transferConfirmation: TransferConfirmation): Flow<State<BankAccountEntity>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.transfer(transferConfirmation).toState())
     }
 }

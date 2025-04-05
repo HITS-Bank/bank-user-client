@@ -15,22 +15,21 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.hitsbank.bank_common.Constants
 import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.domain.entity.RoleType
 import ru.hitsbank.bank_common.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.replace
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.login.event.LoginEffect
 import ru.hitsbank.clientbankapplication.login.event.LoginEvent
-import ru.hitsbank.clientbankapplication.login.mapper.LoginScreenModelMapper
 import ru.hitsbank.clientbankapplication.login.model.LoginScreenModel
 
 @HiltViewModel(assistedFactory = LoginViewModel.Factory::class)
 class LoginViewModel @AssistedInject constructor(
     @Assisted private val authCode: String?,
     private val authInteractor: AuthInteractor,
-    private val mapper: LoginScreenModelMapper,
     private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
@@ -58,7 +57,7 @@ class LoginViewModel @AssistedInject constructor(
     private fun exchangeAuthCodeForToken(authCode: String) {
         _state.updateIfSuccess { it.copy(isLoading = true) }
         viewModelScope.launch {
-            authInteractor.exchangeAuthCodeForToken(authCode).collectLatest { state ->
+            authInteractor.exchangeAuthCodeForToken(authCode, RoleType.CLIENT).collectLatest { state ->
                 when (state) {
                     is State.Error -> {
                         _state.updateIfSuccess { it.copy(isLoading = false) }

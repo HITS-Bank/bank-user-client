@@ -3,11 +3,19 @@ package ru.hitsbank.clientbankapplication.bank_account.data.mapper
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationTypeResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferAccountInfoModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferConfirmationModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferInfoModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferRequestModel
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationTypeEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferAccountInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
 import javax.inject.Inject
 
 class BankAccountMapper @Inject constructor() {
@@ -48,5 +56,38 @@ class BankAccountMapper @Inject constructor() {
                 currencyCode = operation.currencyCode,
             )
         }
+    }
+
+    fun map(request: TransferRequest): TransferRequestModel {
+        return TransferRequestModel(
+            senderAccountId = request.senderAccountId,
+            receiverAccountNumber = request.receiverAccountNumber,
+            transferAmount = request.transferAmount,
+        )
+    }
+
+    fun map(confirmation: TransferConfirmation): TransferConfirmationModel {
+        return TransferConfirmationModel(
+            senderAccountId = confirmation.senderAccountId,
+            receiverAccountId = confirmation.receiverAccountId,
+            transferAmount = confirmation.transferAmount,
+        )
+    }
+
+    fun map(model: TransferInfoModel): TransferInfo {
+        return TransferInfo(
+            senderAccountInfo = map(model.senderAccountInfo),
+            receiverAccountInfo = map(model.receiverAccountInfo),
+            transferAmountBeforeConversion = model.transferAmountBeforeConversion,
+            transferAmountAfterConversion = model.transferAmountAfterConversion,
+        )
+    }
+
+    fun map(model: TransferAccountInfoModel): TransferAccountInfo {
+        return TransferAccountInfo(
+            accountNumber = model.accountNumber,
+            accountCurrencyCode = model.accountCurrencyCode,
+            accountId = model.accountId,
+        )
     }
 }

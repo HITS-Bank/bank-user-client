@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,6 +25,26 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.component.BankButton
+import ru.hitsbank.bank_common.presentation.common.component.Divider
+import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemEnd
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
+import ru.hitsbank.bank_common.presentation.common.component.PaginationErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.PaginationLoadingContent
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.rememberCallback
+import ru.hitsbank.bank_common.presentation.common.verticalSpacer
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.rememberPaginationListState
+import ru.hitsbank.bank_common.presentation.theme.S16_W400
+import ru.hitsbank.bank_common.presentation.theme.S22_W400
+import ru.hitsbank.bank_common.presentation.theme.S24_W600
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
@@ -31,27 +52,6 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.event.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.Divider
-import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemEnd
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
-import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationErrorContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationLoadingContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
-import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
-import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.rememberPaginationListState
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S14_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S24_W600
 
 @Composable
 internal fun AccountDetailsScreenWrapper(
@@ -70,6 +70,8 @@ internal fun AccountDetailsScreenWrapper(
             AccountDetailsEffect.OnWithdrawSuccess -> snackbar.show("Средства выведены")
             AccountDetailsEffect.OnCloseAccountError -> snackbar.show("Не получилось закрыть счет")
             AccountDetailsEffect.OnCloseAccountSuccess -> snackbar.show("Счет закрыт")
+            AccountDetailsEffect.OnTransferError -> snackbar.show("Не получилось перевести средства")
+            AccountDetailsEffect.OnTransferSuccess -> snackbar.show("Средства переведены")
         }
     }
 
@@ -164,39 +166,35 @@ private fun AccountDetailsScreenReady(
     ) { paddings ->
         LazyColumn(
             modifier = Modifier
-                .padding(paddings)
-                .padding(horizontal = 16.dp),
+                .padding(paddings),
             state = listState,
         ) {
             item {
                 16.dp.verticalSpacer()
                 Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = "Информация о счете",
                     style = S24_W600,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 16.dp.verticalSpacer()
                 model.accountDetails.items.forEach { item ->
-                    8.dp.verticalSpacer()
-                    Text(
-                        text = item.title,
-                        style = S16_W400,
-                        color = MaterialTheme.colorScheme.onSurface,
+                    ListItem(
+                        padding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        icon = ListItemIcon.None,
+                        title = item.title,
+                        subtitle = item.subtitle,
+                        divider = Divider.None,
+                        isTitleCopyable = item.copyable,
                     )
-                    Text(
-                        text = item.subtitle,
-                        style = S14_W400,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    8.dp.verticalSpacer()
                 }
                 12.dp.verticalSpacer()
                 if (model.status != BankAccountStatusEntity.CLOSED) {
                     Row(
-                        modifier = Modifier.height(40.dp),
+                        modifier = Modifier.height(58.dp).padding(horizontal = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
-                        BankButton.Outlined(
+                        BankButton.VerticalOutlined(
                             modifier = Modifier.weight(1f),
                             text = "Пополнить",
                             onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTopUpDialog) },
@@ -208,7 +206,20 @@ private fun AccountDetailsScreenReady(
                                 MaterialTheme.colorScheme.outline
                             },
                         )
-                        BankButton.Regular(
+                        BankButton.VerticalRegular(
+                            modifier = Modifier.weight(1f),
+                            text = "Перевести",
+                            onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenTransferDialog) },
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_transfer_18),
+                            enabled = !model.isUserBlocked,
+                            colors = ButtonColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                disabledContainerColor = MaterialTheme.colorScheme.outline,
+                                disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        )
+                        BankButton.VerticalRegular(
                             modifier = Modifier.weight(1f),
                             text = "Вывести",
                             onClick = { onEvent.invoke(AccountDetailsEvent.OnOpenWithdrawDialog) },
@@ -219,6 +230,7 @@ private fun AccountDetailsScreenReady(
                 }
                 32.dp.verticalSpacer()
                 Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = "История операций",
                     style = S24_W600,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -235,7 +247,7 @@ private fun AccountDetailsScreenReady(
             ) {
                 item {
                     Text(
-                        modifier = Modifier.padding(vertical = 16.dp),
+                        modifier = Modifier.padding(16.dp),
                         text = "Пока тут ничего нет",
                         style = S16_W400,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -245,7 +257,6 @@ private fun AccountDetailsScreenReady(
 
             items(model.data, key = { it.id }) { item ->
                 ListItem(
-                    padding = PaddingValues(horizontal = 0.dp, vertical = 12.dp),
                     divider = Divider.None,
                     icon = ListItemIcon.SingleChar(
                         char = item.currencyCodeChar,
@@ -291,6 +302,13 @@ private fun AccountDetailsScreenReady(
         WithdrawDialog(
             items = model.currencyCodeDropdownItems,
             model = model.withdrawDialog,
+            onEvent = onEvent,
+        )
+    }
+
+    if (model.transferDialog.isShown) {
+        TransferDialog(
+            model = model.transferDialog,
             onEvent = onEvent,
         )
     }

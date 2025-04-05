@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.model
 
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
 
 data class LoanListPaginationState(

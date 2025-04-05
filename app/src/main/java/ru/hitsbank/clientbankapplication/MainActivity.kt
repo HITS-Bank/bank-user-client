@@ -23,7 +23,7 @@ import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.replace
-import ru.hitsbank.clientbankapplication.core.presentation.theme.AppTheme
+import ru.hitsbank.bank_common.presentation.theme.AppTheme
 import javax.inject.Inject
 
 @AndroidEntryPoint

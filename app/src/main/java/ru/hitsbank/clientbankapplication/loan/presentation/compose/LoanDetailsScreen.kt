@@ -22,21 +22,21 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.component.BankButton
+import ru.hitsbank.bank_common.presentation.common.component.Divider
+import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemEnd
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.rememberCallback
+import ru.hitsbank.bank_common.presentation.theme.S22_W400
+import ru.hitsbank.bank_common.presentation.theme.S24_W600
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.Divider
-import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemEnd
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
-import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
-import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S24_W600
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEffect
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsDialogState
@@ -141,7 +141,7 @@ private fun LoanDetailsScreenContent(
                         padding = PaddingValues(top = 12.dp, bottom = 12.dp, end = 16.dp),
                         title = item.value,
                         subtitle = item.name,
-                        end = ListItemEnd.Chevron(
+                        end = ListItemEnd.ClickableChevron(
                             onClick = { onEvent(LoanDetailsEvent.OpenBankAccount(item.accountId)) },
                         ),
                     )

@@ -16,10 +16,12 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.common.formatToSum
 import ru.hitsbank.bank_common.presentation.common.toSymbol
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
-import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTransferDialogModel
 import javax.inject.Inject
 
 class AccountDetailsMapper @Inject constructor() {
@@ -52,6 +54,12 @@ class AccountDetailsMapper @Inject constructor() {
                 isDataValid = true,
                 currencyCode = bankAccountEntity.currencyCode,
                 isDropdownExpanded = false,
+            ),
+            transferDialog = AccountDetailsTransferDialogModel(
+                isShown = false,
+                amount = AccountDetailsTransferDialogModel.DEFAULT_AMOUNT.toString(),
+                accountNumber = "",
+                isDataValid = false,
             ),
             closeAccountDialog = CloseAccountDialog(isShown = false),
             isOverlayLoading = false,
@@ -132,10 +140,23 @@ class AccountDetailsMapper @Inject constructor() {
         )
     }
 
+    fun mapToTransferRequest(
+        senderAccountId: String,
+        receiverAccountNumber: String,
+        transferAmount: String,
+    ): TransferRequest {
+        return TransferRequest(
+            senderAccountId = senderAccountId,
+            receiverAccountNumber = receiverAccountNumber,
+            transferAmount = transferAmount,
+        )
+    }
+
     private fun getAccountInfoItem(bankAccountEntity: BankAccountEntity): AccountDetailsItem {
         return AccountDetailsItem(
             title = bankAccountEntity.number,
             subtitle = "Номер счета",
+            copyable = true,
         )
     }
 
@@ -151,6 +172,7 @@ class AccountDetailsMapper @Inject constructor() {
             } else {
                 "Статус"
             },
+            copyable = false,
         )
     }
 }

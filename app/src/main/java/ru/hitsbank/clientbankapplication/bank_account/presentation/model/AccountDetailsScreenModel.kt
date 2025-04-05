@@ -1,9 +1,9 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.model
 
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 
 data class AccountDetailsScreenModel(
     override val paginationState: PaginationState,
@@ -18,6 +18,7 @@ data class AccountDetailsScreenModel(
     val accountDetails: AccountDetailsModel,
     val topUpDialog: AccountDetailsTopUpDialogModel,
     val withdrawDialog: AccountDetailsWithdrawDialogModel,
+    val transferDialog: AccountDetailsTransferDialogModel,
     val closeAccountDialog: CloseAccountDialog,
     val isOverlayLoading: Boolean,
 ) : PaginationStateHolder<OperationHistoryItem> {
@@ -65,6 +66,18 @@ data class AccountDetailsWithdrawDialogModel(
     }
 }
 
+data class AccountDetailsTransferDialogModel(
+    val isShown: Boolean,
+    val amount: String,
+    val accountNumber: String,
+    val isDataValid: Boolean,
+) {
+
+    companion object {
+        const val DEFAULT_AMOUNT = 10000
+    }
+}
+
 data class CloseAccountDialog(
     val isShown: Boolean,
 )
@@ -84,6 +97,7 @@ data class AccountDetailsModel(
 data class AccountDetailsItem(
     val title: String,
     val subtitle: String,
+    val copyable: Boolean,
 )
 
 data class OperationHistoryItem(

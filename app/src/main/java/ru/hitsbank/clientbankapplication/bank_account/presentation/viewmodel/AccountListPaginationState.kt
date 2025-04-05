@@ -2,10 +2,10 @@ package ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel
 
 import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CurrencyCodeDropdownItem
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 
 data class AccountListPaginationState(
     override val paginationState: PaginationState,

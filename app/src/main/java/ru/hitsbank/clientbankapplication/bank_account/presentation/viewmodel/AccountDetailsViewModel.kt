@@ -28,13 +28,16 @@ import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.bank_common.domain.map
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.getIfSuccess
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.back
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationViewModel
+import ru.hitsbank.bank_common.presentation.navigation.forwardWithJsonResult
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationViewModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTransferDialogModel
+import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import kotlin.math.min
 
 private const val BANK_ACCOUNT_ENTITY_JSON = "BANK_ACCOUNT_ENTITY_JSON_ARG"
@@ -74,7 +77,7 @@ class AccountDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    override suspend fun getNextPageContents(pageNumber: Int): Flow<State<List<OperationHistoryItem>>> {
+    override fun getNextPageContents(pageNumber: Int): Flow<State<List<OperationHistoryItem>>> {
         val accountNumber = _state.getIfSuccess()?.number ?: return flowOf(State.Error())
         return bankAccountInteractor.getOperationHistory(
             accountNumberRequest = AccountNumberRequest(
@@ -106,6 +109,11 @@ class AccountDetailsViewModel @AssistedInject constructor(
             is AccountDetailsEvent.OnTopUpDropdownExpanded -> onTopUpDropdownExpanded(event.isExpanded)
             is AccountDetailsEvent.OnWithdrawCurrencyChange -> onWithdrawCurrencyChange(event.currencyCode)
             is AccountDetailsEvent.OnWithdrawDropdownExpanded -> onWithdrawDropdownExpanded(event.isExpanded)
+            AccountDetailsEvent.OnDismissTransferDialog -> onDismissTransferDialog()
+            AccountDetailsEvent.OnOpenTransferDialog -> onOpenTransferDialog()
+            is AccountDetailsEvent.OnTransferAccountChange -> onTransferAccountChange(event.accountNumber)
+            is AccountDetailsEvent.OnTransferAmountChange -> onTransferAmountChange(event.amount)
+            AccountDetailsEvent.Transfer -> onTransfer()
         }
     }
 
@@ -181,6 +189,17 @@ class AccountDetailsViewModel @AssistedInject constructor(
         }
     }
 
+    private fun onDismissTransferDialog() {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                transferDialog = state.transferDialog.copy(
+                    isShown = false,
+                    amount = AccountDetailsTransferDialogModel.DEFAULT_AMOUNT.toString(),
+                )
+            )
+        }
+    }
+
     private fun onOpenTopUpDialog() {
         _state.updateIfSuccess { state ->
             state.copy(
@@ -201,6 +220,20 @@ class AccountDetailsViewModel @AssistedInject constructor(
                     isShown = true,
                     amount = defaultWithdrawAmount.toString(),
                     isDataValid = defaultWithdrawAmount > 0,
+                )
+            )
+        }
+    }
+
+    private fun onOpenTransferDialog() {
+        _state.updateIfSuccess { state ->
+            val maxTransferAmount = _state.getIfSuccess()?.balance?.substringBefore(".")?.toIntOrNull()
+            val defaultTransferAmount = min(AccountDetailsTransferDialogModel.DEFAULT_AMOUNT, maxTransferAmount ?: 0)
+            state.copy(
+                transferDialog = state.transferDialog.copy(
+                    isShown = true,
+                    amount = defaultTransferAmount.toString(),
+                    isDataValid = defaultTransferAmount > 0,
                 )
             )
         }
@@ -228,6 +261,22 @@ class AccountDetailsViewModel @AssistedInject constructor(
                     isDataValid = amountFloat != null
                             && maxWithdrawAmount != null
                             && amountFloat <= maxWithdrawAmount
+                            && amountFloat > 0,
+                )
+            )
+        }
+    }
+
+    private fun onTransferAmountChange(amount: String) {
+        val amountFloat = amount.toFloatOrNull()
+        val maxTransferAmount = _state.getIfSuccess()?.balance?.toFloatOrNull()
+        _state.updateIfSuccess { state ->
+            state.copy(
+                transferDialog = state.transferDialog.copy(
+                    amount = amount,
+                    isDataValid = amountFloat != null
+                            && maxTransferAmount != null
+                            && amountFloat <= maxTransferAmount
                             && amountFloat > 0,
                 )
             )
@@ -269,6 +318,17 @@ class AccountDetailsViewModel @AssistedInject constructor(
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     isDropdownExpanded = isExpanded,
+                )
+            )
+        }
+    }
+
+    private fun onTransferAccountChange(accountNumber: String) {
+        _state.updateIfSuccess { state ->
+            state.copy(
+                transferDialog = state.transferDialog.copy(
+                    accountNumber = accountNumber,
+                    isDataValid = accountNumber.all { it.isDigit() } && accountNumber.length == 20,
                 )
             )
         }
@@ -381,6 +441,73 @@ class AccountDetailsViewModel @AssistedInject constructor(
                     }
 
                     onPaginationEvent(PaginationEvent.Reload)
+                }
+            }
+        }
+    }
+
+    private fun onTransfer() = viewModelScope.launch {
+        val senderAccountId = _state.getIfSuccess()?.id ?: return@launch
+        val amount = _state.getIfSuccess()?.transferDialog?.amount ?: return@launch
+        val receiverAccountNumber = _state.getIfSuccess()?.transferDialog?.accountNumber ?: return@launch
+        bankAccountInteractor.getTransferInfo(
+            transferRequest = accountDetailsMapper.mapToTransferRequest(
+                senderAccountId = senderAccountId,
+                receiverAccountNumber = receiverAccountNumber,
+                transferAmount = amount,
+            ),
+        ).collectLatest { state ->
+            when (state) {
+                State.Loading -> {
+                    _state.updateIfSuccess { uiState ->
+                        uiState.copy(isOverlayLoading = true)
+                    }
+                }
+
+                is State.Error -> {
+                    _state.updateIfSuccess { uiState ->
+                        uiState.copy(
+                            isOverlayLoading = false,
+                            transferDialog = uiState.transferDialog.copy(
+                                isShown = false,
+                                amount = AccountDetailsTransferDialogModel.DEFAULT_AMOUNT.toString(),
+                            ),
+                        )
+                    }
+
+                    sendEffect(AccountDetailsEffect.OnTransferError)
+                }
+
+                is State.Success -> {
+                    _state.updateIfSuccess { uiState ->
+                        uiState.copy(
+                            isOverlayLoading = false,
+                            transferDialog = uiState.transferDialog.copy(
+                                isShown = false,
+                                amount = AccountDetailsTransferDialogModel.DEFAULT_AMOUNT.toString(),
+                            ),
+                        )
+                    }
+
+                    navigationManager.forwardWithJsonResult<BankAccountEntity>(
+                        gson = gson,
+                        destination = RootDestinations.AccountTransferDetails.withArgs(
+                            transferInfoJson = gson.toJson(state.data),
+                        ),
+                    ) { bankAccount ->
+                        if (bankAccount == null) return@forwardWithJsonResult
+
+                        sendEffect(AccountDetailsEffect.OnTransferSuccess)
+
+                        _state.updateIfSuccess { uiState ->
+                            accountDetailsMapper.getUpdatedAccountDetailsScreen(
+                                oldModel = uiState,
+                                bankAccountEntity = bankAccount,
+                            )
+                        }
+
+                        onPaginationEvent(PaginationEvent.Reload)
+                    }
                 }
             }
         }

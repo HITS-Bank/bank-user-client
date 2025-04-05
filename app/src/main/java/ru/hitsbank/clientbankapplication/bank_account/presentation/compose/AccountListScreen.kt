@@ -21,6 +21,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemEnd
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.PaginationErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.PaginationLoadingContent
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.rememberCallback
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.rememberPaginationListState
+import ru.hitsbank.bank_common.presentation.theme.S14_W400
+import ru.hitsbank.bank_common.presentation.theme.S22_W400
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
@@ -28,21 +43,6 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.event.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListPaginationState
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.CreateAccountDialogState
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.ErrorContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemEnd
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationErrorContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.PaginationLoadingContent
-import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
-import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.rememberPaginationListState
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S14_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
 
 @Composable
 internal fun AccountListScreenWrapper(
@@ -153,7 +153,7 @@ internal fun AccountListScreenReady(
                 title = item.number,
                 subtitle = item.description,
                 subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
-                end = ListItemEnd.Chevron(
+                end = ListItemEnd.ClickableChevron(
                     onClick = { onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number)) },
                 ),
             )

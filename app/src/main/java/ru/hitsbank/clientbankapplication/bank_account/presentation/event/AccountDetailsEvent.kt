@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.event
 
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
+import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
 
 sealed interface AccountDetailsEvent {
 
@@ -14,6 +14,16 @@ sealed interface AccountDetailsEvent {
     data object OnDismissTopUpDialog : AccountDetailsEvent
 
     data object OnDismissWithdrawDialog : AccountDetailsEvent
+
+    data object OnOpenTransferDialog : AccountDetailsEvent
+
+    data object OnDismissTransferDialog : AccountDetailsEvent
+
+    data class OnTransferAmountChange(val amount: String) : AccountDetailsEvent
+
+    data class OnTransferAccountChange(val accountNumber: String) : AccountDetailsEvent
+
+    data object Transfer : AccountDetailsEvent
 
     data class OnTopUpAmountChange(val amount: String) : AccountDetailsEvent
 

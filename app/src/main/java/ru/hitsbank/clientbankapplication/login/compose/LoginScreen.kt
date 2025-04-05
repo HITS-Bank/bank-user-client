@@ -23,11 +23,11 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.bank_common.Constants.GENERAL_ERROR_TEXT
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
-import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
-import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
-import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.rememberCallback
+import ru.hitsbank.bank_common.presentation.common.verticalSpacer
 import ru.hitsbank.clientbankapplication.login.event.LoginEffect
 import ru.hitsbank.clientbankapplication.login.event.LoginEvent
 import ru.hitsbank.clientbankapplication.login.model.LoginScreenModel
