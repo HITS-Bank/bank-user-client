@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.0"
+datastorePreferences = "1.1.4"
 gsonConverterVersion = "2.9.0"
 gsonVersion = "2.10.1"
 hiltNavigationCompose = "1.2.0"
@@ -21,6 +22,7 @@ hilt = "2.51.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }

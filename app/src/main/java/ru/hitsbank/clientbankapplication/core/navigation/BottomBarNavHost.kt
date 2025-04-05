@@ -16,10 +16,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import ru.hitsbank.bank_common.domain.entity.RoleType
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.bank_common.presentation.navigation.BottomBarDestination
+import ru.hitsbank.bank_common.presentation.theme.settings.compose.ThemeSettingsScreen
+import ru.hitsbank.bank_common.presentation.theme.settings.viewmodel.ThemeSettingsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanListScreen
 
 object BottomBarDestinations {
@@ -32,6 +35,11 @@ object BottomBarDestinations {
     object Tariffs : BottomBarDestination() {
         override val icon = R.drawable.ic_credit_24
         override val title = "Кредиты"
+    }
+
+    object Personalization : BottomBarDestination() {
+        override val icon = R.drawable.ic_personalization
+        override val title = "Персонализация"
     }
 }
 
@@ -85,6 +93,14 @@ fun BottomBarNavHost() {
             }
             composable(route = BottomBarDestinations.Tariffs.route) {
                 LoanListScreen()
+            }
+            composable(route = BottomBarDestinations.Personalization.route) {
+                val viewModel = hiltViewModel<ThemeSettingsViewModel, ThemeSettingsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(RoleType.CLIENT)
+                    }
+                )
+                ThemeSettingsScreen(viewModel)
             }
         }
     }

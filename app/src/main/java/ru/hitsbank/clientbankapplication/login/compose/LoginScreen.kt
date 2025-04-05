@@ -21,9 +21,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.bank_common.Constants.GENERAL_ERROR_TEXT
 import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
 import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
 import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.rememberCallback

@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
 import ru.hitsbank.bank_common.presentation.common.component.BankButton
 import ru.hitsbank.bank_common.presentation.common.component.Divider
 import ru.hitsbank.bank_common.presentation.common.component.ListItem
@@ -42,7 +43,6 @@ import ru.hitsbank.bank_common.presentation.common.rememberCallback
 import ru.hitsbank.bank_common.presentation.common.verticalSpacer
 import ru.hitsbank.bank_common.presentation.theme.S16_W400
 import ru.hitsbank.bank_common.presentation.theme.S22_W400
-import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEffect
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEvent

@@ -22,6 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
 import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
 import ru.hitsbank.bank_common.presentation.common.component.ListItem
 import ru.hitsbank.bank_common.presentation.common.component.ListItemEnd
@@ -36,7 +37,6 @@ import ru.hitsbank.bank_common.presentation.pagination.PaginationState
 import ru.hitsbank.bank_common.presentation.pagination.rememberPaginationListState
 import ru.hitsbank.bank_common.presentation.theme.S14_W400
 import ru.hitsbank.bank_common.presentation.theme.S22_W400
-import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent

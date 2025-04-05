@@ -26,6 +26,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
 import ru.hitsbank.bank_common.presentation.common.component.BankButton
 import ru.hitsbank.bank_common.presentation.common.component.Divider
 import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
@@ -45,7 +46,6 @@ import ru.hitsbank.bank_common.presentation.pagination.rememberPaginationListSta
 import ru.hitsbank.bank_common.presentation.theme.S16_W400
 import ru.hitsbank.bank_common.presentation.theme.S22_W400
 import ru.hitsbank.bank_common.presentation.theme.S24_W600
-import ru.hitsbank.clientbankapplication.LocalSnackbarController
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEffect
