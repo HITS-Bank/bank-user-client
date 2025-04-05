@@ -79,4 +79,19 @@ class BankAccountInteractor @Inject constructor(
         emit(State.Loading)
         emit(bankAccountRepository.transfer(transferConfirmation).toState())
     }
+
+    fun getHiddenAccountIds(): Flow<State<List<String>>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.getHiddenAccountIds().toState())
+    }
+
+    fun hideAccount(accountId: String): Flow<State<Completable>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.hideAccount(accountId).toState())
+    }
+
+    fun unhideAccount(accountId: String): Flow<State<Completable>> = flow {
+        emit(State.Loading)
+        emit(bankAccountRepository.unhideAccount(accountId).toState())
+    }
 }

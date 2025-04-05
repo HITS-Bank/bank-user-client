@@ -15,6 +15,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.bank_common.presentation.navigation.Destination
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.TransferDetailsScreen
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListMode
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.TransferDetailsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
@@ -152,6 +153,8 @@ object RootDestinations {
     object TariffSelection : Destination()
 
     object AccountSelection : Destination()
+
+    object HiddenAccounts : Destination()
 }
 
 @Composable
@@ -360,7 +363,17 @@ fun RootNavHost(
             val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
                 creationCallback = { factory ->
                     factory.create(
-                        isSelectionMode = true,
+                        AccountListMode.SELECTION,
+                    )
+                }
+            )
+            AccountListScreenWrapper(viewModel)
+        }
+        composable(route = RootDestinations.HiddenAccounts.route) {
+            val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(
+                        AccountListMode.HIDDEN_ACCOUNTS,
                     )
                 }
             )

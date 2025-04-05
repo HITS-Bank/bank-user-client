@@ -51,4 +51,10 @@ interface IBankAccountRepository {
     suspend fun transfer(
         confirmation: TransferConfirmation
     ): Result<BankAccountEntity>
+
+    suspend fun getHiddenAccountIds(): Result<List<String>>
+
+    suspend fun hideAccount(accountId: String): Result<Completable>
+
+    suspend fun unhideAccount(accountId: String): Result<Completable>
 }

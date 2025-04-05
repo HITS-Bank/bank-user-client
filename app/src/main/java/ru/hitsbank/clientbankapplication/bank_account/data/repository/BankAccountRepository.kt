@@ -111,4 +111,26 @@ class BankAccountRepository @Inject constructor(
                 .map(mapper::map)
         }
     }
+
+    override suspend fun getHiddenAccountIds(): Result<List<String>> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.getHiddenAccounts()
+                .toResult()
+                .map { it.accounts }
+        }
+    }
+
+    override suspend fun hideAccount(accountId: String): Result<Completable> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.hideAccount(accountId)
+                .toCompletableResult()
+        }
+    }
+
+    override suspend fun unhideAccount(accountId: String): Result<Completable> {
+        return apiCall(Dispatchers.IO) {
+            bankAccountApi.unhideAccount(accountId)
+                .toCompletableResult()
+        }
+    }
 }

@@ -23,6 +23,7 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.bank_common.presentation.navigation.BottomBarDestination
 import ru.hitsbank.bank_common.presentation.theme.settings.compose.ThemeSettingsScreen
 import ru.hitsbank.bank_common.presentation.theme.settings.viewmodel.ThemeSettingsViewModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListMode
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanListScreen
 
 object BottomBarDestinations {
@@ -85,7 +86,7 @@ fun BottomBarNavHost() {
                 val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
                     creationCallback = { factory ->
                         factory.create(
-                            isSelectionMode = false,
+                            accountListMode = AccountListMode.DEFAULT,
                         )
                     }
                 )

@@ -23,13 +23,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.BankUiState
 import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
+import ru.hitsbank.bank_common.presentation.common.component.Divider
 import ru.hitsbank.bank_common.presentation.common.component.ErrorContent
 import ru.hitsbank.bank_common.presentation.common.component.ListItem
 import ru.hitsbank.bank_common.presentation.common.component.ListItemEnd
 import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
 import ru.hitsbank.bank_common.presentation.common.component.LoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
 import ru.hitsbank.bank_common.presentation.common.component.PaginationErrorContent
 import ru.hitsbank.bank_common.presentation.common.component.PaginationLoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.SwipeableInfo
+import ru.hitsbank.bank_common.presentation.common.component.SwipeableListItem
 import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.rememberCallback
 import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
@@ -40,6 +44,7 @@ import ru.hitsbank.bank_common.presentation.theme.S22_W400
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountListEvent
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListMode
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListPaginationState
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.CreateAccountDialogState
@@ -56,6 +61,9 @@ internal fun AccountListScreenWrapper(
     viewModel.effects.observeWithLifecycle { effect ->
         when (effect) {
             AccountListEffect.OnCreateAccountError -> snackbar.show("Не получилось открыть счет")
+            AccountListEffect.OnFailedToLoadHiddenAccounts -> snackbar.show("Не удалось загрузить скрытые счета")
+            AccountListEffect.OnHideAccountError -> snackbar.show("Не удалось скрыть счет")
+            AccountListEffect.OnUnhideAccountError -> snackbar.show("Не удалось убрать счет из скрытых")
         }
     }
 
@@ -89,12 +97,12 @@ internal fun AccountListScreenReady(
     listState: LazyListState,
 ) = Scaffold(
     topBar = {
-        if (!model.isSelectionMode) {
+        if (model.accountListMode != AccountListMode.SELECTION) {
             CenterAlignedTopAppBar(
                 windowInsets = WindowInsets(0),
                 title = {
                     Text(
-                        text = "Счета",
+                        text = model.accountListMode.topBarTitle,
                         style = S22_W400,
                     )
                 },
@@ -103,7 +111,7 @@ internal fun AccountListScreenReady(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Выбор счета",
+                        text = model.accountListMode.topBarTitle,
                         style = S22_W400,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -124,7 +132,7 @@ internal fun AccountListScreenReady(
         }
     },
     floatingActionButton = {
-        if (!model.isUserBlocked && !model.isSelectionMode) {
+        if (!model.isUserBlocked && model.accountListMode == AccountListMode.DEFAULT) {
             FloatingActionButton(
                 onClick = { onEvent.invoke(AccountListEvent.OnOpenCreateAccountDialog) },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -144,19 +152,49 @@ internal fun AccountListScreenReady(
         state = listState,
     ) {
         items(model.data) { item ->
-            ListItem(
-                icon = ListItemIcon.Vector(
-                    iconResId = R.drawable.ic_account_balance_wallet_24,
-                    backgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                    iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                title = item.number,
-                subtitle = item.description,
-                subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
-                end = ListItemEnd.ClickableChevron(
-                    onClick = { onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number)) },
-                ),
-            )
+            if (model.accountListMode != AccountListMode.SELECTION) {
+                SwipeableListItem(
+                    icon = ListItemIcon.Vector(
+                        iconResId = R.drawable.ic_account_balance_wallet_24,
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                        iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    title = item.number,
+                    subtitle = item.description,
+                    subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
+                    end = ListItemEnd.ClickableChevron(
+                        onClick = {
+                            onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number))
+                        },
+                    ),
+                    swipeableInfo = SwipeableInfo(
+                        iconResId = if (item.isHidden) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off,
+                        onIconClick = {
+                            if (item.isHidden) {
+                                onEvent(AccountListEvent.UnhideAccount(item.id))
+                            } else {
+                                onEvent(AccountListEvent.HideAccount(item.id))
+                            }
+                        },
+                    ),
+                )
+            } else {
+                ListItem(
+                    icon = ListItemIcon.Vector(
+                        iconResId = R.drawable.ic_account_balance_wallet_24,
+                        backgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                        iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
+                    title = item.number,
+                    subtitle = item.description,
+                    subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
+                    end = ListItemEnd.ClickableChevron(
+                        onClick = {
+                            onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number))
+                        },
+                    ),
+                )
+            }
         }
 
         item {
@@ -170,7 +208,21 @@ internal fun AccountListScreenReady(
                         onEvent(AccountListEvent.OnPaginationEvent(PaginationEvent.LoadNextPage))
                     }
                 }
-                else -> Unit
+                else -> {
+                    if (model.accountListMode == AccountListMode.DEFAULT) {
+                        ListItem(
+                            icon = ListItemIcon.Vector(
+                                iconResId = R.drawable.ic_visibility_off,
+                                backgroundColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                iconColor = MaterialTheme.colorScheme.inverseOnSurface,
+                            ),
+                            title = "Скрытые счета",
+                            subtitle = "Нажмите, чтобы посмотреть",
+                            divider = Divider.None,
+                            modifier = Modifier.clickable { onEvent(AccountListEvent.OpenHiddenAccounts) },
+                        )
+                    }
+                }
             }
         }
     }
@@ -178,5 +230,9 @@ internal fun AccountListScreenReady(
     when (val dialogState = model.createAccountDialogState) {
         is CreateAccountDialogState.Shown -> CreateAccountDialog(model.currencyCodeItems, dialogState, onEvent)
         CreateAccountDialogState.Hidden -> Unit
+    }
+
+    if (model.isPerformingAction) {
+        LoadingContentOverlay()
     }
 }

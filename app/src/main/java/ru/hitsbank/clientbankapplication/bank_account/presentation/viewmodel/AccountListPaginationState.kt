@@ -7,6 +7,12 @@ import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CurrencyCodeDropdownItem
 
+enum class AccountListMode(val topBarTitle: String) {
+    DEFAULT("Счета"),
+    HIDDEN_ACCOUNTS("Скрытые счета"),
+    SELECTION("Выбор счета"),
+}
+
 data class AccountListPaginationState(
     override val paginationState: PaginationState,
     override val data: List<AccountItem>,
@@ -14,8 +20,8 @@ data class AccountListPaginationState(
     override val pageSize: Int,
     val isUserBlocked: Boolean,
     val createAccountDialogState: CreateAccountDialogState,
-    val isCreateAccountLoading: Boolean,
-    val isSelectionMode: Boolean,
+    val isPerformingAction: Boolean,
+    val accountListMode: AccountListMode,
 ) : PaginationStateHolder<AccountItem> {
 
     val currencyCodeItems = CurrencyCode.entries.map { code -> CurrencyCodeDropdownItem(code) }
@@ -33,15 +39,15 @@ data class AccountListPaginationState(
     }
 
     companion object {
-        fun default(isSelectionMode: Boolean) = AccountListPaginationState(
+        fun default(accountListMode: AccountListMode) = AccountListPaginationState(
             paginationState = PaginationState.Idle,
             data = emptyList(),
             pageNumber = 1,
             pageSize = DEFAULT_PAGE_SIZE,
             isUserBlocked = false,
             createAccountDialogState = CreateAccountDialogState.Hidden,
-            isCreateAccountLoading = false,
-            isSelectionMode = isSelectionMode,
+            isPerformingAction = false,
+            accountListMode = accountListMode,
         )
     }
 }

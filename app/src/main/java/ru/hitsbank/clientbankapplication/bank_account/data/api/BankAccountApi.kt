@@ -2,12 +2,14 @@ package ru.hitsbank.clientbankapplication.bank_account.data.api
 
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.HiddenAccountsResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferConfirmationModel
@@ -74,4 +76,17 @@ interface BankAccountApi {
     suspend fun transfer(
         @Body transferConfirmationModel: TransferConfirmationModel
     ) : Response<BankAccountResponse>
+
+    @POST("personalization/hiddenAccount")
+    suspend fun hideAccount(
+        @Query("accountId") accountId: String,
+    ): Response<Unit>
+
+    @DELETE("personalization/hiddenAccount")
+    suspend fun unhideAccount(
+        @Query("accountId") accountId: String,
+    ): Response<Unit>
+
+    @GET("personalization/hiddenAccount/list")
+    suspend fun getHiddenAccounts(): Response<HiddenAccountsResponse>
 }

@@ -23,4 +23,10 @@ sealed interface AccountListEvent {
     data class OnSetAccountCreateDropdownExpanded(val isExpanded: Boolean) : AccountListEvent
 
     data object Back : AccountListEvent
+
+    data class HideAccount(val accountId: String) : AccountListEvent
+
+    data class UnhideAccount(val accountId: String) : AccountListEvent
+
+    data object OpenHiddenAccounts : AccountListEvent
 }

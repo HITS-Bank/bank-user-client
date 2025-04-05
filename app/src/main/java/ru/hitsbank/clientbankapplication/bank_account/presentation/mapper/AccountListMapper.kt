@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class AccountListMapper @Inject constructor() {
 
-    fun map(entity: AccountListEntity): List<AccountItem> {
+    fun map(entity: AccountListEntity, hiddenAccountIds: List<String>): List<AccountItem> {
         return entity.bankAccounts.map { accountEntity ->
             AccountItem(
                 id = accountEntity.id,
@@ -21,6 +21,7 @@ class AccountListMapper @Inject constructor() {
                     accountEntity.status,
                 ),
                 descriptionColorId = getBankAccountColorId(accountEntity.status),
+                isHidden = hiddenAccountIds.contains(accountEntity.id),
             )
         }
     }
