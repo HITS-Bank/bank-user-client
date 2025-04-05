@@ -16,9 +16,11 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Acc
 import ru.hitsbank.bank_common.presentation.navigation.Destination
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanPaymentsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanCreateViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanPaymentsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
 import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
 
@@ -72,6 +74,26 @@ object RootDestinations {
         )
     }
 
+    object LoanPayments: Destination() {
+        const val LOAN_ID_ARG = "loanId"
+        const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
+
+        override var arguments = listOf(
+            LOAN_ID_ARG,
+            IS_USER_BLOCKED_ARG,
+        )
+
+        fun withArgs(
+            loanId: String,
+            isUserBlocked: Boolean,
+        ): String {
+            return destinationWithArgs(
+                args = listOf(loanId, isUserBlocked),
+                optionalArgs = emptyMap(),
+            )
+        }
+    }
+
     object LoanDetails : Destination() {
         const val OPTIONAL_LOAN_ENTITY_JSON_ARG = "loanEntity"
         const val OPTIONAL_LOAN_ID_ARG = "loanId"
@@ -97,7 +119,7 @@ object RootDestinations {
 
         override var optionalArguments = listOf(
             OPTIONAL_LOAN_ENTITY_JSON_ARG,
-            OPTIONAL_LOAN_ID_ARG
+            OPTIONAL_LOAN_ID_ARG,
         )
     }
 
@@ -208,6 +230,40 @@ fun RootNavHost(
                 }
             )
             LoanCreateScreen(viewModel)
+        }
+        composable(
+            route = RootDestinations.LoanPayments.route,
+            arguments = listOf(
+                navArgument(RootDestinations.LoanPayments.LOAN_ID_ARG) {
+                    type = NavType.StringType
+                },
+                navArgument(RootDestinations.LoanPayments.IS_USER_BLOCKED_ARG) {
+                    type = NavType.BoolType
+                },
+            )
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getString(
+                RootDestinations.LoanPayments.LOAN_ID_ARG
+            )
+            val isUserBlocked = backStackEntry.arguments?.getBoolean(
+                RootDestinations.LoanPayments.IS_USER_BLOCKED_ARG
+            )
+
+            if (loanId != null && isUserBlocked != null) {
+                val viewModel: LoanPaymentsViewModel = hiltViewModel<LoanPaymentsViewModel, LoanPaymentsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(
+                            loanId = loanId,
+                            isUserBlocked = isUserBlocked,
+                        )
+                    }
+                )
+                LoanPaymentsScreen(viewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navHostController.popBackStack()
+                }
+            }
         }
         composable(
             route = RootDestinations.LoanDetails.route,

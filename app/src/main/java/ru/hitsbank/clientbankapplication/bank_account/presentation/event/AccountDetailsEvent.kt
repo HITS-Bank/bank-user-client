@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.event
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 
 sealed interface AccountDetailsEvent {
@@ -17,6 +18,14 @@ sealed interface AccountDetailsEvent {
     data class OnTopUpAmountChange(val amount: String) : AccountDetailsEvent
 
     data class OnWithdrawAmountChange(val amount: String) : AccountDetailsEvent
+
+    data class OnTopUpCurrencyChange(val currencyCode: CurrencyCode) : AccountDetailsEvent
+
+    data class OnWithdrawCurrencyChange(val currencyCode: CurrencyCode) : AccountDetailsEvent
+
+    data class OnTopUpDropdownExpanded(val isExpanded: Boolean) : AccountDetailsEvent
+
+    data class OnWithdrawDropdownExpanded(val isExpanded: Boolean) : AccountDetailsEvent
 
     data object TopUp : AccountDetailsEvent
 

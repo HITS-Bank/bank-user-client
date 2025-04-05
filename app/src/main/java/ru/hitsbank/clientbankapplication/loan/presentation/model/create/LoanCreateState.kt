@@ -1,5 +1,7 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.model.create
 
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+
 data class LoanCreateState(
     val amount: String,
     val termInMonths: String,
@@ -7,6 +9,7 @@ data class LoanCreateState(
     val tariffName: String?,
     val accountNumber: String?,
     val accountId: String?,
+    val loanRatingState: BankUiState<Int>,
     val isPerformingAction: Boolean,
 ) {
     val canCreateLoan: Boolean
@@ -29,6 +32,7 @@ data class LoanCreateState(
             accountNumber = null,
             accountId = null,
             isPerformingAction = false,
+            loanRatingState = BankUiState.Loading,
         )
     }
 }

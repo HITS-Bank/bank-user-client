@@ -17,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import ru.hitsbank.bank_common.presentation.common.component.dropdown.DropdownField
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTopUpDialogModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CurrencyCodeDropdownItem
 import ru.hitsbank.clientbankapplication.core.presentation.common.horizontalSpacer
 import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
 import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
@@ -27,6 +29,7 @@ import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W500
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TopUpDialog(
+    items: List<CurrencyCodeDropdownItem>,
     model: AccountDetailsTopUpDialogModel,
     onEvent: (AccountDetailsEvent) -> Unit,
 ) {
@@ -53,6 +56,20 @@ internal fun TopUpDialog(
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                )
+                16.dp.verticalSpacer()
+                DropdownField(
+                    items = items,
+                    selectedItem = model.currencyCodeDropdownItem,
+                    onItemSelected = { onEvent(AccountDetailsEvent.OnTopUpCurrencyChange(it.currencyCode)) },
+                    isDropdownOpen = model.isDropdownExpanded,
+                    onOpenDropdown = {
+                        onEvent(AccountDetailsEvent.OnTopUpDropdownExpanded(true))
+                    },
+                    onCloseDropdown = {
+                        onEvent(AccountDetailsEvent.OnTopUpDropdownExpanded(false))
+                    },
+                    label = "Валюта пополнения",
                 )
                 16.dp.verticalSpacer()
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

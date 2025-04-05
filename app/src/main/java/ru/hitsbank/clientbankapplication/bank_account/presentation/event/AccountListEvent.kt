@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.event
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationEvent
 
 sealed interface AccountListEvent {
@@ -15,7 +16,11 @@ sealed interface AccountListEvent {
 
     data object OnDismissCreateAccountDialog : AccountListEvent
 
-    data object OnCreateAccount : AccountListEvent
+    data class OnCreateAccount(val currencyCode: CurrencyCode) : AccountListEvent
+
+    data class OnSelectAccountCurrencyCode(val currencyCode: CurrencyCode) : AccountListEvent
+
+    data class OnSetAccountCreateDropdownExpanded(val isExpanded: Boolean) : AccountListEvent
 
     data object Back : AccountListEvent
 }

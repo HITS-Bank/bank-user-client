@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.model
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
 import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
@@ -21,6 +22,8 @@ data class AccountDetailsScreenModel(
     val isOverlayLoading: Boolean,
 ) : PaginationStateHolder<OperationHistoryItem> {
 
+    val currencyCodeDropdownItems = CurrencyCode.entries.map { code -> CurrencyCodeDropdownItem(code) }
+
     override fun copyWith(
         paginationState: PaginationState,
         data: List<OperationHistoryItem>,
@@ -37,8 +40,11 @@ data class AccountDetailsScreenModel(
 data class AccountDetailsTopUpDialogModel(
     val isShown: Boolean,
     val amount: String,
+    val currencyCode: CurrencyCode,
+    val isDropdownExpanded: Boolean,
     val isDataValid: Boolean,
 ) {
+    val currencyCodeDropdownItem = CurrencyCodeDropdownItem(currencyCode)
 
     companion object {
         const val DEFAULT_AMOUNT = 10000
@@ -48,8 +54,11 @@ data class AccountDetailsTopUpDialogModel(
 data class AccountDetailsWithdrawDialogModel(
     val isShown: Boolean,
     val amount: String,
+    val currencyCode: CurrencyCode,
+    val isDropdownExpanded: Boolean,
     val isDataValid: Boolean,
 ) {
+    val currencyCodeDropdownItem = CurrencyCodeDropdownItem(currencyCode)
 
     companion object {
         const val DEFAULT_AMOUNT = 10000
@@ -82,6 +91,7 @@ data class OperationHistoryItem(
     val title: String,
     val description: String,
     val operationType: OperationType,
+    val currencyCodeChar: Char,
     val amountText: String,
     val leftPartBackgroundColorId: Int,
     val contentColorId: Int,

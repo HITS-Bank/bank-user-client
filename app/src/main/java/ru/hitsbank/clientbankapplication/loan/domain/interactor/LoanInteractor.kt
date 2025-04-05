@@ -7,6 +7,7 @@ import ru.hitsbank.bank_common.domain.toState
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanCreateEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
+import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
@@ -47,5 +48,15 @@ class LoanInteractor @Inject constructor(
     fun makeLoanPayment(loanId: String, amount: String): Flow<State<LoanEntity>> = flow {
         emit(State.Loading)
         emit(loanRepository.makeLoanPayment(loanId, amount).toState())
+    }
+
+    fun getLoanRating(): Flow<State<Int>> = flow {
+        emit(State.Loading)
+        emit(loanRepository.getLoanRating().toState())
+    }
+
+    fun getLoanPayments(loanId: String): Flow<State<List<LoanPaymentEntity>>> = flow {
+        emit(State.Loading)
+        emit(loanRepository.getLoanPayments(loanId).toState())
     }
 }
