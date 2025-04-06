@@ -1,6 +1,7 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.compose
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,16 +18,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
 import ru.hitsbank.bank_common.presentation.common.component.BankButton
 import ru.hitsbank.bank_common.presentation.common.component.Divider
 import ru.hitsbank.bank_common.presentation.common.component.ListItem
 import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
 import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
 import ru.hitsbank.bank_common.presentation.common.rememberCallback
 import ru.hitsbank.bank_common.presentation.common.verticalSpacer
 import ru.hitsbank.bank_common.presentation.theme.S22_W400
 import ru.hitsbank.bank_common.presentation.theme.S24_W600
 import ru.hitsbank.clientbankapplication.R
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.TransferDetailsEffect
 import ru.hitsbank.clientbankapplication.bank_account.presentation.event.TransferDetailsEvent
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.TransferDetailsViewModel
 
@@ -35,6 +39,13 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.Tra
 fun TransferDetailsScreen(viewModel: TransferDetailsViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onEvent = rememberCallback(viewModel::onEvent)
+    val snackbar = LocalSnackbarController.current
+
+    viewModel.effects.observeWithLifecycle { effect ->
+        when (effect) {
+            TransferDetailsEffect.TransferError -> snackbar.show("Не удалось перевести средства")
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -90,6 +101,7 @@ fun TransferDetailsScreen(viewModel: TransferDetailsViewModel) {
                     subtitle = item.subtitle,
                     divider = Divider.None,
                     isTitleCopyable = item.copyable,
+                    padding = PaddingValues(vertical = 8.dp),
                 )
             }
         }
