@@ -3,19 +3,18 @@ package ru.hitsbank.clientbankapplication.bank_account.domain.interactor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.domain.toState
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
-import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
-import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.bank_common.domain.State
-import ru.hitsbank.bank_common.domain.entity.CurrencyCode
-import ru.hitsbank.bank_common.domain.toState
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import javax.inject.Inject
 
 class BankAccountInteractor @Inject constructor(
@@ -62,12 +61,12 @@ class BankAccountInteractor @Inject constructor(
     }
 
     fun getOperationHistory(
-        accountNumberRequest: AccountNumberRequest,
+        accountId: String,
         pageSize: Int,
         pageNumber: Int,
     ): Flow<State<List<OperationEntity>>> = flow {
         emit(State.Loading)
-        emit(bankAccountRepository.getOperationHistory(accountNumberRequest, pageSize, pageNumber).toState())
+        emit(bankAccountRepository.getOperationHistory(accountId, pageSize, pageNumber).toState())
     }
 
     fun getTransferInfo(transferRequest: TransferRequest): Flow<State<TransferInfo>> = flow {

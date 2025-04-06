@@ -5,6 +5,7 @@ import ru.hitsbank.bank_common.data.utils.apiCall
 import ru.hitsbank.bank_common.data.utils.toCompletableResult
 import ru.hitsbank.bank_common.data.utils.toResult
 import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.bank_common.domain.map
 import ru.hitsbank.clientbankapplication.bank_account.data.api.BankAccountApi
@@ -14,12 +15,10 @@ import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
-import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
-import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import ru.hitsbank.clientbankapplication.bank_account.domain.repository.IBankAccountRepository
 import javax.inject.Inject
 
 class BankAccountRepository @Inject constructor(
@@ -81,13 +80,13 @@ class BankAccountRepository @Inject constructor(
     }
 
     override suspend fun getOperationHistory(
-        accountNumberRequest: AccountNumberRequest,
+        accountId: String,
         pageSize: Int,
         pageNumber: Int,
     ): Result<List<OperationEntity>> {
         return apiCall(Dispatchers.IO) {
             bankAccountApi.getOperationHistory(
-                accountNumberRequest = accountNumberRequest,
+                accountId = accountId,
                 pageSize = pageSize,
                 pageNumber = pageNumber,
             )

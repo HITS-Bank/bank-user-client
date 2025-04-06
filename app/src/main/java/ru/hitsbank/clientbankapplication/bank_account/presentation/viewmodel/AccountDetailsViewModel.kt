@@ -14,16 +14,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.hitsbank.clientbankapplication.bank_account.domain.interactor.BankAccountInteractor
-import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
-import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEffect
-import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
-import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountDetailsMapper
-import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
-import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTopUpDialogModel
-import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
-import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
@@ -36,7 +26,16 @@ import ru.hitsbank.bank_common.presentation.navigation.back
 import ru.hitsbank.bank_common.presentation.navigation.forwardWithJsonResult
 import ru.hitsbank.bank_common.presentation.pagination.PaginationEvent
 import ru.hitsbank.bank_common.presentation.pagination.PaginationViewModel
+import ru.hitsbank.clientbankapplication.bank_account.domain.interactor.BankAccountInteractor
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEffect
+import ru.hitsbank.clientbankapplication.bank_account.presentation.event.AccountDetailsEvent
+import ru.hitsbank.clientbankapplication.bank_account.presentation.mapper.AccountDetailsMapper
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsScreenModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTopUpDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTransferDialogModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import kotlin.math.min
 
@@ -78,11 +77,9 @@ class AccountDetailsViewModel @AssistedInject constructor(
     }
 
     override fun getNextPageContents(pageNumber: Int): Flow<State<List<OperationHistoryItem>>> {
-        val accountNumber = _state.getIfSuccess()?.number ?: return flowOf(State.Error())
+        val accountId = _state.getIfSuccess()?.id ?: return flowOf(State.Error())
         return bankAccountInteractor.getOperationHistory(
-            accountNumberRequest = AccountNumberRequest(
-                accountNumber = accountNumber,
-            ),
+            accountId = accountId,
             pageSize = DEFAULT_PAGE_SIZE,
             pageNumber = pageNumber,
         ).map { state ->

@@ -1,14 +1,13 @@
 package ru.hitsbank.clientbankapplication.bank_account.domain.repository
 
 import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.clientbankapplication.bank_account.data.model.TopUpRequest
 import ru.hitsbank.clientbankapplication.bank_account.data.model.WithdrawRequest
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
-import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountNumberRequest
-import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
@@ -39,7 +38,7 @@ interface IBankAccountRepository {
     suspend fun getBankAccountById(accountId: String): Result<BankAccountEntity>
 
     suspend fun getOperationHistory(
-        accountNumberRequest: AccountNumberRequest,
+        accountId: String,
         pageSize: Int,
         pageNumber: Int,
     ): Result<List<OperationEntity>>

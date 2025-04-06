@@ -60,9 +60,9 @@ interface BankAccountApi {
     ): Response<Unit>
 
     // TODO WebSockets
-    @POST("core/bank_account/operation_history")
+    @POST("core/bank_account/{accountId}/operation_history")
     suspend fun getOperationHistory(
-        @Body accountNumberRequest: AccountNumberRequest,
+        @Path("accountId") accountId: String,
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
     ): Response<List<OperationResponse>>
