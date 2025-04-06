@@ -4,7 +4,7 @@ sealed interface LoanDetailsEvent {
 
     data object Back : LoanDetailsEvent
 
-    data class OpenBankAccount(val accountNumber: String) : LoanDetailsEvent
+    data class OpenBankAccount(val accountId: String) : LoanDetailsEvent
 
     data object MakeLoanPaymentDialogOpen : LoanDetailsEvent
 

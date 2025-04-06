@@ -1,6 +1,5 @@
 package ru.hitsbank.clientbankapplication.loan.data.api
 
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,10 +7,11 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanCreateRequest
-import ru.hitsbank.clientbankapplication.loan.data.model.LoanPage
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanPaymentRequest
+import ru.hitsbank.clientbankapplication.loan.data.model.LoanPaymentResponse
 import ru.hitsbank.clientbankapplication.loan.data.model.LoanResponse
-import ru.hitsbank.clientbankapplication.loan.data.model.LoanTariffsPage
+import ru.hitsbank.clientbankapplication.loan.data.model.LoanTariffResponse
+import ru.hitsbank.clientbankapplication.loan.data.model.LoanUserRatingResponse
 
 interface LoanApi {
 
@@ -22,17 +22,33 @@ interface LoanApi {
         @Query("pageNumber") pageNumber: Int,
         @Query("pageSize") pageSize: Int,
         @Query("nameQuery") nameQuery: String? = null,
-    ): Response<LoanTariffsPage>
+    ): Response<List<LoanTariffResponse>>
 
-    @GET("credit/loan/{loanNumber}")
-    suspend fun getLoanByNumber(@Path("loanNumber") loanNumber: String): Response<LoanResponse>
+    @GET("credit/loan/{loanId}")
+    suspend fun getLoanById(@Path("loanId") loanId: String): Response<LoanResponse>
 
     @POST("credit/loan/create")
     suspend fun createLoan(@Body loanCreateRequest: LoanCreateRequest): Response<LoanResponse>
 
     @GET("credit/loan/list")
-    suspend fun getLoansPage(@Query("pageSize") pageSize: Int, @Query("pageNumber") pageNumber: Int): Response<LoanPage>
+    suspend fun getLoansPage(
+        @Query("pageSize") pageSize: Int,
+        @Query("pageNumber") pageNumber: Int,
+    ): Response<List<LoanResponse>>
 
-    @POST("credit/loan/pay")
-    suspend fun makeLoanPayment(@Body paymentRequest: LoanPaymentRequest): Response<ResponseBody>
+    @POST("credit/loan/{loanId}/pay")
+    suspend fun makeLoanPayment(
+        @Path("loanId") loanId: String,
+        @Body paymentRequest: LoanPaymentRequest,
+    ): Response<Unit>
+
+    @GET("core/bank_account/loan/{loanId}/payments")
+    suspend fun getLoanPayments(
+        @Path("loanId") loanId: String,
+    ): Response<List<LoanPaymentResponse>>
+
+    @GET("core/bank_account/{userId}/rating")
+    suspend fun getLoanUserRating(
+        @Path("userId") userId: String,
+    ): Response<LoanUserRatingResponse>
 }

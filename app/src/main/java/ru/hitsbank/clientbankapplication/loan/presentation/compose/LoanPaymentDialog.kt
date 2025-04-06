@@ -17,10 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import ru.hitsbank.clientbankapplication.core.presentation.common.horizontalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W500
+import ru.hitsbank.bank_common.presentation.common.horizontalSpacer
+import ru.hitsbank.bank_common.presentation.common.verticalSpacer
+import ru.hitsbank.bank_common.presentation.theme.S16_W400
+import ru.hitsbank.bank_common.presentation.theme.S16_W500
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsDialogState
 

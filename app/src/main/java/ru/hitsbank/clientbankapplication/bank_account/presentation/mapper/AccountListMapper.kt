@@ -1,25 +1,34 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.mapper
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.common.formatToSum
 import ru.hitsbank.clientbankapplication.R
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
+import javax.inject.Inject
 
-class AccountListMapper {
+class AccountListMapper @Inject constructor() {
 
-    fun map(entity: AccountListEntity): List<AccountItem> {
+    fun map(entity: AccountListEntity, hiddenAccountIds: List<String>): List<AccountItem> {
         return entity.bankAccounts.map { accountEntity ->
             AccountItem(
+                id = accountEntity.id,
                 number = accountEntity.number,
-                description = getBankAccountDescription(accountEntity.balance, accountEntity.status),
+                description = getBankAccountDescription(
+                    accountEntity.balance,
+                    accountEntity.currencyCode,
+                    accountEntity.status,
+                ),
                 descriptionColorId = getBankAccountColorId(accountEntity.status),
+                isHidden = hiddenAccountIds.contains(accountEntity.id),
             )
         }
     }
 
     private fun getBankAccountDescription(
         balance: String,
+        currencyCode: CurrencyCode,
         statusEntity: BankAccountStatusEntity,
     ): String {
         return when (statusEntity) {
@@ -32,7 +41,7 @@ class AccountListMapper {
             }
 
             else -> {
-                "Баланс: ${balance.formatToSum()}"
+                "Баланс: ${balance.formatToSum(currencyCode)}"
             }
         }
     }

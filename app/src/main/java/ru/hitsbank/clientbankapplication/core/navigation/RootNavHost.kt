@@ -3,44 +3,66 @@ package ru.hitsbank.clientbankapplication.core.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountDetailsScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.AccountListScreenWrapper
 import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountDetailsViewModel
-import ru.hitsbank.clientbankapplication.core.navigation.base.Destination
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListViewModel
+import ru.hitsbank.bank_common.presentation.navigation.Destination
+import ru.hitsbank.clientbankapplication.bank_account.presentation.compose.TransferDetailsScreen
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.AccountListMode
+import ru.hitsbank.clientbankapplication.bank_account.presentation.viewmodel.TransferDetailsViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanCreateScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanDetailsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.compose.LoanPaymentsScreen
 import ru.hitsbank.clientbankapplication.loan.presentation.compose.tariff.TariffsScreen
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanCreateViewModel
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanDetailsViewModel
+import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanPaymentsViewModel
 import ru.hitsbank.clientbankapplication.login.compose.LoginScreenWrapper
+import ru.hitsbank.clientbankapplication.login.viewmodel.LoginViewModel
 
 object RootDestinations {
 
-    object Auth : Destination()
+    object Auth : Destination() {
+        const val OPTIONAL_AUTH_CODE_ARG = "authCode"
+
+        fun withArgs(authCode: String?): String {
+            return destinationWithArgs(
+                args = emptyList(),
+                optionalArgs = mapOf(
+                    OPTIONAL_AUTH_CODE_ARG to authCode,
+                )
+            )
+        }
+
+        override var optionalArguments = listOf(
+            OPTIONAL_AUTH_CODE_ARG,
+        )
+    }
 
     object BottomBarRoot : Destination()
 
     object AccountDetails : Destination() {
         const val OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG = "bankAccountEntity"
-        const val OPTIONAL_ACCOUNT_NUMBER_ARG = "accountNumber"
+        const val OPTIONAL_ACCOUNT_ID_ARG = "accountId"
         const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
 
         fun withArgs(
             bankAccountEntityJson: String?,
-            accountNumber: String?,
+            accountId: String?,
             isUserBlocked: Boolean,
         ): String {
             return destinationWithArgs(
                 args = listOf(isUserBlocked),
                 optionalArgs = mapOf(
                     OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG to bankAccountEntityJson,
-                    OPTIONAL_ACCOUNT_NUMBER_ARG to accountNumber,
+                    OPTIONAL_ACCOUNT_ID_ARG to accountId,
                 )
             )
         }
@@ -51,25 +73,61 @@ object RootDestinations {
 
         override var optionalArguments = listOf(
             OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG,
-            OPTIONAL_ACCOUNT_NUMBER_ARG
+            OPTIONAL_ACCOUNT_ID_ARG
         )
+    }
+
+    object AccountTransferDetails : Destination() {
+        const val TRANSFER_INFO_JSON_ARG = "transferInfo"
+
+        fun withArgs(
+            transferInfoJson: String,
+        ): String {
+            return destinationWithArgs(
+                args = listOf(transferInfoJson),
+            )
+        }
+
+        override var arguments = listOf(
+            TRANSFER_INFO_JSON_ARG,
+        )
+    }
+
+    object LoanPayments: Destination() {
+        const val LOAN_ID_ARG = "loanId"
+        const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
+
+        override var arguments = listOf(
+            LOAN_ID_ARG,
+            IS_USER_BLOCKED_ARG,
+        )
+
+        fun withArgs(
+            loanId: String,
+            isUserBlocked: Boolean,
+        ): String {
+            return destinationWithArgs(
+                args = listOf(loanId, isUserBlocked),
+                optionalArgs = emptyMap(),
+            )
+        }
     }
 
     object LoanDetails : Destination() {
         const val OPTIONAL_LOAN_ENTITY_JSON_ARG = "loanEntity"
-        const val OPTIONAL_LOAN_NUMBER_ARG = "loanId"
+        const val OPTIONAL_LOAN_ID_ARG = "loanId"
         const val IS_USER_BLOCKED_ARG = "IS_USER_BLOCKED_ARG"
 
         fun withArgs(
             loanEntityJson: String?,
-            loanNumber: String?,
+            loanId: String?,
             isUserBlocked: Boolean,
         ): String {
             return destinationWithArgs(
                 args = listOf(isUserBlocked),
                 optionalArgs = mapOf(
                     OPTIONAL_LOAN_ENTITY_JSON_ARG to loanEntityJson,
-                    OPTIONAL_LOAN_NUMBER_ARG to loanNumber,
+                    OPTIONAL_LOAN_ID_ARG to loanId,
                 )
             )
         }
@@ -80,7 +138,7 @@ object RootDestinations {
 
         override var optionalArguments = listOf(
             OPTIONAL_LOAN_ENTITY_JSON_ARG,
-            OPTIONAL_LOAN_NUMBER_ARG
+            OPTIONAL_LOAN_ID_ARG,
         )
     }
 
@@ -95,6 +153,8 @@ object RootDestinations {
     object TariffSelection : Destination()
 
     object AccountSelection : Destination()
+
+    object HiddenAccounts : Destination()
 }
 
 @Composable
@@ -104,11 +164,29 @@ fun RootNavHost(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = RootDestinations.Auth.destination,
+        startDestination = RootDestinations.Auth.route,
         modifier = modifier,
     ) {
-        composable(route = RootDestinations.Auth.route) {
-            LoginScreenWrapper()
+        composable(
+            route = RootDestinations.Auth.route,
+            arguments = listOf(
+                navArgument(RootDestinations.Auth.OPTIONAL_AUTH_CODE_ARG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                },
+            )
+        ) { backStackEntry ->
+            val authCode = backStackEntry.arguments?.getString(
+                RootDestinations.Auth.OPTIONAL_AUTH_CODE_ARG
+            )
+            val viewModel: LoginViewModel = hiltViewModel<LoginViewModel, LoginViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(authCode = authCode)
+                }
+            )
+
+            LoginScreenWrapper(viewModel)
         }
         composable(route = RootDestinations.BottomBarRoot.route) {
             BottomBarNavHost()
@@ -124,7 +202,7 @@ fun RootNavHost(
                     nullable = true
                     defaultValue = null
                 },
-                navArgument(RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG) {
+                navArgument(RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_ID_ARG) {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -137,14 +215,48 @@ fun RootNavHost(
             val bankAccountEntityJson = backStackEntry.arguments?.getString(
                 RootDestinations.AccountDetails.OPTIONAL_BANK_ACCOUNT_ENTITY_JSON_ARG
             )
-            val accountNumber = backStackEntry.arguments?.getString(
-                RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_NUMBER_ARG
-            )
-            val viewModel: AccountDetailsViewModel = koinViewModel(
-                parameters = { parametersOf(bankAccountEntityJson, accountNumber, isUserBlocked) },
+            val accountId = backStackEntry.arguments?.getString(
+                RootDestinations.AccountDetails.OPTIONAL_ACCOUNT_ID_ARG
             )
 
-            AccountDetailsScreenWrapper(viewModel)
+            isUserBlocked?.let {
+                val viewModel: AccountDetailsViewModel =
+                    hiltViewModel<AccountDetailsViewModel, AccountDetailsViewModel.Factory>(
+                        creationCallback = { factory ->
+                            factory.create(
+                                bankAccountEntityJson = bankAccountEntityJson,
+                                accountId = accountId,
+                                isUserBlocked = isUserBlocked,
+                            )
+                        }
+                    )
+                AccountDetailsScreenWrapper(viewModel)
+            }
+        }
+        composable(
+            route = RootDestinations.AccountTransferDetails.route,
+            arguments = listOf(
+                navArgument(RootDestinations.AccountTransferDetails.TRANSFER_INFO_JSON_ARG) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val transferInfoJson = backStackEntry.arguments?.getString(
+                RootDestinations.AccountTransferDetails.TRANSFER_INFO_JSON_ARG
+            )
+
+            if (transferInfoJson != null) {
+                val viewModel: TransferDetailsViewModel = hiltViewModel<TransferDetailsViewModel, TransferDetailsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(transferInfoJson)
+                    }
+                )
+                TransferDetailsScreen(viewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navHostController.popBackStack()
+                }
+            }
         }
         composable(
             route = RootDestinations.CreateLoan.route,
@@ -158,11 +270,46 @@ fun RootNavHost(
                 RootDestinations.CreateLoan.IS_USER_BLOCKED_ARG
             )
 
-            LoanCreateScreen(
-                viewModel = koinViewModel(
-                    parameters = { parametersOf(isUserBlocked ?: true) }
-                )
+            val viewModel: LoanCreateViewModel = hiltViewModel<LoanCreateViewModel, LoanCreateViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(isUserBlocked = isUserBlocked ?: true)
+                }
             )
+            LoanCreateScreen(viewModel)
+        }
+        composable(
+            route = RootDestinations.LoanPayments.route,
+            arguments = listOf(
+                navArgument(RootDestinations.LoanPayments.LOAN_ID_ARG) {
+                    type = NavType.StringType
+                },
+                navArgument(RootDestinations.LoanPayments.IS_USER_BLOCKED_ARG) {
+                    type = NavType.BoolType
+                },
+            )
+        ) { backStackEntry ->
+            val loanId = backStackEntry.arguments?.getString(
+                RootDestinations.LoanPayments.LOAN_ID_ARG
+            )
+            val isUserBlocked = backStackEntry.arguments?.getBoolean(
+                RootDestinations.LoanPayments.IS_USER_BLOCKED_ARG
+            )
+
+            if (loanId != null && isUserBlocked != null) {
+                val viewModel: LoanPaymentsViewModel = hiltViewModel<LoanPaymentsViewModel, LoanPaymentsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(
+                            loanId = loanId,
+                            isUserBlocked = isUserBlocked,
+                        )
+                    }
+                )
+                LoanPaymentsScreen(viewModel)
+            } else {
+                LaunchedEffect(Unit) {
+                    navHostController.popBackStack()
+                }
+            }
         }
         composable(
             route = RootDestinations.LoanDetails.route,
@@ -175,7 +322,7 @@ fun RootNavHost(
                     nullable = true
                     defaultValue = null
                 },
-                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG) {
+                navArgument(RootDestinations.LoanDetails.OPTIONAL_LOAN_ID_ARG) {
                     type = NavType.StringType
                     nullable = true
                     defaultValue = null
@@ -188,12 +335,18 @@ fun RootNavHost(
             val loanEntityJson = it.arguments?.getString(
                 RootDestinations.LoanDetails.OPTIONAL_LOAN_ENTITY_JSON_ARG
             )
-            val loanNumber = it.arguments?.getString(
-                RootDestinations.LoanDetails.OPTIONAL_LOAN_NUMBER_ARG
+            val loanId = it.arguments?.getString(
+                RootDestinations.LoanDetails.OPTIONAL_LOAN_ID_ARG
             )
             if (isUserBlocked != null) {
-                val viewModel: LoanDetailsViewModel = koinViewModel(
-                    parameters = { parametersOf(loanNumber, loanEntityJson, isUserBlocked) }
+                val viewModel: LoanDetailsViewModel = hiltViewModel<LoanDetailsViewModel, LoanDetailsViewModel.Factory>(
+                    creationCallback = { factory ->
+                        factory.create(
+                            loanId = loanId,
+                            loanEntityJson = loanEntityJson,
+                            isUserBlocked = isUserBlocked,
+                        )
+                    }
                 )
 
                 LoanDetailsScreen(viewModel)
@@ -207,11 +360,24 @@ fun RootNavHost(
             TariffsScreen()
         }
         composable(route = RootDestinations.AccountSelection.route) {
-            AccountListScreenWrapper(
-                viewModel = koinViewModel(
-                    parameters = { parametersOf(true) }
-                )
+            val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(
+                        AccountListMode.SELECTION,
+                    )
+                }
             )
+            AccountListScreenWrapper(viewModel)
+        }
+        composable(route = RootDestinations.HiddenAccounts.route) {
+            val viewModel: AccountListViewModel = hiltViewModel<AccountListViewModel, AccountListViewModel.Factory>(
+                creationCallback = { factory ->
+                    factory.create(
+                        AccountListMode.HIDDEN_ACCOUNTS,
+                    )
+                }
+            )
+            AccountListScreenWrapper(viewModel)
         }
     }
 }

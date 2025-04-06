@@ -6,9 +6,13 @@ sealed interface AccountDetailsEffect {
 
     data object OnWithdrawError : AccountDetailsEffect
 
+    data object OnTransferError : AccountDetailsEffect
+
     data object OnTopUpSuccess : AccountDetailsEffect
 
     data object OnWithdrawSuccess : AccountDetailsEffect
+
+    data object OnTransferSuccess : AccountDetailsEffect
 
     data object OnCloseAccountError : AccountDetailsEffect
 

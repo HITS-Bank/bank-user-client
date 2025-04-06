@@ -14,18 +14,24 @@ import ru.hitsbank.clientbankapplication.bank_account.presentation.model.Account
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsWithdrawDialogModel
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.CloseAccountDialog
 import ru.hitsbank.clientbankapplication.bank_account.presentation.model.OperationHistoryItem
-import ru.hitsbank.clientbankapplication.core.constants.Constants.DEFAULT_PAGE_SIZE
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
-import ru.hitsbank.clientbankapplication.core.presentation.common.utcDateTimeToReadableFormat
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.Constants.DEFAULT_PAGE_SIZE
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.common.formatToSum
+import ru.hitsbank.bank_common.presentation.common.toSymbol
+import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import ru.hitsbank.clientbankapplication.bank_account.presentation.model.AccountDetailsTransferDialogModel
+import javax.inject.Inject
 
-class AccountDetailsMapper {
+class AccountDetailsMapper @Inject constructor() {
 
     fun mapToAccountDetailsScreenModel(
         isUserBlocked: Boolean,
         bankAccountEntity: BankAccountEntity,
     ): AccountDetailsScreenModel {
         return AccountDetailsScreenModel(
+            id = bankAccountEntity.id,
             balance = bankAccountEntity.balance,
             number = bankAccountEntity.number,
             status = bankAccountEntity.status,
@@ -39,11 +45,21 @@ class AccountDetailsMapper {
                 isShown = false,
                 amount = AccountDetailsTopUpDialogModel.DEFAULT_AMOUNT.toString(),
                 isDataValid = true,
+                currencyCode = bankAccountEntity.currencyCode,
+                isDropdownExpanded = false,
             ),
             withdrawDialog = AccountDetailsWithdrawDialogModel(
                 isShown = false,
                 amount = AccountDetailsWithdrawDialogModel.DEFAULT_AMOUNT.toString(),
                 isDataValid = true,
+                currencyCode = bankAccountEntity.currencyCode,
+                isDropdownExpanded = false,
+            ),
+            transferDialog = AccountDetailsTransferDialogModel(
+                isShown = false,
+                amount = AccountDetailsTransferDialogModel.DEFAULT_AMOUNT.toString(),
+                accountNumber = "",
+                isDataValid = false,
             ),
             closeAccountDialog = CloseAccountDialog(isShown = false),
             isOverlayLoading = false,
@@ -63,24 +79,27 @@ class AccountDetailsMapper {
                     OperationTypeEntity.WITHDRAWAL -> "Вывод"
                     OperationTypeEntity.TOP_UP -> "Пополнение"
                     OperationTypeEntity.LOAN_PAYMENT -> "Выплата по кредиту"
+                    OperationTypeEntity.TRANSFER_INCOMING -> "Входящий перевод"
+                    OperationTypeEntity.TRANSFER_OUTGOING -> "Исходящий перевод"
                 },
                 description = operation.executedAt.utcDateTimeToReadableFormat(),
                 operationType = OperationHistoryItem.OperationType.IN,
-                amountText = if (operation.type == OperationTypeEntity.TOP_UP) {
-                    "+${operation.amount.formatToSum(true)}"
+                amountText = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
+                    "+${operation.amount.formatToSum(operation.currencyCode, true)}"
                 } else {
-                    "-${operation.amount.formatToSum(true)}"
+                    "-${operation.amount.formatToSum(operation.currencyCode, true)}"
                 },
-                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
                     R.color.operationInContainer
                 } else {
                     R.color.operationOutContainer
                 },
-                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP) {
+                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
                     R.color.operationInContent
                 } else {
                     R.color.operationOutContent
                 },
+                currencyCodeChar = operation.currencyCode.toSymbol(),
             )
         }
     }
@@ -102,22 +121,34 @@ class AccountDetailsMapper {
     }
 
     fun mapToTopUpRequest(
-        accountNumber: String,
+        currencyCode: CurrencyCode,
         amount: String,
     ): TopUpRequest {
         return TopUpRequest(
-            accountNumber = accountNumber,
+            currencyCode = currencyCode,
             amount = amount,
         )
     }
 
     fun mapToWithdrawRequest(
-        accountNumber: String,
+        currencyCode: CurrencyCode,
         amount: String,
     ): WithdrawRequest {
         return WithdrawRequest(
-            accountNumber = accountNumber,
+            currencyCode = currencyCode,
             amount = amount,
+        )
+    }
+
+    fun mapToTransferRequest(
+        senderAccountId: String,
+        receiverAccountNumber: String,
+        transferAmount: String,
+    ): TransferRequest {
+        return TransferRequest(
+            senderAccountId = senderAccountId,
+            receiverAccountNumber = receiverAccountNumber,
+            transferAmount = transferAmount,
         )
     }
 
@@ -125,13 +156,14 @@ class AccountDetailsMapper {
         return AccountDetailsItem(
             title = bankAccountEntity.number,
             subtitle = "Номер счета",
+            copyable = true,
         )
     }
 
     private fun getBalanceOrStatusInfo(bankAccountEntity: BankAccountEntity): AccountDetailsItem {
         return AccountDetailsItem(
             title = if (bankAccountEntity.status != BankAccountStatusEntity.CLOSED) {
-                bankAccountEntity.balance.formatToSum()
+                bankAccountEntity.balance.formatToSum(bankAccountEntity.currencyCode)
             } else {
                 "Закрыт"
             },
@@ -140,6 +172,7 @@ class AccountDetailsMapper {
             } else {
                 "Статус"
             },
+            copyable = false,
         )
     }
 }

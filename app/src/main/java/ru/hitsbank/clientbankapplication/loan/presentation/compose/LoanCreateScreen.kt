@@ -3,6 +3,7 @@ package ru.hitsbank.clientbankapplication.loan.presentation.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,17 +28,23 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.hitsbank.clientbankapplication.LocalSnackbarController
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.LocalSnackbarController
+import ru.hitsbank.bank_common.presentation.common.component.BankButton
+import ru.hitsbank.bank_common.presentation.common.component.Divider
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.LoadingContentOverlay
+import ru.hitsbank.bank_common.presentation.common.component.PaginationErrorContent
+import ru.hitsbank.bank_common.presentation.common.component.PaginationLoadingContent
+import ru.hitsbank.bank_common.presentation.common.component.defaultTextFieldColors
+import ru.hitsbank.bank_common.presentation.common.noRippleClickable
+import ru.hitsbank.bank_common.presentation.common.observeWithLifecycle
+import ru.hitsbank.bank_common.presentation.common.rememberCallback
+import ru.hitsbank.bank_common.presentation.common.verticalSpacer
+import ru.hitsbank.bank_common.presentation.theme.S16_W400
+import ru.hitsbank.bank_common.presentation.theme.S22_W400
 import ru.hitsbank.clientbankapplication.R
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankButton
-import ru.hitsbank.clientbankapplication.core.presentation.common.LoadingContentOverlay
-import ru.hitsbank.clientbankapplication.core.presentation.common.defaultTextFieldColors
-import ru.hitsbank.clientbankapplication.core.presentation.common.noRippleClickable
-import ru.hitsbank.clientbankapplication.core.presentation.common.observeWithLifecycle
-import ru.hitsbank.clientbankapplication.core.presentation.common.rememberCallback
-import ru.hitsbank.clientbankapplication.core.presentation.common.verticalSpacer
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S16_W400
-import ru.hitsbank.clientbankapplication.core.presentation.theme.S22_W400
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEffect
 import ru.hitsbank.clientbankapplication.loan.presentation.event.create.LoanCreateEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanCreateViewModel
@@ -86,12 +93,24 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddings)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
+            when (val loanRating = uiState.loanRatingState) {
+                is BankUiState.Error -> PaginationErrorContent { onEvent(LoanCreateEvent.ReloadLoanRating) }
+                BankUiState.Loading -> PaginationLoadingContent()
+                is BankUiState.Ready -> ListItem(
+                    icon = ListItemIcon.None,
+                    title = loanRating.model.toString(),
+                    subtitle = "Кредитный рейтинг",
+                    divider = Divider.None,
+                    padding = PaddingValues(vertical = 8.dp),
+                )
+            }
+            16.dp.verticalSpacer()
             OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 value = uiState.amount,
                 onValueChange = { onEvent(LoanCreateEvent.ChangeAmount(it)) },
                 placeholder = {
@@ -109,7 +128,8 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             16.dp.verticalSpacer()
             OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 value = uiState.termInMonths,
                 onValueChange = { onEvent(LoanCreateEvent.ChangeTerm(it)) },
                 placeholder = {
@@ -128,6 +148,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .noRippleClickable {
                         onEvent(LoanCreateEvent.SelectTariff)
                     },
@@ -156,6 +177,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .noRippleClickable {
                         onEvent(LoanCreateEvent.SelectAccount)
                     },
@@ -181,7 +203,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
                 enabled = false,
             )
             16.dp.verticalSpacer()
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+            Box(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 BankButton.Outlined(
                     text = "Оформить",
                     onClick = { onEvent(LoanCreateEvent.ConfirmCreate) },

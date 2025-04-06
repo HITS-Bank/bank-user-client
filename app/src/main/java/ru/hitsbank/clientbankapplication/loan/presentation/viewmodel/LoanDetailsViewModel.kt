@@ -3,6 +3,10 @@ package ru.hitsbank.clientbankapplication.loan.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -10,14 +14,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.hitsbank.clientbankapplication.core.domain.common.State
+import ru.hitsbank.bank_common.domain.State
+import ru.hitsbank.bank_common.presentation.common.BankUiState
+import ru.hitsbank.bank_common.presentation.common.getIfSuccess
+import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
+import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
+import ru.hitsbank.bank_common.presentation.navigation.back
+import ru.hitsbank.bank_common.presentation.navigation.forwardWithCallbackResult
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
-import ru.hitsbank.clientbankapplication.core.navigation.base.NavigationManager
-import ru.hitsbank.clientbankapplication.core.navigation.base.back
-import ru.hitsbank.clientbankapplication.core.navigation.base.forwardWithCallbackResult
-import ru.hitsbank.clientbankapplication.core.presentation.common.BankUiState
-import ru.hitsbank.clientbankapplication.core.presentation.common.getIfSuccess
-import ru.hitsbank.clientbankapplication.core.presentation.common.updateIfSuccess
 import ru.hitsbank.clientbankapplication.loan.domain.interactor.LoanInteractor
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.event.LoanDetailsEffect
@@ -27,10 +31,14 @@ import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsDial
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsState
 import ru.hitsbank.clientbankapplication.loan.presentation.model.getAmount
 
-class LoanDetailsViewModel(
-    private val loanNumber: String?,
-    private val loanEntityJson: String?,
-    private val isUserBlocked: Boolean,
+private const val LOAN_ID = "LOAN_ID"
+private const val LOAN_ENTITY_JSON = "LOAN_ENTITY_JSON"
+
+@HiltViewModel(assistedFactory = LoanDetailsViewModel.Factory::class)
+class LoanDetailsViewModel @AssistedInject constructor(
+    @Assisted(LOAN_ID) private val loanId: String?,
+    @Assisted(LOAN_ENTITY_JSON) private val loanEntityJson: String?,
+    @Assisted private val isUserBlocked: Boolean,
     private val gson: Gson,
     private val loanInteractor: LoanInteractor,
     private val mapper: LoanDetailsMapper,
@@ -43,7 +51,7 @@ class LoanDetailsViewModel(
     private val _effects = MutableSharedFlow<LoanDetailsEffect>()
     val effects = _effects.asSharedFlow()
 
-    private lateinit var actualLoanNumber: String
+    private lateinit var actualLoanId: String
 
     init {
         loadLoanDetails()
@@ -55,11 +63,11 @@ class LoanDetailsViewModel(
                 navigationManager.forwardWithCallbackResult(
                     RootDestinations.AccountDetails.withArgs(
                         bankAccountEntityJson = null,
-                        accountNumber = event.accountNumber,
+                        accountId = event.accountId,
                         isUserBlocked = isUserBlocked,
                     )
                 ) {
-                    forceReloadLoanDetails(actualLoanNumber)
+                    forceReloadLoanDetails(actualLoanId)
                 }
             }
 
@@ -87,7 +95,7 @@ class LoanDetailsViewModel(
                 if (amount != null) {
                     viewModelScope.launch {
                         val makeLoanPaymentRequest =
-                            loanInteractor.makeLoanPayment(actualLoanNumber, amount)
+                            loanInteractor.makeLoanPayment(actualLoanId, amount)
                         makeLoanPaymentRequest.collectLatest { state ->
                             when (state) {
                                 State.Loading -> _state.updateIfSuccess { it.copy(isPerformingAction = true) }
@@ -123,18 +131,18 @@ class LoanDetailsViewModel(
     private fun loadLoanDetails() {
         if (loanEntityJson != null) {
             val loanEntity = gson.fromJson(loanEntityJson, LoanEntity::class.java)
-            actualLoanNumber = loanEntity.number
+            actualLoanId = loanEntity.id
             _state.update { BankUiState.Ready(LoanDetailsState.default(mapper.map(loanEntity), isUserBlocked)) }
-        } else if (loanNumber != null) {
-            actualLoanNumber = loanNumber
-            forceReloadLoanDetails(loanNumber)
+        } else if (loanId != null) {
+            actualLoanId = loanId
+            forceReloadLoanDetails(loanId)
         } else {
             _state.update { BankUiState.Error() }
         }
     }
 
-    private fun forceReloadLoanDetails(loanNumber: String) {
-        val loanEntityRequest = loanInteractor.getLoanByNumber(loanNumber)
+    private fun forceReloadLoanDetails(loanId: String) {
+        val loanEntityRequest = loanInteractor.getLoanById(loanId)
         viewModelScope.launch {
             loanEntityRequest.collectLatest { state ->
                 _state.update {
@@ -148,5 +156,14 @@ class LoanDetailsViewModel(
                 }
             }
         }
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted(LOAN_ID) loanId: String?,
+            @Assisted(LOAN_ENTITY_JSON) loanEntityJson: String?,
+            isUserBlocked: Boolean,
+        ): LoanDetailsViewModel
     }
 }

@@ -1,38 +1,37 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.mapper
 
-import ru.hitsbank.clientbankapplication.bank_account.data.model.AccountListResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.BankAccountResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationResponse
 import ru.hitsbank.clientbankapplication.bank_account.data.model.OperationTypeResponse
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferAccountInfoModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferConfirmationModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferInfoModel
+import ru.hitsbank.clientbankapplication.bank_account.data.model.TransferRequestModel
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.AccountListEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationEntity
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.OperationTypeEntity
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferAccountInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
+import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import javax.inject.Inject
 
-class BankAccountMapper {
+class BankAccountMapper @Inject constructor() {
 
-    fun map(response: AccountListResponse): AccountListEntity {
+    fun map(response: List<BankAccountResponse>): AccountListEntity {
         return AccountListEntity(
-            bankAccounts = response.bankAccounts.map { response ->
-                BankAccountEntity(
-                    number = response.accountNumber,
-                    balance = response.balance,
-                    status = when {
-                        response.closed -> BankAccountStatusEntity.CLOSED
-                        response.blocked -> BankAccountStatusEntity.BLOCKED
-                        else -> BankAccountStatusEntity.OPEN
-                    },
-                )
-            },
-            pageInfo = response.pageInfo,
+            bankAccounts = response.map(::map),
         )
     }
 
     fun map(response: BankAccountResponse): BankAccountEntity {
         return BankAccountEntity(
+            id = response.accountId,
             number = response.accountNumber,
             balance = response.balance,
+            currencyCode = response.currencyCode,
             status = when {
                 response.closed -> BankAccountStatusEntity.CLOSED
                 response.blocked -> BankAccountStatusEntity.BLOCKED
@@ -50,9 +49,45 @@ class BankAccountMapper {
                     OperationTypeResponse.WITHDRAW -> OperationTypeEntity.WITHDRAWAL
                     OperationTypeResponse.TOP_UP -> OperationTypeEntity.TOP_UP
                     OperationTypeResponse.LOAN_PAYMENT -> OperationTypeEntity.LOAN_PAYMENT
+                    OperationTypeResponse.TRANSFER_INCOMING -> OperationTypeEntity.TRANSFER_INCOMING
+                    OperationTypeResponse.TRANSFER_OUTGOING -> OperationTypeEntity.TRANSFER_OUTGOING
                 },
                 amount = operation.amount,
+                currencyCode = operation.currencyCode,
             )
         }
+    }
+
+    fun map(request: TransferRequest): TransferRequestModel {
+        return TransferRequestModel(
+            senderAccountId = request.senderAccountId,
+            receiverAccountNumber = request.receiverAccountNumber,
+            transferAmount = request.transferAmount,
+        )
+    }
+
+    fun map(confirmation: TransferConfirmation): TransferConfirmationModel {
+        return TransferConfirmationModel(
+            senderAccountId = confirmation.senderAccountId,
+            receiverAccountNumber = confirmation.receiverAccountNumber,
+            transferAmount = confirmation.transferAmount,
+        )
+    }
+
+    fun map(model: TransferInfoModel): TransferInfo {
+        return TransferInfo(
+            senderAccountInfo = map(model.senderAccountInfo),
+            receiverAccountInfo = map(model.receiverAccountInfo),
+            transferAmountBeforeConversion = model.transferAmountBeforeConversion,
+            transferAmountAfterConversion = model.transferAmountAfterConversion,
+        )
+    }
+
+    fun map(model: TransferAccountInfoModel): TransferAccountInfo {
+        return TransferAccountInfo(
+            accountNumber = model.accountNumber,
+            accountCurrencyCode = model.accountCurrencyCode,
+            accountId = model.accountId,
+        )
     }
 }

@@ -1,12 +1,13 @@
 package ru.hitsbank.clientbankapplication.loan.domain.repository
 
-import ru.hitsbank.clientbankapplication.core.domain.common.Result
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanCreateEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffEntity
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrder
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
+import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 
 interface ILoanRepository {
 
@@ -17,8 +18,8 @@ interface ILoanRepository {
         query: String? = null,
     ): Result<List<LoanTariffEntity>>
 
-    suspend fun getLoanByNumber(
-        number: String,
+    suspend fun getLoanById(
+        loanId: String,
     ): Result<LoanEntity>
 
     suspend fun getLoans(
@@ -30,7 +31,13 @@ interface ILoanRepository {
     ): Result<LoanEntity>
 
     suspend fun makeLoanPayment(
-        loanNumber: String,
+        loanId: String,
         amount: String,
     ): Result<LoanEntity>
+
+    suspend fun getLoanRating(): Result<Int>
+
+    suspend fun getLoanPayments(
+        loanId: String,
+    ): Result<List<LoanPaymentEntity>>
 }

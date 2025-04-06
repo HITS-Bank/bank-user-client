@@ -4,5 +4,5 @@ sealed interface LoanListEvent {
 
     data object CreateLoan : LoanListEvent
 
-    data class OpenLoanDetails(val loanNumber: String) : LoanListEvent
+    data class OpenLoanDetails(val loanId: String) : LoanListEvent
 }

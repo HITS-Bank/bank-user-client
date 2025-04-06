@@ -1,13 +1,12 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.mapper
 
-import ru.hitsbank.clientbankapplication.core.presentation.common.formatToSum
+import ru.hitsbank.bank_common.presentation.common.formatToSum
+import ru.hitsbank.bank_common.presentation.common.utcDateTimeToReadableFormat
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanEntity
 import ru.hitsbank.clientbankapplication.loan.presentation.model.LoanDetailsListItem
-import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class LoanDetailsMapper {
-
-    private val dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+class LoanDetailsMapper @Inject constructor() {
 
     fun map(loan: LoanEntity): List<LoanDetailsListItem> {
         return listOf(
@@ -29,29 +28,30 @@ class LoanDetailsMapper {
                 name = "Срок кредита (мес.)",
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = loan.amount.formatToSum(),
+                value = loan.amount.formatToSum(loan.currencyCode),
                 name = "Сумма кредита",
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = loan.paymentSum.formatToSum(),
+                value = loan.paymentSum.formatToSum(loan.currencyCode),
                 name = "Сумма выплат"
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = loan.paymentAmount.formatToSum(),
+                value = loan.paymentAmount.formatToSum(loan.currencyCode),
                 name = "Сумма платежа"
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = dateTimeFormatter.format(loan.nextPaymentDateTime),
+                value = loan.nextPaymentDateTime.utcDateTimeToReadableFormat(),
                 name = "Время следующего платежа",
             ),
             LoanDetailsListItem.LoanDetailsProperty(
-                value = loan.currentDebt.formatToSum(),
+                value = loan.currentDebt.formatToSum(loan.currencyCode),
                 name = "Текущий долг",
             ),
             LoanDetailsListItem.LoanBankAccount(
+                accountId = loan.bankAccountId,
                 value = loan.bankAccountNumber,
                 name = "Счет кредита",
-                accountNumber = loan.bankAccountNumber,
+                accountNumber = loan.bankAccountId,
             ),
             LoanDetailsListItem.MakePaymentButton,
         )

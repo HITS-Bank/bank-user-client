@@ -1,7 +1,7 @@
 package ru.hitsbank.clientbankapplication.loan.presentation.model
 
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.loan.presentation.viewmodel.LoanListViewModel
 
 data class LoanListPaginationState(
@@ -21,7 +21,7 @@ data class LoanListPaginationState(
     }
 
     override fun resetPagination(): PaginationStateHolder<LoanItem> {
-        return copy(data = emptyList(), pageNumber = 0)
+        return copy(data = emptyList(), pageNumber = 1)
     }
 
     companion object {

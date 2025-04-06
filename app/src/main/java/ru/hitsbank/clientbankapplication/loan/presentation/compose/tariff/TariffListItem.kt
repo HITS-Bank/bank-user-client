@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import ru.hitsbank.clientbankapplication.core.presentation.common.Divider
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItem
-import ru.hitsbank.clientbankapplication.core.presentation.common.ListItemIcon
+import ru.hitsbank.bank_common.presentation.common.component.Divider
+import ru.hitsbank.bank_common.presentation.common.component.ListItem
+import ru.hitsbank.bank_common.presentation.common.component.ListItemIcon
 import ru.hitsbank.clientbankapplication.loan.presentation.event.tariff.TariffsScreenEvent
 import ru.hitsbank.clientbankapplication.loan.presentation.model.tariff.TariffModel
 

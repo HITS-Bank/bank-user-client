@@ -13,4 +13,6 @@ sealed interface LoanCreateEvent {
     data object SelectTariff : LoanCreateEvent
 
     data object SelectAccount : LoanCreateEvent
+
+    data object ReloadLoanRating : LoanCreateEvent
 }

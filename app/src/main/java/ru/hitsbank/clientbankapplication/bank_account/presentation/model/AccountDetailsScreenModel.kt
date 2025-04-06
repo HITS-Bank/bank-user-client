@@ -1,14 +1,16 @@
 package ru.hitsbank.clientbankapplication.bank_account.presentation.model
 
+import ru.hitsbank.bank_common.domain.entity.CurrencyCode
+import ru.hitsbank.bank_common.presentation.pagination.PaginationState
+import ru.hitsbank.bank_common.presentation.pagination.PaginationStateHolder
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.BankAccountStatusEntity
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationState
-import ru.hitsbank.clientbankapplication.core.presentation.pagination.PaginationStateHolder
 
 data class AccountDetailsScreenModel(
     override val paginationState: PaginationState,
     override val data: List<OperationHistoryItem>,
     override val pageNumber: Int,
     override val pageSize: Int,
+    val id: String,
     val balance: String,
     val number: String,
     val isUserBlocked: Boolean,
@@ -16,9 +18,12 @@ data class AccountDetailsScreenModel(
     val accountDetails: AccountDetailsModel,
     val topUpDialog: AccountDetailsTopUpDialogModel,
     val withdrawDialog: AccountDetailsWithdrawDialogModel,
+    val transferDialog: AccountDetailsTransferDialogModel,
     val closeAccountDialog: CloseAccountDialog,
     val isOverlayLoading: Boolean,
 ) : PaginationStateHolder<OperationHistoryItem> {
+
+    val currencyCodeDropdownItems = CurrencyCode.entries.map { code -> CurrencyCodeDropdownItem(code) }
 
     override fun copyWith(
         paginationState: PaginationState,
@@ -36,8 +41,11 @@ data class AccountDetailsScreenModel(
 data class AccountDetailsTopUpDialogModel(
     val isShown: Boolean,
     val amount: String,
+    val currencyCode: CurrencyCode,
+    val isDropdownExpanded: Boolean,
     val isDataValid: Boolean,
 ) {
+    val currencyCodeDropdownItem = CurrencyCodeDropdownItem(currencyCode)
 
     companion object {
         const val DEFAULT_AMOUNT = 10000
@@ -47,6 +55,21 @@ data class AccountDetailsTopUpDialogModel(
 data class AccountDetailsWithdrawDialogModel(
     val isShown: Boolean,
     val amount: String,
+    val currencyCode: CurrencyCode,
+    val isDropdownExpanded: Boolean,
+    val isDataValid: Boolean,
+) {
+    val currencyCodeDropdownItem = CurrencyCodeDropdownItem(currencyCode)
+
+    companion object {
+        const val DEFAULT_AMOUNT = 10000
+    }
+}
+
+data class AccountDetailsTransferDialogModel(
+    val isShown: Boolean,
+    val amount: String,
+    val accountNumber: String,
     val isDataValid: Boolean,
 ) {
 
@@ -74,6 +97,7 @@ data class AccountDetailsModel(
 data class AccountDetailsItem(
     val title: String,
     val subtitle: String,
+    val copyable: Boolean,
 )
 
 data class OperationHistoryItem(
@@ -81,6 +105,7 @@ data class OperationHistoryItem(
     val title: String,
     val description: String,
     val operationType: OperationType,
+    val currencyCodeChar: Char,
     val amountText: String,
     val leftPartBackgroundColorId: Int,
     val contentColorId: Int,
