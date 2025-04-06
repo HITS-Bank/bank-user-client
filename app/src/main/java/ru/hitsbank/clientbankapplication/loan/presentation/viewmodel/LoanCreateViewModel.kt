@@ -43,6 +43,10 @@ class LoanCreateViewModel @AssistedInject constructor(
     private val _effects = MutableSharedFlow<LoanCreateEffect>()
     val effects = _effects.asSharedFlow()
 
+    init {
+        refreshLoanRating()
+    }
+
     fun onEvent(event: LoanCreateEvent) {
         when (event) {
             LoanCreateEvent.Back -> {

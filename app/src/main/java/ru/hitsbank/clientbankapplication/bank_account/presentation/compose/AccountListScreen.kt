@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -99,7 +100,9 @@ internal fun AccountListScreenReady(
     topBar = {
         if (model.accountListMode != AccountListMode.SELECTION) {
             CenterAlignedTopAppBar(
-                windowInsets = WindowInsets(0),
+                windowInsets =
+                    if (model.accountListMode == AccountListMode.DEFAULT) WindowInsets(0)
+                    else TopAppBarDefaults.windowInsets,
                 title = {
                     Text(
                         text = model.accountListMode.topBarTitle,
@@ -162,11 +165,8 @@ internal fun AccountListScreenReady(
                     title = item.number,
                     subtitle = item.description,
                     subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
-                    end = ListItemEnd.ClickableChevron(
-                        onClick = {
-                            onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number))
-                        },
-                    ),
+                    end = ListItemEnd.Chevron,
+                    modifier = Modifier.clickable { onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number)) },
                     swipeableInfo = SwipeableInfo(
                         iconResId = if (item.isHidden) R.drawable.ic_visibility_on else R.drawable.ic_visibility_off,
                         onIconClick = {
@@ -188,11 +188,8 @@ internal fun AccountListScreenReady(
                     title = item.number,
                     subtitle = item.description,
                     subtitleTextStyle = S14_W400.copy(color = colorResource(id = item.descriptionColorId)),
-                    end = ListItemEnd.ClickableChevron(
-                        onClick = {
-                            onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number))
-                        },
-                    ),
+                    end = ListItemEnd.Chevron,
+                    modifier = Modifier.clickable { onEvent.invoke(AccountListEvent.OnClickDetails(item.id, item.number)) },
                 )
             }
         }

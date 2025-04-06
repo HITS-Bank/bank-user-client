@@ -69,7 +69,7 @@ internal fun WithdrawDialog(
                     onCloseDropdown = {
                         onEvent(AccountDetailsEvent.OnWithdrawDropdownExpanded(false))
                     },
-                    label = "Валюта пополнения",
+                    label = "Валюта вывода",
                 )
                 16.dp.verticalSpacer()
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {

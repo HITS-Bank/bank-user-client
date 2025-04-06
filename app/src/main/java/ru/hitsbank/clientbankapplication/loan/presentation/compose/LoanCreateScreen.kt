@@ -3,6 +3,7 @@ package ru.hitsbank.clientbankapplication.loan.presentation.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -92,7 +93,6 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddings)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             when (val loanRating = uiState.loanRatingState) {
@@ -103,11 +103,14 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
                     title = loanRating.model.toString(),
                     subtitle = "Кредитный рейтинг",
                     divider = Divider.None,
+                    padding = PaddingValues(vertical = 8.dp),
                 )
             }
+            16.dp.verticalSpacer()
             OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 value = uiState.amount,
                 onValueChange = { onEvent(LoanCreateEvent.ChangeAmount(it)) },
                 placeholder = {
@@ -125,7 +128,8 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             16.dp.verticalSpacer()
             OutlinedTextField(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 value = uiState.termInMonths,
                 onValueChange = { onEvent(LoanCreateEvent.ChangeTerm(it)) },
                 placeholder = {
@@ -144,6 +148,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .noRippleClickable {
                         onEvent(LoanCreateEvent.SelectTariff)
                     },
@@ -172,6 +177,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
                     .noRippleClickable {
                         onEvent(LoanCreateEvent.SelectAccount)
                     },
@@ -197,7 +203,7 @@ fun LoanCreateScreen(viewModel: LoanCreateViewModel) {
                 enabled = false,
             )
             16.dp.verticalSpacer()
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+            Box(modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 BankButton.Outlined(
                     text = "Оформить",
                     onClick = { onEvent(LoanCreateEvent.ConfirmCreate) },

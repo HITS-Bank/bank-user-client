@@ -7,7 +7,7 @@ data class OperationResponse(
     val executedAt: String,
     val type: OperationTypeResponse,
     val amount: String,
-    val currencyCode: CurrencyCode,
+    val currencyCode: CurrencyCode = CurrencyCode.RUB,
 )
 
 // TODO с сервера должен приходить WITHDRAW

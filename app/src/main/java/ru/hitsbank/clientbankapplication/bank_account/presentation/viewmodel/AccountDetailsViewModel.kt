@@ -288,6 +288,7 @@ class AccountDetailsViewModel @AssistedInject constructor(
             state.copy(
                 topUpDialog = state.topUpDialog.copy(
                     currencyCode = currencyCode,
+                    isDropdownExpanded = false,
                 )
             )
         }
@@ -298,6 +299,7 @@ class AccountDetailsViewModel @AssistedInject constructor(
             state.copy(
                 withdrawDialog = state.withdrawDialog.copy(
                     currencyCode = currencyCode,
+                    isDropdownExpanded = false,
                 )
             )
         }
