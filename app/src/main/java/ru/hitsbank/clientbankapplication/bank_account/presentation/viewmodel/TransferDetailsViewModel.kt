@@ -52,7 +52,7 @@ class TransferDetailsViewModel @AssistedInject constructor(
                 viewModelScope.launch {
                     val transferConfirmation = TransferConfirmation(
                         senderAccountId = transferInfo.senderAccountInfo.accountId,
-                        receiverAccountId = transferInfo.receiverAccountInfo.accountId,
+                        receiverAccountNumber = transferInfo.receiverAccountInfo.accountNumber,
                         transferAmount = transferInfo.transferAmountBeforeConversion,
                     )
                     bankAccountInteractor.transfer(transferConfirmation).collect { state ->

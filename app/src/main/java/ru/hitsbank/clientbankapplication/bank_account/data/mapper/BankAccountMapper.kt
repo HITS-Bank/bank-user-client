@@ -69,7 +69,7 @@ class BankAccountMapper @Inject constructor() {
     fun map(confirmation: TransferConfirmation): TransferConfirmationModel {
         return TransferConfirmationModel(
             senderAccountId = confirmation.senderAccountId,
-            receiverAccountId = confirmation.receiverAccountId,
+            receiverAccountNumber = confirmation.receiverAccountNumber,
             transferAmount = confirmation.transferAmount,
         )
     }
