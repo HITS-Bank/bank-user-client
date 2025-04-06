@@ -79,8 +79,16 @@ class AccountListViewModel @AssistedInject constructor(
             }
         }.map { state ->
             state.map { list ->
+                val actualList = list.copy(
+                    bankAccounts = list.bankAccounts.filter { account ->
+                        when (accountListMode) {
+                            AccountListMode.SELECTION -> account.currencyCode == CurrencyCode.RUB
+                            else -> true
+                        }
+                    }
+                )
                 PageInfo(
-                    content = mapper.map(list, hiddenAccountIds).filter { account ->
+                    content = mapper.map(actualList, hiddenAccountIds).filter { account ->
                         when (accountListMode) {
                             AccountListMode.DEFAULT -> !account.isHidden
                             AccountListMode.HIDDEN_ACCOUNTS -> account.isHidden
