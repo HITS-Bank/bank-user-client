@@ -2,6 +2,7 @@ package ru.hitsbank.clientbankapplication.loan.data.repository
 
 import kotlinx.coroutines.Dispatchers
 import ru.hitsbank.bank_common.data.utils.apiCall
+import ru.hitsbank.bank_common.data.utils.toCompletableResult
 import ru.hitsbank.bank_common.data.utils.toResult
 import ru.hitsbank.clientbankapplication.core.domain.model.PageInfo
 import ru.hitsbank.clientbankapplication.loan.data.api.LoanApi
@@ -14,6 +15,7 @@ import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingOrde
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanTariffSortingProperty
 import ru.hitsbank.clientbankapplication.loan.domain.repository.ILoanRepository
 import ru.hitsbank.bank_common.domain.Result
+import ru.hitsbank.bank_common.domain.map
 import ru.hitsbank.bank_common.domain.repository.IProfileRepository
 import ru.hitsbank.clientbankapplication.loan.domain.model.LoanPaymentEntity
 import javax.inject.Inject
@@ -75,11 +77,13 @@ class LoanRepository @Inject constructor(
 
     override suspend fun makeLoanPayment(loanId: String, amount: String): Result<LoanEntity> {
         return apiCall(Dispatchers.IO) {
-            loanApi.makeLoanPayment(
+            val result = loanApi.makeLoanPayment(
                 loanId = loanId,
                 paymentRequest = LoanPaymentRequest(amount = amount),
-            ).toResult { loan ->
-                mapper.map(loan)
+            ).toCompletableResult()
+            when (result) {
+                is Result.Error -> return@apiCall result
+                is Result.Success -> loanApi.getLoanById(loanId).toResult().map { mapper.map(it) }
             }
         }
     }

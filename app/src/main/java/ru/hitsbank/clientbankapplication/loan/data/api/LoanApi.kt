@@ -40,7 +40,7 @@ interface LoanApi {
     suspend fun makeLoanPayment(
         @Path("loanId") loanId: String,
         @Body paymentRequest: LoanPaymentRequest,
-    ): Response<LoanResponse>
+    ): Response<Unit>
 
     @GET("core/bank_account/loan/{loanId}/payments")
     suspend fun getLoanPayments(
