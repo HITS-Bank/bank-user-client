@@ -61,13 +61,17 @@ class AccountDetailsViewModel @AssistedInject constructor(
     init {
         when {
             bankAccountEntityJson != null -> {
-                getAccountDetailsModel()
+                val account = getAccountDetailsModel()
                 onPaginationEvent(PaginationEvent.Reload)
+                account?.id?.let { accountId ->
+                    subscribeToAccountHistoryUpdates(accountId)
+                }
             }
 
             accountId != null -> {
                 getAccountFromApi(accountId)
                 onPaginationEvent(PaginationEvent.Reload)
+                subscribeToAccountHistoryUpdates(checkNotNull(accountId))
             }
 
             else -> {
@@ -114,7 +118,27 @@ class AccountDetailsViewModel @AssistedInject constructor(
         }
     }
 
-    private fun getAccountDetailsModel() {
+    private fun subscribeToAccountHistoryUpdates(accountId: String) {
+        viewModelScope.launch {
+            bankAccountInteractor.getOperationHistoryUpdates(accountId).collectLatest { state ->
+                when (state) {
+                    State.Loading -> Unit
+                    is State.Error -> {
+                        sendEffect(AccountDetailsEffect.OnOperationUpdatesFailure)
+                    }
+                    is State.Success -> _state.updateIfSuccess { oldState ->
+                        val modifiedList = oldState.data.toMutableList()
+                        modifiedList.add(0, accountDetailsMapper.mapToOperationHistoryItem(state.data))
+                        oldState.copy(
+                            data = modifiedList,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getAccountDetailsModel(): BankAccountEntity? {
         val bankAccountEntity = bankAccountEntityJson
             ?.let { json ->
                 gson.fromJson(json, BankAccountEntity::class.java)
@@ -129,6 +153,7 @@ class AccountDetailsViewModel @AssistedInject constructor(
             )
             _state.update { BankUiState.Ready(screenModel) }
         }
+        return bankAccountEntity
     }
 
     private fun getAccountFromApi(
@@ -382,8 +407,6 @@ class AccountDetailsViewModel @AssistedInject constructor(
                             bankAccountEntity = state.data,
                         )
                     }
-
-                    onPaginationEvent(PaginationEvent.Reload)
                 }
             }
         }
@@ -438,8 +461,6 @@ class AccountDetailsViewModel @AssistedInject constructor(
                             bankAccountEntity = state.data,
                         )
                     }
-
-                    onPaginationEvent(PaginationEvent.Reload)
                 }
             }
         }
@@ -504,8 +525,6 @@ class AccountDetailsViewModel @AssistedInject constructor(
                                 bankAccountEntity = bankAccount,
                             )
                         }
-
-                        onPaginationEvent(PaginationEvent.Reload)
                     }
                 }
             }

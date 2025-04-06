@@ -73,36 +73,39 @@ class AccountDetailsMapper @Inject constructor() {
 
     fun mapToOperationHistoryItems(operationHistory: List<OperationEntity>): List<OperationHistoryItem> {
         return operationHistory.map { operation ->
-            OperationHistoryItem(
-                id = operation.id,
-                title = when (operation.type) {
-                    OperationTypeEntity.WITHDRAWAL -> "Вывод"
-                    OperationTypeEntity.TOP_UP -> "Пополнение"
-                    OperationTypeEntity.LOAN_PAYMENT -> "Выплата по кредиту"
-                    OperationTypeEntity.TRANSFER_INCOMING -> "Входящий перевод"
-                    OperationTypeEntity.TRANSFER_OUTGOING -> "Исходящий перевод"
-                },
-                description = operation.executedAt.utcDateTimeToReadableFormat(),
-                operationType = OperationHistoryItem.OperationType.IN,
-                amountText = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
-                    "+${operation.amount.formatToSum(operation.currencyCode, true)}"
-                } else {
-                    "-${operation.amount.formatToSum(operation.currencyCode, true)}"
-                },
-                leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
-                    R.color.operationInContainer
-                } else {
-                    R.color.operationOutContainer
-                },
-                contentColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
-                    R.color.operationInContent
-                } else {
-                    R.color.operationOutContent
-                },
-                currencyCodeChar = operation.currencyCode.toSymbol(),
-            )
+            mapToOperationHistoryItem(operation)
         }
     }
+
+    fun mapToOperationHistoryItem(operation: OperationEntity) =
+        OperationHistoryItem(
+            id = operation.id,
+            title = when (operation.type) {
+                OperationTypeEntity.WITHDRAWAL -> "Вывод"
+                OperationTypeEntity.TOP_UP -> "Пополнение"
+                OperationTypeEntity.LOAN_PAYMENT -> "Выплата по кредиту"
+                OperationTypeEntity.TRANSFER_INCOMING -> "Входящий перевод"
+                OperationTypeEntity.TRANSFER_OUTGOING -> "Исходящий перевод"
+            },
+            description = operation.executedAt.utcDateTimeToReadableFormat(),
+            operationType = OperationHistoryItem.OperationType.IN,
+            amountText = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
+                "+${operation.amount.formatToSum(operation.currencyCode, true)}"
+            } else {
+                "-${operation.amount.formatToSum(operation.currencyCode, true)}"
+            },
+            leftPartBackgroundColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
+                R.color.operationInContainer
+            } else {
+                R.color.operationOutContainer
+            },
+            contentColorId = if (operation.type == OperationTypeEntity.TOP_UP || operation.type == OperationTypeEntity.TRANSFER_INCOMING) {
+                R.color.operationInContent
+            } else {
+                R.color.operationOutContent
+            },
+            currencyCodeChar = operation.currencyCode.toSymbol(),
+        )
 
     fun getUpdatedAccountDetailsScreen(
         oldModel: AccountDetailsScreenModel,

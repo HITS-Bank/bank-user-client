@@ -1,9 +1,13 @@
 package ru.hitsbank.clientbankapplication.bank_account.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import ru.hitsbank.bank_common.data.utils.apiCall
 import ru.hitsbank.bank_common.data.utils.toCompletableResult
 import ru.hitsbank.bank_common.data.utils.toResult
+import ru.hitsbank.bank_common.data.websocket.BankAccountHistoryWebsocketManager
 import ru.hitsbank.bank_common.domain.Completable
 import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
@@ -23,6 +27,7 @@ import javax.inject.Inject
 
 class BankAccountRepository @Inject constructor(
     private val bankAccountApi: BankAccountApi,
+    private val bankAccountHistoryWebsocketManager: BankAccountHistoryWebsocketManager,
     private val mapper: BankAccountMapper,
 ) : IBankAccountRepository {
 
@@ -92,6 +97,19 @@ class BankAccountRepository @Inject constructor(
             )
                 .toResult()
                 .map(mapper::map)
+        }
+    }
+
+    override fun getOperationHistoryUpdates(accountId: String): Result<Flow<OperationEntity>> {
+        return runCatching {
+            bankAccountHistoryWebsocketManager
+                .accountHistoryUpdatesFlow(accountId)
+                .map(mapper::map)
+                .flowOn(Dispatchers.IO)
+        }.map { flow ->
+            Result.Success(flow)
+        }.getOrElse { throwable ->
+            Result.Error(throwable)
         }
     }
 
