@@ -1,8 +1,12 @@
 package ru.hitsbank.clientbankapplication.bank_account.domain.interactor
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import ru.hitsbank.bank_common.domain.Completable
+import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
 import ru.hitsbank.bank_common.domain.toState
@@ -67,6 +71,19 @@ class BankAccountInteractor @Inject constructor(
     ): Flow<State<List<OperationEntity>>> = flow {
         emit(State.Loading)
         emit(bankAccountRepository.getOperationHistory(accountId, pageSize, pageNumber).toState())
+    }
+
+    fun getOperationHistoryUpdates(
+        accountId: String,
+    ): Flow<State<OperationEntity>> {
+        return when (val flowResult = bankAccountRepository.getOperationHistoryUpdates(accountId)) {
+            is Result.Error -> flowOf(State.Error(flowResult.throwable))
+            is Result.Success -> flowResult.data.map<OperationEntity, State<OperationEntity>> { operation ->
+                State.Success(operation)
+            }.catch { throwable ->
+                emit(State.Error(throwable))
+            }
+        }
     }
 
     fun getTransferInfo(transferRequest: TransferRequest): Flow<State<TransferInfo>> = flow {

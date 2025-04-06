@@ -17,4 +17,6 @@ sealed interface AccountDetailsEffect {
     data object OnCloseAccountError : AccountDetailsEffect
 
     data object OnCloseAccountSuccess : AccountDetailsEffect
+
+    data object OnOperationUpdatesFailure : AccountDetailsEffect
 }

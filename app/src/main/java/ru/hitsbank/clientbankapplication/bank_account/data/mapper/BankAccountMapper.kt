@@ -16,6 +16,8 @@ import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferAccou
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferConfirmation
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferInfo
 import ru.hitsbank.clientbankapplication.bank_account.domain.model.TransferRequest
+import ru.hitsbank.bank_common.data.model.OperationResponse as CommonOperationResponse
+import ru.hitsbank.bank_common.data.model.OperationTypeResponse as CommonOperationTypeResponse
 import javax.inject.Inject
 
 class BankAccountMapper @Inject constructor() {
@@ -56,6 +58,22 @@ class BankAccountMapper @Inject constructor() {
                 currencyCode = operation.currencyCode,
             )
         }
+    }
+
+    fun map(response: CommonOperationResponse): OperationEntity {
+        return OperationEntity(
+            id = response.id,
+            executedAt = response.executedAt,
+            type = when (response.type) {
+                CommonOperationTypeResponse.WITHDRAW -> OperationTypeEntity.WITHDRAWAL
+                CommonOperationTypeResponse.TOP_UP -> OperationTypeEntity.TOP_UP
+                CommonOperationTypeResponse.LOAN_PAYMENT -> OperationTypeEntity.LOAN_PAYMENT
+                CommonOperationTypeResponse.TRANSFER_INCOMING -> OperationTypeEntity.TRANSFER_INCOMING
+                CommonOperationTypeResponse.TRANSFER_OUTGOING -> OperationTypeEntity.TRANSFER_OUTGOING
+            },
+            amount = response.amount,
+            currencyCode = response.currencyCode,
+        )
     }
 
     fun map(request: TransferRequest): TransferRequestModel {

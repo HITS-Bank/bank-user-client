@@ -1,5 +1,6 @@
 package ru.hitsbank.clientbankapplication.bank_account.domain.repository
 
+import kotlinx.coroutines.flow.Flow
 import ru.hitsbank.bank_common.domain.Completable
 import ru.hitsbank.bank_common.domain.Result
 import ru.hitsbank.bank_common.domain.entity.CurrencyCode
@@ -42,6 +43,10 @@ interface IBankAccountRepository {
         pageSize: Int,
         pageNumber: Int,
     ): Result<List<OperationEntity>>
+
+    fun getOperationHistoryUpdates(
+        accountId: String,
+    ): Result<Flow<OperationEntity>>
 
     suspend fun getTransferInfo(
         transferRequest: TransferRequest

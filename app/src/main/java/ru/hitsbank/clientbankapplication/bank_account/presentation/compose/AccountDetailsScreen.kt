@@ -71,6 +71,7 @@ internal fun AccountDetailsScreenWrapper(
             AccountDetailsEffect.OnCloseAccountSuccess -> snackbar.show("Счет закрыт")
             AccountDetailsEffect.OnTransferError -> snackbar.show("Не получилось перевести средства")
             AccountDetailsEffect.OnTransferSuccess -> snackbar.show("Средства переведены")
+            AccountDetailsEffect.OnOperationUpdatesFailure -> snackbar.show("Вебсокет отвалился:(")
         }
     }
 
