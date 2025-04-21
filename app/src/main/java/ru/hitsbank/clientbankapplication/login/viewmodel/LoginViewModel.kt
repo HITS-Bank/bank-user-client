@@ -1,8 +1,11 @@
 package ru.hitsbank.clientbankapplication.login.viewmodel
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.ktx.messaging
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -13,10 +16,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import ru.hitsbank.bank_common.Constants
 import ru.hitsbank.bank_common.domain.State
 import ru.hitsbank.bank_common.domain.entity.RoleType
 import ru.hitsbank.bank_common.domain.interactor.AuthInteractor
+import ru.hitsbank.bank_common.domain.interactor.PushNotificationInteractor
+import ru.hitsbank.bank_common.domain.model.RegisterFcmRequest
 import ru.hitsbank.bank_common.presentation.common.BankUiState
 import ru.hitsbank.bank_common.presentation.common.updateIfSuccess
 import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
@@ -30,6 +36,7 @@ import ru.hitsbank.clientbankapplication.login.model.LoginScreenModel
 class LoginViewModel @AssistedInject constructor(
     @Assisted private val authCode: String?,
     private val authInteractor: AuthInteractor,
+    private val notificationInteractor: PushNotificationInteractor,
     private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
@@ -70,9 +77,21 @@ class LoginViewModel @AssistedInject constructor(
 
                     is State.Success -> {
                         _state.updateIfSuccess { it.copy(isLoading = false) }
+                        registerFcmToken()
                         navigationManager.replace(RootDestinations.BottomBarRoot.destination)
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun registerFcmToken() {
+        val request = RegisterFcmRequest(fcmToken = Firebase.messaging.token.await())
+        notificationInteractor.registerFcmToken(request).collectLatest { state ->
+            when (state) {
+                State.Loading -> Unit
+                is State.Error -> Log.e(TAG, "error registering token")
+                is State.Success -> Log.d(TAG, "successfully registered token")
             }
         }
     }
@@ -109,5 +128,9 @@ class LoginViewModel @AssistedInject constructor(
         fun create(
             authCode: String?,
         ): LoginViewModel
+    }
+
+    private companion object {
+        const val TAG = "LoginViewModel"
     }
 }

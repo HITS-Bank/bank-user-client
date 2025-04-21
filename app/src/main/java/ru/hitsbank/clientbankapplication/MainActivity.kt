@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import ru.hitsbank.bank_common.Constants.DEEPLINK_APP_SCHEME
 import ru.hitsbank.bank_common.Constants.DEEPLINK_AUTH_HOST
 import ru.hitsbank.bank_common.domain.entity.RoleType
@@ -29,6 +28,7 @@ import ru.hitsbank.bank_common.presentation.navigation.NavigationManager
 import ru.hitsbank.bank_common.presentation.navigation.replace
 import ru.hitsbank.bank_common.presentation.theme.AppTheme
 import ru.hitsbank.bank_common.presentation.theme.ThemeViewModel
+import ru.hitsbank.bank_common.requestNotificationPermission
 import ru.hitsbank.clientbankapplication.core.navigation.RootDestinations
 import ru.hitsbank.clientbankapplication.core.navigation.RootNavHost
 import javax.inject.Inject
@@ -43,6 +43,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        requestNotificationPermission()
+
         setContent {
             val viewModel = hiltViewModel<ThemeViewModel, ThemeViewModel.Factory>(
                 creationCallback = { factory ->
