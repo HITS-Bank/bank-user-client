@@ -37,8 +37,12 @@ class LoanMapper @Inject constructor() {
         )
     }
 
-    fun map(loanCreateEntity: LoanCreateEntity): LoanCreateRequest {
+    fun map(
+        requestId: String,
+        loanCreateEntity: LoanCreateEntity,
+    ): LoanCreateRequest {
         return LoanCreateRequest(
+            requestId = requestId,
             tariffId = loanCreateEntity.tariffId,
             amount = loanCreateEntity.amount,
             termInMonths = loanCreateEntity.termInMonths,

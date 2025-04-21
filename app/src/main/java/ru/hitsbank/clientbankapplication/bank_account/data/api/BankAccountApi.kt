@@ -29,6 +29,7 @@ interface BankAccountApi {
     @POST("core/bank_account/create")
     suspend fun createAccount(
         @Query("currencyCode") currencyCode: CurrencyCode,
+        @Query("requestId") requestId: String,
     ): Response<BankAccountResponse>
 
     @Deprecated(message = "Use getBankAccountById")
@@ -57,6 +58,7 @@ interface BankAccountApi {
     @POST("core/bank_account/{accountId}/close")
     suspend fun closeAccount(
         @Path("accountId") accountId: String,
+        @Query("requestId") requestId: String,
     ): Response<Unit>
 
     // TODO WebSockets
@@ -80,11 +82,13 @@ interface BankAccountApi {
     @POST("personalization/hiddenAccount")
     suspend fun hideAccount(
         @Query("accountId") accountId: String,
+        @Query("requestId") requestId: String,
     ): Response<Unit>
 
     @DELETE("personalization/hiddenAccount")
     suspend fun unhideAccount(
         @Query("accountId") accountId: String,
+        @Query("requestId") requestId: String,
     ): Response<Unit>
 
     @GET("personalization/hiddenAccount/list")

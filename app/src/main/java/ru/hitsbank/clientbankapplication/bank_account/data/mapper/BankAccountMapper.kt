@@ -84,8 +84,12 @@ class BankAccountMapper @Inject constructor() {
         )
     }
 
-    fun map(confirmation: TransferConfirmation): TransferConfirmationModel {
+    fun map(
+        requestId: String,
+        confirmation: TransferConfirmation,
+    ): TransferConfirmationModel {
         return TransferConfirmationModel(
+            requestId = requestId,
             senderAccountId = confirmation.senderAccountId,
             receiverAccountNumber = confirmation.receiverAccountNumber,
             transferAmount = confirmation.transferAmount,

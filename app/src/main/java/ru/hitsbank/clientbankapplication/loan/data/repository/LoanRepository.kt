@@ -1,6 +1,8 @@
 package ru.hitsbank.clientbankapplication.loan.data.repository
 
 import kotlinx.coroutines.Dispatchers
+import ru.hitsbank.bank_common.data.model.RequestIdHolder
+import ru.hitsbank.bank_common.data.model.getNewRequestId
 import ru.hitsbank.bank_common.data.utils.apiCall
 import ru.hitsbank.bank_common.data.utils.toCompletableResult
 import ru.hitsbank.bank_common.data.utils.toResult
@@ -25,6 +27,9 @@ class LoanRepository @Inject constructor(
     private val mapper: LoanMapper,
     private val profileRepository: IProfileRepository,
 ) : ILoanRepository {
+
+    private var createLoanIdHolder: RequestIdHolder? = null
+    private var makeLoanPaymentIdHolder: RequestIdHolder? = null
 
     override suspend fun getLoanTariffs(
         pageInfo: PageInfo,
@@ -67,8 +72,16 @@ class LoanRepository @Inject constructor(
     }
 
     override suspend fun createLoan(loan: LoanCreateEntity): Result<LoanEntity> {
+        val idHolder = createLoanIdHolder.getNewRequestId(loan.hashCode())
+        createLoanIdHolder = idHolder
+
         return apiCall(Dispatchers.IO) {
-            loanApi.createLoan(mapper.map(loan))
+            loanApi.createLoan(mapper.map(idHolder.requestId, loan))
+                .also { response ->
+                    if (response.isSuccessful) {
+                        createLoanIdHolder = null
+                    }
+                }
                 .toResult { loan ->
                     mapper.map(loan)
                 }
@@ -76,14 +89,24 @@ class LoanRepository @Inject constructor(
     }
 
     override suspend fun makeLoanPayment(loanId: String, amount: String): Result<LoanEntity> {
+        val hashcode = loanId.hashCode() * 31 + amount.hashCode()
+        val idHolder = makeLoanPaymentIdHolder.getNewRequestId(hashcode)
+        makeLoanPaymentIdHolder = idHolder
+
         return apiCall(Dispatchers.IO) {
             val result = loanApi.makeLoanPayment(
                 loanId = loanId,
-                paymentRequest = LoanPaymentRequest(amount = amount),
+                paymentRequest = LoanPaymentRequest(
+                    requestId = idHolder.requestId,
+                    amount = amount,
+                ),
             ).toCompletableResult()
             when (result) {
                 is Result.Error -> return@apiCall result
-                is Result.Success -> loanApi.getLoanById(loanId).toResult().map { mapper.map(it) }
+                is Result.Success -> {
+                    makeLoanPaymentIdHolder = null
+                    loanApi.getLoanById(loanId).toResult().map { mapper.map(it) }
+                }
             }
         }
     }
